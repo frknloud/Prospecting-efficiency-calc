@@ -1,3 +1,172 @@
 [
-  
+  {
+      "name": "Strong",
+      "allowedSlots": "pan",
+      "flat": {
+        "capacity": 20
+      },
+      "multiplier": {}
+    },
+    {
+      "name": "Forceful",
+      "allowedSlots": "pan",
+      "flat": {
+        "shakeStrength": 2
+      },
+      "multiplier": {}
+    },
+    {
+      "name": "Swift",
+      "allowedSlots": "pan",
+      "flat": {
+        "shakeSpeed": 10
+      },
+      "multiplier": {}
+    },
+    {
+      "name": "Lucky",
+      "allowedSlots": "pan",
+      "flat": {
+        "luck": 5
+      },
+      "multiplier": {}
+    },
+    {
+      "name": "Gigantic",
+      "allowedSlots": "pan",
+      "flat": {
+        "capacity": 40
+      },
+      "multiplier": {
+        "capacity": 1.15
+      }
+    },
+    {
+      "name": "Blessed",
+      "allowedSlots": "pan",
+      "flat": {
+        "capacity": 25,
+        "luck": 10
+      },
+      "multiplier": {
+        "capacity": 1.1,
+        "luck": 1.1
+      }
+    },
+    {
+      "name": "Glowing",
+      "allowedSlots": "pan",
+      "flat": {
+        "shakeSpeed": 25
+      },
+      "multiplier": {}
+    },
+    {
+      "name": "Destructive",
+      "allowedSlots": "pan",
+      "flat": {
+        "shakeStrength": 5
+      },
+      "multiplier": {
+        "shakeStrength": 1.1
+      }
+    },
+    {
+      "name": "Titanic",
+      "allowedSlots": "pan",
+      "flat": {
+        "capacity": 30,
+        "sizeBoost": 20
+      },
+      "multiplier": {
+        "capacity": 1.1
+      }
+    },
+    {
+      "name": "Greedy",
+      "allowedSlots": "pan",
+      "flat": {
+        "sellBoost": 20
+      },
+      "multiplier": {}
+    },
+    {
+      "name": "Midas",
+      "allowedSlots": "pan",
+      "flat": {
+        "sellBoost": 50
+      },
+      "multiplier": {}
+    },
+    {
+      "name": "Boosting",
+      "allowedSlots": "pan",
+      "flat": {
+        "sizeBoost": 10
+      },
+      "multiplier": {}
+    },
+    {
+      "name": "Unstable",
+      "allowedSlots": "pan",
+      "flat": {
+        "modifierBoost": 25
+      },
+      "multiplier": {}
+    },
+    {
+      "name": "Divine",
+      "allowedSlots": "pan",
+      "flat": {
+        "capacity": 40,
+        "luck": 20
+      },
+      "multiplier": {
+        "capacity": 1.2,
+        "luck": 1.2
+      }
+    },
+    {
+      "name": "Cosmic",
+      "allowedSlots": "pan",
+      "flat": {
+        "capacity": 50,
+        "shakeStrength": 3,
+        "sizeBoost": 25
+      },
+      "multiplier": {
+        "capacity": 1.3,
+        "shakeStrength": 1.15
+      }
+    },
+    {
+      "name": "Prismatic",
+      "allowedSlots": "pan",
+      "flat": {
+        "luck": 10,
+        "capacity": 20,
+        "shakeSpeed": 10,
+        "shakeStrength": 2,
+        "sizeBoost": 10,
+        "modifierBoost": 10
+      },
+      "multiplier": {
+        "luck": 1.15,
+        "capacity": 1.15,
+        "shakeStrength": 1.15
+      }
+    },
+    {
+      "name": "Infernal",
+      "allowedSlots": "pan",
+      "flat": {
+        "capacity": -20,
+        "luck": 80,
+        "sizeBoost": -10
+      },
+      "multiplier": {
+        "capacity": 0.75,
+        "luck": 1.4
+      }
+    }
 ]
