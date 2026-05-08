@@ -6,7 +6,8 @@ import {
   MuseumMineral,
   MuseumModifier,
   MuseumSlotSelection,
-  PartialStats
+  PartialStats,
+  StatKey
 } from '../types';
 
 import {
@@ -14,10 +15,17 @@ import {
   slotContribution
 } from './applyMuseum';
 
+function emptyMuseumMultipliers(): PartialStats {
+  return museumConfig.stats.reduce((multipliers, stat) => {
+    multipliers[stat as StatKey] = 1;
+    return multipliers;
+  }, {} as PartialStats);
+}
+
 export function calculateMuseumStats(
   slots: MuseumSlotSelection[]
 ): PartialStats {
-  let multipliers: PartialStats = {};
+  let multipliers: PartialStats = emptyMuseumMultipliers();
 
   slots.forEach((slot) => {
     if (!slot.mineralId) return;
