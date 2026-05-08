@@ -62,6 +62,14 @@ export default function App() {
     }))
   );
 
+  const museumColumnOne = museumSlots.filter(
+    (slot) => slot.slotId <= 9
+  );
+
+  const museumColumnTwo = museumSlots.filter(
+    (slot) => slot.slotId >= 10
+  );
+
   const museumMultipliers = useMemo(
     () => calculateMuseumStats(museumSlots),
     [museumSlots]
@@ -201,19 +209,19 @@ export default function App() {
   }
 
   return (
-    <main className="min-h-screen p-6 bg-slate-900 text-white">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold mb-6">
+    <main className="min-h-screen p-4 bg-slate-900 text-white overflow-x-hidden">
+      <div className="max-w-[1800px] mx-auto">
+        <h1 className="text-3xl font-bold mb-4">
           Prospecting Efficiency Calculator
         </h1>
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
-          <section className="bg-slate-800 rounded-2xl p-6 shadow-lg space-y-4">
-            <h2 className="text-2xl font-semibold">
+        <div className="grid grid-cols-1 2xl:grid-cols-[1fr_1.25fr_0.9fr] gap-4 items-start">
+          <section className="bg-slate-800 rounded-2xl p-4 shadow-lg space-y-4 text-sm">
+            <h2 className="text-xl font-semibold">
               Equipment
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <EquipmentSelector
                 label="Pan"
                 items={pans}
@@ -238,7 +246,7 @@ export default function App() {
               onChange={setSelectedShovel}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <EquipmentSelector
                 label="Necklace"
                 items={necklaces}
@@ -255,7 +263,7 @@ export default function App() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <EquipmentSelector
                 label="Charm"
                 items={charms}
@@ -272,12 +280,12 @@ export default function App() {
               />
             </div>
 
-            <div className="pt-4 border-t border-slate-700">
-              <h3 className="text-xl font-semibold mb-3">
+            <div className="pt-3 border-t border-slate-700">
+              <h3 className="text-lg font-semibold mb-2">
                 Rings
               </h3>
 
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {selectedRings.map((value, index) => {
                   const availableRings = filterAvailableRings(
                     rings,
@@ -288,7 +296,7 @@ export default function App() {
                   return (
                     <div
                       key={index}
-                      className="grid grid-cols-1 md:grid-cols-2 gap-3"
+                      className="grid grid-cols-1 md:grid-cols-2 gap-2"
                     >
                       <EquipmentSelector
                         label={`Ring ${index + 1}`}
@@ -315,12 +323,12 @@ export default function App() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-700">
-              <h3 className="text-xl font-semibold mb-3">
+            <div className="pt-3 border-t border-slate-700">
+              <h3 className="text-lg font-semibold mb-2">
                 Totems
               </h3>
 
-              <div className="grid grid-cols-1 gap-3">
+              <div className="grid grid-cols-1 gap-2">
                 {buffs.map((buff) => (
                   <ToggleCard
                     key={buff.id}
@@ -333,51 +341,63 @@ export default function App() {
             </div>
           </section>
 
-          <section className="bg-slate-800 rounded-2xl p-6 shadow-lg self-start">
-            <h2 className="text-2xl font-semibold mb-4">
+          <section className="bg-slate-800 rounded-2xl p-4 shadow-lg self-start text-sm">
+            <h2 className="text-xl font-semibold mb-3">
               Museum Setup
             </h2>
 
-            <div className="space-y-3">
-              {museumSlots.map((slot) => (
-                <MuseumSlotSelector
-                  key={slot.slotId}
-                  slot={slot}
-                  onChange={updateMuseumSlot}
-                />
-              ))}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+              <div className="space-y-3">
+                {museumColumnOne.map((slot) => (
+                  <MuseumSlotSelector
+                    key={slot.slotId}
+                    slot={slot}
+                    onChange={updateMuseumSlot}
+                  />
+                ))}
+              </div>
+
+              <div className="space-y-3">
+                {museumColumnTwo.map((slot) => (
+                  <MuseumSlotSelector
+                    key={slot.slotId}
+                    slot={slot}
+                    onChange={updateMuseumSlot}
+                  />
+                ))}
+              </div>
             </div>
           </section>
 
-          <section className="bg-slate-800 rounded-2xl p-6 shadow-lg space-y-6 self-start">
+          <section className="bg-slate-800 rounded-2xl p-4 shadow-lg space-y-4 self-start text-sm">
             <div>
-              <h2 className="text-2xl font-semibold mb-4">
+              <h2 className="text-xl font-semibold mb-3">
                 Efficiency Score
               </h2>
 
-              <div className="bg-indigo-600 rounded-2xl p-6 text-center">
-                <div className="text-sm uppercase tracking-wide text-indigo-200 mb-2">
+              <div className="bg-indigo-600 rounded-2xl p-4 text-center">
+                <div className="text-xs uppercase tracking-wide text-indigo-200 mb-1">
                   Efficiency
                 </div>
 
-                <div className="text-5xl font-bold">
+                <div className="text-4xl font-bold">
                   {efficiencyResult.efficiency.toFixed(2)}
                 </div>
               </div>
             </div>
 
             <div>
-              <h3 className="text-xl font-semibold mb-3">
+              <h3 className="text-lg font-semibold mb-2">
                 Cycle Metrics
               </h3>
 
               <div className="space-y-2">
-                <div className="flex justify-between bg-slate-700 rounded-lg px-4 py-2">
+                <div className="flex justify-between bg-slate-700 rounded-lg px-3 py-2">
                   <span>Digs Required</span>
                   <span>{efficiencyResult.digsRequired}</span>
                 </div>
 
-                <div className="flex justify-between bg-slate-700 rounded-lg px-4 py-2">
+                <div className="flex justify-between bg-slate-700 rounded-lg px-3 py-2">
                   <span>Cycle Time</span>
                   <span>{efficiencyResult.cycleTime.toFixed(2)}</span>
                 </div>
@@ -385,7 +405,7 @@ export default function App() {
             </div>
 
             <div>
-              <h3 className="text-xl font-semibold mb-3">
+              <h3 className="text-lg font-semibold mb-2">
                 Final Stats
               </h3>
 
@@ -393,10 +413,9 @@ export default function App() {
                 {Object.entries(totalStats).map(([key, value]) => (
                   <div
                     key={key}
-                    className="flex justify-between bg-slate-700 rounded-lg px-4 py-2"
+                    className="flex justify-between bg-slate-700 rounded-lg px-3 py-2"
                   >
                     <span className="capitalize">{key}</span>
-
                     <span>{Number(value).toFixed(2)}</span>
                   </div>
                 ))}
