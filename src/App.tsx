@@ -21,12 +21,15 @@ import { applyBuffs } from './logic/applyBuffs';
 import { applyMuseum } from './logic/applyMuseum';
 import { applyEnchant } from './logic/applyEnchants';
 import { recommendUpgrades } from './logic/recommendUpgrades';
+import { isBuildReadyForRecommendations } from './logic/isBuildReadyForRecommendations';
 
 import type { BuildState, MuseumSlotSelection, Rarity } from './types';
 
 const RING_SLOT_COUNT = 8;
 
 export default function App() {
+  const [ringSlotLimit, setRingSlotLimit] = useState<6 | 8>(8);
+
   const [selectedPan, setSelectedPan] = useState<string | null>(null);
   const [selectedPanEnchant, setSelectedPanEnchant] = useState<string | null>(null);
   const [selectedShovel, setSelectedShovel] = useState<string | null>(null);
@@ -61,6 +64,9 @@ export default function App() {
     [museumSlots]
   );
 
+  const activeRings = selectedRings.slice(0, ringSlotLimit);
+  const activeRingMutations = selectedRingMutations.slice(0, ringSlotLimit);
+
   const selectedEquipment = useMemo(() => {
     const pan = pans.find((item) => item.name === selectedPan);
     const panEnchant = enchants.find((item) => item.name === selectedPanEnchant);
@@ -70,9 +76,9 @@ export default function App() {
     const charm = charms.find((item) => item.name === selectedCharm);
     const charmMutation = mutations.find((item) => item.name === selectedCharmMutation);
 
-    const ringItems = selectedRings.map((ringName, index) => {
+    const ringItems = activeRings.map((ringName, index) => {
       const ring = rings.find((item) => item.name === ringName);
-      const mutation = mutations.find((item) => item.name === selectedRingMutations[index]);
+      const mutation = mutations.find((item) => item.name === activeRingMutations[index]);
 
       if (!ring) return undefined;
 
@@ -112,8 +118,8 @@ export default function App() {
     selectedNecklaceMutation,
     selectedCharm,
     selectedCharmMutation,
-    selectedRings,
-    selectedRingMutations
+    activeRings,
+    activeRingMutations
   ]);
 
   const baseStats = useMemo(
@@ -149,16 +155,21 @@ export default function App() {
     necklaceMutationId: selectedNecklaceMutation,
     charmId: selectedCharm,
     charmMutationId: selectedCharmMutation,
-    rings: selectedRings.map((ringId, index) => ({
+    rings: activeRings.map((ringId, index) => ({
       ringId,
-      mutationId: selectedRingMutations[index]
+      mutationId: activeRingMutations[index]
     })),
     museumSlots
   };
 
+  const showRecommendations = isBuildReadyForRecommendations(buildState);
+
   const upgradeRecommendations = useMemo(
-    () => recommendUpgrades(buildState),
-    [buildState]
+    () =>
+      showRecommendations
+        ? recommendUpgrades(buildState, ringSlotLimit)
+        : [],
+    [buildState, ringSlotLimit, showRecommendations]
   );
 
   function updateMuseumSlot(updated: MuseumSlotSelection) {
@@ -202,6 +213,8 @@ export default function App() {
 
         <div className="grid grid-cols-1 2xl:grid-cols-[1fr_1.25fr_0.9fr] gap-4 items-start">
           <EquipmentPanel
+            ringSlotLimit={ringSlotLimit}
+            setRingSlotLimit={setRingSlotLimit}
             selectedPan={selectedPan}
             selectedPanEnchant={selectedPanEnchant}
             selectedShovel={selectedShovel}
@@ -272,45 +285,51 @@ export default function App() {
                 Next Best Upgrades
               </h3>
 
-              <div className="space-y-2">
-                {upgradeRecommendations.map((upgrade, index) => (
-                  <div
-                    key={`${upgrade.slot}-${upgrade.itemName}-${index}`}
-                    className="bg-slate-800 rounded-xl p-3"
-                  >
-                    <div className="flex justify-between items-start gap-3">
-                      <div>
-                        <div className="font-semibold text-slate-100">
-                          {upgrade.slot}
+              {!showRecommendations ? (
+                <div className="text-sm text-slate-400">
+                  Select most of your build before upgrade recommendations appear.
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {upgradeRecommendations.map((upgrade, index) => (
+                    <div
+                      key={`${upgrade.slot}-${upgrade.itemName}-${index}`}
+                      className="bg-slate-800 rounded-xl p-3"
+                    >
+                      <div className="flex justify-between items-start gap-3">
+                        <div>
+                          <div className="font-semibold text-slate-100">
+                            {upgrade.slot}
+                          </div>
+
+                          <div className="text-sm text-slate-300">
+                            {upgrade.itemName}
+                            {upgrade.mutationName
+                              ? ` + ${upgrade.mutationName}`
+                              : ''}
+                          </div>
                         </div>
 
-                        <div className="text-sm text-slate-300">
-                          {upgrade.itemName}
-                          {upgrade.mutationName
-                            ? ` + ${upgrade.mutationName}`
-                            : ''}
+                        <div className="text-right">
+                          <div className="text-green-400 font-bold">
+                            +{upgrade.percentGain.toFixed(2)}%
+                          </div>
+
+                          <div className="text-xs text-slate-400">
+                            +{upgrade.efficiencyGain.toFixed(2)}
+                          </div>
                         </div>
                       </div>
 
-                      <div className="text-right">
-                        <div className="text-green-400 font-bold">
-                          +{upgrade.percentGain.toFixed(2)}%
+                      {upgrade.digsImproved && (
+                        <div className="mt-2 text-xs text-amber-300 font-semibold">
+                          Dig breakpoint improvement
                         </div>
-
-                        <div className="text-xs text-slate-400">
-                          +{upgrade.efficiencyGain.toFixed(2)}
-                        </div>
-                      </div>
+                      )}
                     </div>
-
-                    {upgrade.digsImproved && (
-                      <div className="mt-2 text-xs text-amber-300 font-semibold">
-                        Dig breakpoint improvement
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </section>
         </div>
