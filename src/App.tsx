@@ -299,23 +299,6 @@ export default function App() {
 
             <div className="pt-4 border-t border-slate-700">
               <h3 className="text-xl font-semibold mb-3">
-                Totems
-              </h3>
-
-              <div className="grid grid-cols-1 gap-3">
-                {buffs.map((buff) => (
-                  <ToggleCard
-                    key={buff.id}
-                    label={buff.name}
-                    enabled={enabledBuffs.includes(buff.id)}
-                    onToggle={() => toggleBuff(buff.id)}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-slate-700">
-              <h3 className="text-xl font-semibold mb-3">
                 Rings
               </h3>
 
@@ -331,21 +314,34 @@ export default function App() {
                 Ring Mutations
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-3">
                 {selectedRingMutations.map((value, index) => (
-                  <div
+                  <MutationSelector
                     key={index}
-                    className="bg-slate-700 rounded-xl p-3"
-                  >
-                    <MutationSelector
-                      label={`Ring ${index + 1} Mutation`}
-                      mutations={mutations}
-                      value={value}
-                      onChange={(newValue) =>
-                        updateRingMutation(index, newValue)
-                      }
-                    />
-                  </div>
+                    label={`Ring ${index + 1} Mutation`}
+                    mutations={mutations}
+                    value={value}
+                    onChange={(newValue) =>
+                      updateRingMutation(index, newValue)
+                    }
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-slate-700">
+              <h3 className="text-xl font-semibold mb-3">
+                Totems
+              </h3>
+
+              <div className="grid grid-cols-1 gap-3">
+                {buffs.map((buff) => (
+                  <ToggleCard
+                    key={buff.id}
+                    label={buff.name}
+                    enabled={enabledBuffs.includes(buff.id)}
+                    onToggle={() => toggleBuff(buff.id)}
+                  />
                 ))}
               </div>
             </div>
