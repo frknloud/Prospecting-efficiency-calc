@@ -15,6 +15,7 @@ import EquipmentSelector from './components/EquipmentSelector';
 import MutationSelector from './components/MutationSelector';
 import ToggleCard from './components/ToggleCard';
 import EnchantSelector from './components/EnchantSelector';
+import StatBadge from './components/StatBadge';
 
 import {
   MuseumSlotSelection,
@@ -31,6 +32,18 @@ import { applyEnchant } from './logic/applyEnchants';
 import { filterAvailableRings } from './logic/filterAvailableRings';
 
 const RING_SLOT_COUNT = 8;
+
+const museumLegend = [
+  { key: 'luck', label: 'Luck' },
+  { key: 'capacity', label: 'Capacity' },
+  { key: 'digStrength', label: 'Dig Strength' },
+  { key: 'digSpeed', label: 'Dig Speed' },
+  { key: 'shakeStrength', label: 'Shake Strength' },
+  { key: 'shakeSpeed', label: 'Shake Speed' },
+  { key: 'sizeBoost', label: 'Size Boost' },
+  { key: 'modifierBoost', label: 'Modifier Boost' },
+  { key: 'sellBoost', label: 'Sell Boost' }
+];
 
 export default function App() {
   const [selectedPan, setSelectedPan] = useState<string | null>(null);
@@ -222,100 +235,45 @@ export default function App() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <EquipmentSelector
-                label="Pan"
-                items={pans}
-                value={selectedPan}
-                getName={(item) => item.name}
-                onChange={setSelectedPan}
-              />
-
-              <EnchantSelector
-                label="Pan Enchant"
-                enchants={enchants}
-                value={selectedPanEnchant}
-                onChange={setSelectedPanEnchant}
-              />
+              <EquipmentSelector label="Pan" items={pans} value={selectedPan} getName={(item) => item.name} onChange={setSelectedPan} />
+              <EnchantSelector label="Pan Enchant" enchants={enchants} value={selectedPanEnchant} onChange={setSelectedPanEnchant} />
             </div>
 
-            <EquipmentSelector
-              label="Shovel"
-              items={shovels}
-              value={selectedShovel}
-              getName={(item) => item.name}
-              onChange={setSelectedShovel}
-            />
+            <EquipmentSelector label="Shovel" items={shovels} value={selectedShovel} getName={(item) => item.name} onChange={setSelectedShovel} />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <EquipmentSelector
-                label="Necklace"
-                items={necklaces}
-                value={selectedNecklace}
-                getName={(item) => item.name}
-                onChange={setSelectedNecklace}
-              />
-
-              <MutationSelector
-                label="Necklace Mutation"
-                mutations={mutations}
-                value={selectedNecklaceMutation}
-                onChange={setSelectedNecklaceMutation}
-              />
+              <EquipmentSelector label="Necklace" items={necklaces} value={selectedNecklace} getName={(item) => item.name} onChange={setSelectedNecklace} />
+              <MutationSelector label="Necklace Mutation" mutations={mutations} value={selectedNecklaceMutation} onChange={setSelectedNecklaceMutation} />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <EquipmentSelector
-                label="Charm"
-                items={charms}
-                value={selectedCharm}
-                getName={(item) => item.name}
-                onChange={setSelectedCharm}
-              />
-
-              <MutationSelector
-                label="Charm Mutation"
-                mutations={mutations}
-                value={selectedCharmMutation}
-                onChange={setSelectedCharmMutation}
-              />
+              <EquipmentSelector label="Charm" items={charms} value={selectedCharm} getName={(item) => item.name} onChange={setSelectedCharm} />
+              <MutationSelector label="Charm Mutation" mutations={mutations} value={selectedCharmMutation} onChange={setSelectedCharmMutation} />
             </div>
 
             <div className="pt-3 border-t border-slate-700">
-              <h3 className="text-lg font-semibold mb-2">
-                Rings
-              </h3>
+              <h3 className="text-lg font-semibold mb-2">Rings</h3>
 
               <div className="space-y-2">
                 {selectedRings.map((value, index) => {
-                  const availableRings = filterAvailableRings(
-                    rings,
-                    selectedRings,
-                    index
-                  );
+                  const availableRings = filterAvailableRings(rings, selectedRings, index);
 
                   return (
-                    <div
-                      key={index}
-                      className="grid grid-cols-1 md:grid-cols-2 gap-2"
-                    >
+                    <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       <EquipmentSelector
                         label={`Ring ${index + 1}`}
                         items={availableRings}
                         value={value}
                         getName={(item) => item.name}
                         getId={(item) => item.id ?? item.name}
-                        onChange={(newValue) =>
-                          updateRing(index, newValue)
-                        }
+                        onChange={(newValue) => updateRing(index, newValue)}
                       />
 
                       <MutationSelector
                         label={`Ring ${index + 1} Mutation`}
                         mutations={mutations}
                         value={selectedRingMutations[index]}
-                        onChange={(newValue) =>
-                          updateRingMutation(index, newValue)
-                        }
+                        onChange={(newValue) => updateRingMutation(index, newValue)}
                       />
                     </div>
                   );
@@ -324,9 +282,7 @@ export default function App() {
             </div>
 
             <div className="pt-3 border-t border-slate-700">
-              <h3 className="text-lg font-semibold mb-2">
-                Totems
-              </h3>
+              <h3 className="text-lg font-semibold mb-2">Totems</h3>
 
               <div className="grid grid-cols-1 gap-2">
                 {buffs.map((buff) => (
@@ -342,28 +298,37 @@ export default function App() {
           </section>
 
           <section className="bg-slate-800 rounded-2xl p-4 shadow-lg self-start text-sm">
-            <h2 className="text-xl font-semibold mb-3">
-              Museum Setup
-            </h2>
+            <div className="flex flex-col gap-3 mb-3">
+              <h2 className="text-xl font-semibold">
+                Museum Setup
+              </h2>
+
+              <div className="flex flex-wrap gap-2">
+                {museumLegend.map((item) => (
+                  <div
+                    key={item.key}
+                    className="flex items-center gap-1 bg-slate-700 rounded-lg px-2 py-1"
+                  >
+                    <StatBadge statKey={item.key} />
+
+                    <span className="text-xs text-slate-300">
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
               <div className="space-y-3">
                 {museumColumnOne.map((slot) => (
-                  <MuseumSlotSelector
-                    key={slot.slotId}
-                    slot={slot}
-                    onChange={updateMuseumSlot}
-                  />
+                  <MuseumSlotSelector key={slot.slotId} slot={slot} onChange={updateMuseumSlot} />
                 ))}
               </div>
 
               <div className="space-y-3">
                 {museumColumnTwo.map((slot) => (
-                  <MuseumSlotSelector
-                    key={slot.slotId}
-                    slot={slot}
-                    onChange={updateMuseumSlot}
-                  />
+                  <MuseumSlotSelector key={slot.slotId} slot={slot} onChange={updateMuseumSlot} />
                 ))}
               </div>
             </div>
@@ -371,9 +336,7 @@ export default function App() {
 
           <section className="bg-slate-800 rounded-2xl p-4 shadow-lg space-y-4 self-start text-sm">
             <div>
-              <h2 className="text-xl font-semibold mb-3">
-                Efficiency Score
-              </h2>
+              <h2 className="text-xl font-semibold mb-3">Efficiency Score</h2>
 
               <div className="bg-indigo-600 rounded-2xl p-4 text-center">
                 <div className="text-xs uppercase tracking-wide text-indigo-200 mb-1">
@@ -387,9 +350,7 @@ export default function App() {
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold mb-2">
-                Cycle Metrics
-              </h3>
+              <h3 className="text-lg font-semibold mb-2">Cycle Metrics</h3>
 
               <div className="space-y-2">
                 <div className="flex justify-between bg-slate-700 rounded-lg px-3 py-2">
@@ -405,16 +366,11 @@ export default function App() {
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold mb-2">
-                Final Stats
-              </h3>
+              <h3 className="text-lg font-semibold mb-2">Final Stats</h3>
 
               <div className="space-y-2">
                 {Object.entries(totalStats).map(([key, value]) => (
-                  <div
-                    key={key}
-                    className="flex justify-between bg-slate-700 rounded-lg px-3 py-2"
-                  >
+                  <div key={key} className="flex justify-between bg-slate-700 rounded-lg px-3 py-2">
                     <span className="capitalize">{key}</span>
                     <span>{Number(value).toFixed(2)}</span>
                   </div>
