@@ -1,7 +1,8 @@
 interface RingItem {
-  id: string;
+  id?: string;
   name: string;
   unique?: boolean;
+  [key: string]: unknown;
 }
 
 export function filterAvailableRings(
@@ -21,6 +22,8 @@ export function filterAvailableRings(
       return true;
     }
 
-    return !selectedUniqueIds.has(ring.id);
+    const ringId = ring.id ?? ring.name;
+
+    return !selectedUniqueIds.has(ringId);
   });
 }
