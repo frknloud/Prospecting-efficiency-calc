@@ -3,9 +3,10 @@ import EquipmentSelector from './EquipmentSelector';
 import { filterAvailableRings } from '../logic/filterAvailableRings';
 
 interface RingItem {
-  id: string;
+  id?: string;
   name: string;
   unique?: boolean;
+  [key: string]: unknown;
 }
 
 interface Props {
@@ -38,6 +39,7 @@ export default function RingGrid({
               items={availableRings}
               value={value}
               getName={(item) => item.name}
+              getId={(item) => item.id ?? item.name}
               onChange={(newValue) =>
                 onChange(index, newValue)
               }
