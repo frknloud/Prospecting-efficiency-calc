@@ -207,7 +207,7 @@ export default function App() {
           Prospecting Efficiency Calculator
         </h1>
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
           <section className="bg-slate-800 rounded-2xl p-6 shadow-lg space-y-4">
             <h2 className="text-2xl font-semibold">
               Equipment
@@ -333,12 +333,12 @@ export default function App() {
             </div>
           </section>
 
-          <section className="bg-slate-800 rounded-2xl p-6 shadow-lg">
+          <section className="bg-slate-800 rounded-2xl p-6 shadow-lg self-start">
             <h2 className="text-2xl font-semibold mb-4">
               Museum Setup
             </h2>
 
-            <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
+            <div className="space-y-3">
               {museumSlots.map((slot) => (
                 <MuseumSlotSelector
                   key={slot.slotId}
@@ -349,7 +349,7 @@ export default function App() {
             </div>
           </section>
 
-          <section className="bg-slate-800 rounded-2xl p-6 shadow-lg space-y-6">
+          <section className="bg-slate-800 rounded-2xl p-6 shadow-lg space-y-6 self-start">
             <div>
               <h2 className="text-2xl font-semibold mb-4">
                 Efficiency Score
