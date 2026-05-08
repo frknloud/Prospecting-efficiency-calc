@@ -6,16 +6,18 @@ import {
   MuseumMineral,
   MuseumModifier,
   MuseumSlotSelection,
-  PartialStats,
-  StatKey
+  PartialStats
 } from '../types';
 
-import { applyMuseumModifier } from './applyMuseum';
+import {
+  addMuseumContribution,
+  slotContribution
+} from './applyMuseum';
 
 export function calculateMuseumStats(
   slots: MuseumSlotSelection[]
 ): PartialStats {
-  const totals: PartialStats = {};
+  let multipliers: PartialStats = {};
 
   slots.forEach((slot) => {
     if (!slot.mineralId) return;
@@ -33,18 +35,17 @@ export function calculateMuseumStats(
     const rarityBonus =
       museumConfig.rarityModifierBonus[slot.rarity] ?? 0;
 
-    const modifiedStats = applyMuseumModifier(
+    const contribution = slotContribution(
       mineral,
       modifier,
       rarityBonus
     );
 
-    Object.entries(modifiedStats).forEach(([key, value]) => {
-      const statKey = key as StatKey;
-
-      totals[statKey] = (totals[statKey] ?? 0) + (value ?? 0);
-    });
+    multipliers = addMuseumContribution(
+      multipliers,
+      contribution
+    );
   });
 
-  return totals;
+  return multipliers;
 }
