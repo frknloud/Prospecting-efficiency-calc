@@ -14,7 +14,8 @@ const rarityStyles: Record<string, string> = {
   rare: 'bg-blue-700 text-blue-100',
   epic: 'bg-purple-700 text-purple-100',
   legendary: 'bg-amber-600 text-amber-100',
-  mythic: 'bg-red-700 text-red-100'
+  mythic: 'bg-pink-700 text-pink-100',
+  exotic: 'bg-red-700 text-red-100'
 };
 
 export default function MuseumSlotSelector({
