@@ -6,8 +6,7 @@ import MuseumSlotSelector from './components/MuseumSlotSelector';
 
 import {
   MuseumSlotSelection,
-  PartialStats,
-  StatKey
+  Rarity
 } from './types';
 
 import { calculateMuseumStats } from './logic/calculateMuseumStats';
@@ -18,7 +17,7 @@ export default function App() {
   >(
     museumSlotsData.map((slot) => ({
       slotId: slot.slotId,
-      rarity: slot.rarity,
+      rarity: slot.rarity as Rarity,
       mineralId: null,
       modifierId: null
     }))
