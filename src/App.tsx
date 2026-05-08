@@ -389,7 +389,7 @@ export default function App() {
                 Final Stats
               </h3>
 
-              <div className="space-y-2 max-h-[40vh] overflow-y-auto pr-1">
+              <div className="space-y-2">
                 {Object.entries(totalStats).map(([key, value]) => (
                   <div
                     key={key}
