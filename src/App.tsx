@@ -11,11 +11,7 @@ import buffs from './data/buffs.json';
 import enchants from './data/enchants.json';
 
 import MuseumSlotSelector from './components/MuseumSlotSelector';
-import EquipmentSelector from './components/EquipmentSelector';
-import MutationSelector from './components/MutationSelector';
-import ToggleCard from './components/ToggleCard';
-import EnchantSelector from './components/EnchantSelector';
-import StatBadge from './components/StatBadge';
+import EquipmentPanel from './components/EquipmentPanel';
 
 import { calculateMuseumStats } from './logic/calculateMuseumStats';
 import { calculateStats } from './logic/calculateStats';
@@ -24,24 +20,11 @@ import { applyMutation } from './logic/applyMutations';
 import { applyBuffs } from './logic/applyBuffs';
 import { applyMuseum } from './logic/applyMuseum';
 import { applyEnchant } from './logic/applyEnchants';
-import { filterAvailableRings } from './logic/filterAvailableRings';
 import { recommendUpgrades } from './logic/recommendUpgrades';
 
 import type { BuildState, MuseumSlotSelection, Rarity } from './types';
 
 const RING_SLOT_COUNT = 8;
-
-const museumLegend = [
-  { key: 'luck', label: 'Luck' },
-  { key: 'capacity', label: 'Capacity' },
-  { key: 'digStrength', label: 'Dig Strength' },
-  { key: 'digSpeed', label: 'Dig Speed' },
-  { key: 'shakeStrength', label: 'Shake Strength' },
-  { key: 'shakeSpeed', label: 'Shake Speed' },
-  { key: 'sizeBoost', label: 'Size Boost' },
-  { key: 'modifierBoost', label: 'Modifier Boost' },
-  { key: 'sellBoost', label: 'Sell Boost' }
-];
 
 export default function App() {
   const [selectedPan, setSelectedPan] = useState<string | null>(null);
@@ -73,7 +56,10 @@ export default function App() {
   const museumColumnOne = museumSlots.filter((slot) => slot.slotId <= 9);
   const museumColumnTwo = museumSlots.filter((slot) => slot.slotId >= 10);
 
-  const museumMultipliers = useMemo(() => calculateMuseumStats(museumSlots), [museumSlots]);
+  const museumMultipliers = useMemo(
+    () => calculateMuseumStats(museumSlots),
+    [museumSlots]
+  );
 
   const selectedEquipment = useMemo(() => {
     const pan = pans.find((item) => item.name === selectedPan);
@@ -97,19 +83,63 @@ export default function App() {
     });
 
     return [
-      pan ? { ...pan, stats: applyEnchant(pan.stats, panEnchant) } : undefined,
+      pan
+        ? {
+            ...pan,
+            stats: applyEnchant(pan.stats, panEnchant)
+          }
+        : undefined,
       shovel,
-      necklace ? { ...necklace, stats: applyMutation(necklace.stats, necklaceMutation) } : undefined,
-      charm ? { ...charm, stats: applyMutation(charm.stats, charmMutation) } : undefined,
+      necklace
+        ? {
+            ...necklace,
+            stats: applyMutation(necklace.stats, necklaceMutation)
+          }
+        : undefined,
+      charm
+        ? {
+            ...charm,
+            stats: applyMutation(charm.stats, charmMutation)
+          }
+        : undefined,
       ...ringItems
     ];
-  }, [selectedPan, selectedPanEnchant, selectedShovel, selectedNecklace, selectedNecklaceMutation, selectedCharm, selectedCharmMutation, selectedRings, selectedRingMutations]);
+  }, [
+    selectedPan,
+    selectedPanEnchant,
+    selectedShovel,
+    selectedNecklace,
+    selectedNecklaceMutation,
+    selectedCharm,
+    selectedCharmMutation,
+    selectedRings,
+    selectedRingMutations
+  ]);
 
-  const baseStats = useMemo(() => calculateStats(selectedEquipment), [selectedEquipment]);
-  const activeBuffs = useMemo(() => buffs.filter((buff) => enabledBuffs.includes(buff.id)), [enabledBuffs]);
-  const buffedStats = useMemo(() => applyBuffs(baseStats, activeBuffs), [baseStats, activeBuffs]);
-  const totalStats = useMemo(() => applyMuseum(buffedStats, museumMultipliers), [buffedStats, museumMultipliers]);
-  const efficiencyResult = useMemo(() => calculateEfficiency(totalStats), [totalStats]);
+  const baseStats = useMemo(
+    () => calculateStats(selectedEquipment),
+    [selectedEquipment]
+  );
+
+  const activeBuffs = useMemo(
+    () => buffs.filter((buff) => enabledBuffs.includes(buff.id)),
+    [enabledBuffs]
+  );
+
+  const buffedStats = useMemo(
+    () => applyBuffs(baseStats, activeBuffs),
+    [baseStats, activeBuffs]
+  );
+
+  const totalStats = useMemo(
+    () => applyMuseum(buffedStats, museumMultipliers),
+    [buffedStats, museumMultipliers]
+  );
+
+  const efficiencyResult = useMemo(
+    () => calculateEfficiency(totalStats),
+    [totalStats]
+  );
 
   const buildState: BuildState = {
     panId: selectedPan,
@@ -132,30 +162,67 @@ export default function App() {
   );
 
   function updateMuseumSlot(updated: MuseumSlotSelection) {
-    setMuseumSlots((prev) => prev.map((slot) => slot.slotId === updated.slotId ? updated : slot));
+    setMuseumSlots((prev) =>
+      prev.map((slot) =>
+        slot.slotId === updated.slotId ? updated : slot
+      )
+    );
   }
 
   function updateRing(index: number, value: string | null) {
-    setSelectedRings((prev) => prev.map((ring, ringIndex) => ringIndex === index ? value : ring));
+    setSelectedRings((prev) =>
+      prev.map((ring, ringIndex) =>
+        ringIndex === index ? value : ring
+      )
+    );
   }
 
   function updateRingMutation(index: number, value: string | null) {
-    setSelectedRingMutations((prev) => prev.map((mutation, mutationIndex) => mutationIndex === index ? value : mutation));
+    setSelectedRingMutations((prev) =>
+      prev.map((mutation, mutationIndex) =>
+        mutationIndex === index ? value : mutation
+      )
+    );
   }
 
   function toggleBuff(buffId: string) {
-    setEnabledBuffs((prev) => prev.includes(buffId) ? prev.filter((id) => id !== buffId) : [...prev, buffId]);
+    setEnabledBuffs((prev) =>
+      prev.includes(buffId)
+        ? prev.filter((id) => id !== buffId)
+        : [...prev, buffId]
+    );
   }
 
   return (
     <main className="min-h-screen p-4 bg-slate-900 text-white overflow-x-hidden">
       <div className="max-w-[1800px] mx-auto">
-        <h1 className="text-3xl font-bold mb-4">Prospecting Efficiency Calculator</h1>
+        <h1 className="text-3xl font-bold mb-4">
+          Prospecting Efficiency Calculator
+        </h1>
 
         <div className="grid grid-cols-1 2xl:grid-cols-[1fr_1.25fr_0.9fr] gap-4 items-start">
-          <section className="bg-slate-800 rounded-2xl p-4 shadow-lg space-y-4 text-sm">
-            <h2 className="text-xl font-semibold">Equipment</h2>
-          </section>
+          <EquipmentPanel
+            selectedPan={selectedPan}
+            selectedPanEnchant={selectedPanEnchant}
+            selectedShovel={selectedShovel}
+            selectedNecklace={selectedNecklace}
+            selectedNecklaceMutation={selectedNecklaceMutation}
+            selectedCharm={selectedCharm}
+            selectedCharmMutation={selectedCharmMutation}
+            selectedRings={selectedRings}
+            selectedRingMutations={selectedRingMutations}
+            enabledBuffs={enabledBuffs}
+            setSelectedPan={setSelectedPan}
+            setSelectedPanEnchant={setSelectedPanEnchant}
+            setSelectedShovel={setSelectedShovel}
+            setSelectedNecklace={setSelectedNecklace}
+            setSelectedNecklaceMutation={setSelectedNecklaceMutation}
+            setSelectedCharm={setSelectedCharm}
+            setSelectedCharmMutation={setSelectedCharmMutation}
+            updateRing={updateRing}
+            updateRingMutation={updateRingMutation}
+            toggleBuff={toggleBuff}
+          />
 
           <section className="bg-slate-800 rounded-2xl p-4 shadow-lg self-start text-sm">
             <h2 className="text-xl font-semibold mb-4">Museum Setup</h2>
@@ -163,13 +230,21 @@ export default function App() {
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
               <div className="space-y-3">
                 {museumColumnOne.map((slot) => (
-                  <MuseumSlotSelector key={slot.slotId} slot={slot} onChange={updateMuseumSlot} />
+                  <MuseumSlotSelector
+                    key={slot.slotId}
+                    slot={slot}
+                    onChange={updateMuseumSlot}
+                  />
                 ))}
               </div>
 
               <div className="space-y-3">
                 {museumColumnTwo.map((slot) => (
-                  <MuseumSlotSelector key={slot.slotId} slot={slot} onChange={updateMuseumSlot} />
+                  <MuseumSlotSelector
+                    key={slot.slotId}
+                    slot={slot}
+                    onChange={updateMuseumSlot}
+                  />
                 ))}
               </div>
             </div>
@@ -177,16 +252,25 @@ export default function App() {
 
           <section className="bg-slate-800 rounded-2xl p-4 shadow-lg space-y-4 self-start text-sm">
             <div>
-              <h2 className="text-xl font-semibold mb-3">Efficiency Score</h2>
+              <h2 className="text-xl font-semibold mb-3">
+                Efficiency Score
+              </h2>
 
               <div className="bg-indigo-600 rounded-2xl p-4 text-center">
-                <div className="text-xs uppercase tracking-wide text-indigo-200 mb-1">Efficiency</div>
-                <div className="text-4xl font-bold">{efficiencyResult.efficiency.toFixed(2)}</div>
+                <div className="text-xs uppercase tracking-wide text-indigo-200 mb-1">
+                  Efficiency
+                </div>
+
+                <div className="text-4xl font-bold">
+                  {efficiencyResult.efficiency.toFixed(2)}
+                </div>
               </div>
             </div>
 
             <div className="bg-slate-700 rounded-2xl p-4">
-              <h3 className="text-lg font-semibold mb-3">Next Best Upgrades</h3>
+              <h3 className="text-lg font-semibold mb-3">
+                Next Best Upgrades
+              </h3>
 
               <div className="space-y-2">
                 {upgradeRecommendations.map((upgrade, index) => (
@@ -202,7 +286,9 @@ export default function App() {
 
                         <div className="text-sm text-slate-300">
                           {upgrade.itemName}
-                          {upgrade.mutationName ? ` + ${upgrade.mutationName}` : ''}
+                          {upgrade.mutationName
+                            ? ` + ${upgrade.mutationName}`
+                            : ''}
                         </div>
                       </div>
 
