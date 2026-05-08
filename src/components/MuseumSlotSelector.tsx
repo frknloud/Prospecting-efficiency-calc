@@ -31,10 +31,16 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
     (modifier) => modifier.id === slot.modifierId
   );
 
+  const mineralStats = Object.keys(
+    selectedMineral?.stats ?? {}
+  );
+
+  const modifierStats = selectedModifier?.affects ?? [];
+
   const statKeys = Array.from(
     new Set([
-      ...(selectedMineral?.affects ?? []),
-      ...(selectedModifier?.affects ?? [])
+      ...mineralStats,
+      ...modifierStats
     ])
   );
 
