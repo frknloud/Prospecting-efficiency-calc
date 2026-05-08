@@ -33,8 +33,8 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
 
   const statKeys = Array.from(
     new Set([
-      ...Object.keys(selectedMineral?.stats ?? {}),
-      ...Object.keys(selectedModifier?.stats ?? {})
+      ...(selectedMineral?.affects ?? []),
+      ...(selectedModifier?.affects ?? [])
     ])
   );
 
