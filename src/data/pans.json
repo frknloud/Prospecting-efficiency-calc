@@ -1,44 +1,47 @@
 [
   {
-      "name": "Abyssal Pan",
-      "slot": "pan",
-      "stats": {
-        "luck": 700,
-        "capacity": 250,
-        "digStrength": 0,
-        "digSpeed": 0,
-        "shakeStrength": 8,
-        "shakeSpeed": 110,
-        "modifierBoost": 0,
-        "sizeBoost": 20
-      }
-    },
-    {
-      "name": "Blightflow Pan",
-      "slot": "pan",
-      "stats": {
-        "luck": 500,
-        "capacity": 400,
-        "digStrength": 0,
-        "digSpeed": 0,
-        "shakeStrength": 30,
-        "shakeSpeed": 200,
-        "modifierBoost": 0,
-        "sizeBoost": 25
-      }
-    },
-    {
-      "name": "Nebula Pan",
-      "slot": "pan",
-      "stats": {
-        "luck": 800,
-        "capacity": 500,
-        "digStrength": 0,
-        "digSpeed": 0,
-        "shakeStrength": 80,
-        "shakeSpeed": 125,
-        "modifierBoost": 25,
-        "sizeBoost": 33
-      }
+    "id": "abyssal-pan",
+    "name": "Abyssal Pan",
+    "slot": "pan",
+    "stats": {
+      "luck": 700,
+      "capacity": 250,
+      "digStrength": 0,
+      "digSpeed": 0,
+      "shakeStrength": 8,
+      "shakeSpeed": 110,
+      "modifierBoost": 0,
+      "sizeBoost": 20
     }
+  },
+  {
+    "id": "blightflow-pan",
+    "name": "Blightflow Pan",
+    "slot": "pan",
+    "stats": {
+      "luck": 500,
+      "capacity": 400,
+      "digStrength": 0,
+      "digSpeed": 0,
+      "shakeStrength": 30,
+      "shakeSpeed": 200,
+      "modifierBoost": 0,
+      "sizeBoost": 25
+    }
+  },
+  {
+    "id": "nebula-pan",
+    "name": "Nebula Pan",
+    "slot": "pan",
+    "stats": {
+      "luck": 800,
+      "capacity": 500,
+      "digStrength": 0,
+      "digSpeed": 0,
+      "shakeStrength": 80,
+      "shakeSpeed": 125,
+      "modifierBoost": 25,
+      "sizeBoost": 33
+    }
+  }
 ]
