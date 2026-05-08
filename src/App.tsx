@@ -12,6 +12,7 @@ import enchants from './data/enchants.json';
 
 import MuseumSlotSelector from './components/MuseumSlotSelector';
 import EquipmentPanel from './components/EquipmentPanel';
+import StatBadge from './components/StatBadge';
 
 import { calculateMuseumStats } from './logic/calculateMuseumStats';
 import { calculateStats } from './logic/calculateStats';
@@ -26,6 +27,18 @@ import { isBuildReadyForRecommendations } from './logic/isBuildReadyForRecommend
 import type { BuildState, MuseumSlotSelection, Rarity } from './types';
 
 const RING_SLOT_COUNT = 8;
+
+const museumLegend = [
+  'luck',
+  'capacity',
+  'digStrength',
+  'digSpeed',
+  'shakeStrength',
+  'shakeSpeed',
+  'sizeBoost',
+  'modifierBoost',
+  'sellBoost'
+];
 
 export default function App() {
   const [ringSlotLimit, setRingSlotLimit] = useState<6 | 8>(8);
@@ -239,6 +252,38 @@ export default function App() {
 
           <section className="bg-slate-800 rounded-2xl p-4 shadow-lg self-start text-sm">
             <h2 className="text-xl font-semibold mb-4">Museum Setup</h2>
+
+            <div className="flex flex-wrap gap-2 mb-4">
+              {museumLegend.map((stat) => (
+                <StatBadge
+                  key={stat}
+                  statKey={stat}
+                />
+              ))}
+            </div>
+
+            <div className="bg-slate-700 rounded-xl p-4 mb-4">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-300 mb-3">
+                Final Museum Multipliers
+              </h3>
+
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                {Object.entries(museumMultipliers).map(([key, value]) => (
+                  <div
+                    key={key}
+                    className="flex justify-between bg-slate-800 rounded-lg px-3 py-2"
+                  >
+                    <span className="text-slate-300">{key}</span>
+
+                    <span className="font-semibold text-indigo-300">
+                      {typeof value === 'number'
+                        ? value.toFixed(2)
+                        : String(value)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
               <div className="space-y-3">
