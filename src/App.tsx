@@ -8,12 +8,14 @@ import necklaces from './data/necklaces.json';
 import charms from './data/charms.json';
 import mutations from './data/mutations.json';
 import buffs from './data/buffs.json';
+import enchants from './data/enchants.json';
 
 import MuseumSlotSelector from './components/MuseumSlotSelector';
 import EquipmentSelector from './components/EquipmentSelector';
 import RingGrid from './components/RingGrid';
 import MutationSelector from './components/MutationSelector';
 import ToggleCard from './components/ToggleCard';
+import EnchantSelector from './components/EnchantSelector';
 
 import {
   MuseumSlotSelection,
@@ -26,23 +28,34 @@ import { calculateEfficiency } from './logic/calculateEfficiency';
 import { applyMutation } from './logic/applyMutations';
 import { applyBuffs } from './logic/applyBuffs';
 import { applyMuseum } from './logic/applyMuseum';
+import { applyEnchant } from './logic/applyEnchants';
 
 const RING_SLOT_COUNT = 8;
 
 export default function App() {
   const [selectedPan, setSelectedPan] = useState<string | null>(null);
+  const [selectedPanEnchant, setSelectedPanEnchant] = useState<
+    string | null
+  >(null);
+
   const [selectedShovel, setSelectedShovel] = useState<string | null>(null);
+
   const [selectedRings, setSelectedRings] = useState<Array<string | null>>(
     Array(RING_SLOT_COUNT).fill(null)
   );
+
   const [selectedRingMutations, setSelectedRingMutations] = useState<
     Array<string | null>
   >(Array(RING_SLOT_COUNT).fill(null));
+
   const [selectedNecklace, setSelectedNecklace] = useState<string | null>(null);
+
   const [selectedNecklaceMutation, setSelectedNecklaceMutation] = useState<
     string | null
   >(null);
+
   const [selectedCharm, setSelectedCharm] = useState<string | null>(null);
+
   const [selectedCharmMutation, setSelectedCharmMutation] = useState<
     string | null
   >(null);
@@ -67,6 +80,11 @@ export default function App() {
 
   const selectedEquipment = useMemo(() => {
     const pan = pans.find((item) => item.name === selectedPan);
+
+    const panEnchant = enchants.find(
+      (enchant) => enchant.name === selectedPanEnchant
+    );
+
     const shovel = shovels.find((item) => item.name === selectedShovel);
 
     const necklace = necklaces.find(
@@ -103,7 +121,15 @@ export default function App() {
     });
 
     return [
-      pan,
+      pan
+        ? {
+            ...pan,
+            stats: applyEnchant(
+              pan.stats,
+              panEnchant
+            )
+          }
+        : undefined,
       shovel,
       necklace
         ? {
@@ -127,6 +153,7 @@ export default function App() {
     ];
   }, [
     selectedPan,
+    selectedPanEnchant,
     selectedShovel,
     selectedRings,
     selectedRingMutations,
@@ -211,13 +238,22 @@ export default function App() {
               Equipment
             </h2>
 
-            <EquipmentSelector
-              label="Pan"
-              items={pans}
-              value={selectedPan}
-              getName={(item) => item.name}
-              onChange={setSelectedPan}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <EquipmentSelector
+                label="Pan"
+                items={pans}
+                value={selectedPan}
+                getName={(item) => item.name}
+                onChange={setSelectedPan}
+              />
+
+              <EnchantSelector
+                label="Pan Enchant"
+                enchants={enchants}
+                value={selectedPanEnchant}
+                onChange={setSelectedPanEnchant}
+              />
+            </div>
 
             <EquipmentSelector
               label="Shovel"
