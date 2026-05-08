@@ -50,6 +50,11 @@ export default function StatBadge({ statKey, value }: Props) {
     return null;
   }
 
+  const displayPercent =
+    value !== undefined
+      ? Math.round((value - 1) * 100)
+      : undefined;
+
   return (
     <div
       className={`rounded-md px-2 py-1 text-xs font-bold ${config.border ? 'border border-slate-400' : ''}`}
@@ -59,9 +64,10 @@ export default function StatBadge({ statKey, value }: Props) {
       }}
     >
       {config.label}
-      {value !== undefined && (
+
+      {displayPercent !== undefined && (
         <span className="ml-1 text-[10px]">
-          +{Math.round(value * 100)}%
+          +{displayPercent}%
         </span>
       )}
     </div>
