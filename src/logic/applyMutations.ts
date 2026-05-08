@@ -2,7 +2,8 @@ import { PartialStats, StatKey } from '../types';
 
 interface MutationData {
   multiplier?: number;
-  flat?: Record<string, number>;
+  flat?: Record<string, number | undefined>;
+  [key: string]: unknown;
 }
 
 export function applyMutation(
@@ -20,8 +21,8 @@ export function applyMutation(
       finalValue *= mutation.multiplier;
     }
 
-    if (mutation?.flat?.[statKey]) {
-      finalValue += mutation.flat[statKey];
+    if (mutation?.flat?.[statKey] !== undefined) {
+      finalValue += Number(mutation.flat[statKey]);
     }
 
     result[statKey] = finalValue;
