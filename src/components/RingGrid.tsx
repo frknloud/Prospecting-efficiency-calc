@@ -21,7 +21,7 @@ export default function RingGrid({
   onChange
 }: Props) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div className="space-y-3">
       {values.map((value, index) => {
         const availableRings = filterAvailableRings(
           rings,
@@ -30,21 +30,17 @@ export default function RingGrid({
         );
 
         return (
-          <div
+          <EquipmentSelector
             key={index}
-            className="bg-slate-700 rounded-xl p-3"
-          >
-            <EquipmentSelector
-              label={`Ring ${index + 1}`}
-              items={availableRings}
-              value={value}
-              getName={(item) => item.name}
-              getId={(item) => item.id ?? item.name}
-              onChange={(newValue) =>
-                onChange(index, newValue)
-              }
-            />
-          </div>
+            label={`Ring ${index + 1}`}
+            items={availableRings}
+            value={value}
+            getName={(item) => item.name}
+            getId={(item) => item.id ?? item.name}
+            onChange={(newValue) =>
+              onChange(index, newValue)
+            }
+          />
         );
       })}
     </div>
