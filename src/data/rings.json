@@ -1,1 +1,163 @@
-[]
+[
+  {
+      "name": "Mythril Ring",
+      "slot": "ring",
+      "unique": false,
+      "stats": {
+        "luck": 90,
+        "capacity": 0,
+        "digStrength": 0,
+        "digSpeed": 42,
+        "shakeStrength": 0,
+        "shakeSpeed": 42,
+        "modifierBoost": 0,
+        "sizeBoost": 0,
+        "sellBoost": 26
+      },
+      "rarity": "Mythic"
+    },
+    {
+      "name": "Ring of Thorns",
+      "slot": "ring",
+      "unique": false,
+      "stats": {
+        "luck": 110,
+        "capacity": 0,
+        "digStrength": 45,
+        "digSpeed": 0,
+        "shakeStrength": 0,
+        "shakeSpeed": 0,
+        "modifierBoost": 65,
+        "sizeBoost": 32,
+        "inventorySize": 170
+      },
+      "rarity": "Mythic"
+    },
+    {
+      "name": "Purifying Ring",
+      "slot": "ring",
+      "unique": false,
+      "stats": {
+        "luck": 90,
+        "capacity": 110,
+        "digStrength": 90,
+        "digSpeed": 0,
+        "shakeStrength": 30,
+        "shakeSpeed": 0,
+        "inventorySize": 90
+      },
+      "rarity": "Mythic"
+    },
+    {
+      "name": "Vortex Ring",
+      "slot": "ring",
+      "unique": false,
+      "stats": {
+        "luck": 155,
+        "capacity": 325,
+        "digStrength": 90,
+        "digSpeed": 0,
+        "shakeStrength": 11,
+        "shakeSpeed": 0
+      },
+      "rarity": "Exotic"
+    },
+    {
+      "name": "Umbrite Ring",
+      "slot": "ring",
+      "unique": false,
+      "stats": {
+        "luck": 245,
+        "capacity": 220,
+        "digStrength": 50,
+        "digSpeed": 0,
+        "shakeStrength": 22,
+        "shakeSpeed": 0,
+        "sizeBoost": 16
+      },
+      "rarity": "Exotic"
+    },
+    {
+      "name": "Otherworldly Ring",
+      "slot": "ring",
+      "unique": false,
+      "stats": {
+        "luck": 375,
+        "capacity": 0,
+        "digStrength": 0,
+        "digSpeed": 22,
+        "shakeStrength": 0,
+        "shakeSpeed": 22,
+        "sizeBoost": 26,
+        "sellBoost": 32
+      },
+      "rarity": "Exotic"
+    },
+    {
+      "name": "Dredge Master's Ring",
+      "slot": "ring",
+      "unique": true,
+      "stats": {
+        "luck": 0,
+        "capacity": 550,
+        "digStrength": 135,
+        "digSpeed": 0,
+        "shakeStrength": 30,
+        "shakeSpeed": 0,
+        "sizeBoost": 55
+      },
+      "rarity": "Exotic"
+    },
+    {
+      "name": "Accretion Disk",
+      "slot": "ring",
+      "unique": false,
+      "stats": {
+        "luck": 400,
+        "capacity": 0,
+        "digStrength": 0,
+        "digSpeed": 50,
+        "shakeStrength": 0,
+        "shakeSpeed": 50,
+        "sizeBoost": 16,
+        "modifierBoost": 16,
+        "inventorySize": 100
+      },
+      "rarity": "Exotic"
+    },
+    {
+      "name": "Ring of Champions",
+      "slot": "ring",
+      "unique": true,
+      "stats": {
+        "luck": 550,
+        "capacity": 450,
+        "digStrength": 180,
+        "digSpeed": 100,
+        "shakeStrength": 55,
+        "shakeSpeed": 100,
+        "sizeBoost": 160,
+        "modifierBoost": 160,
+        "sellBoost": 160
+      },
+      "rarity": "Ascended"
+    },
+    {
+      "name": "Ring of the Stars",
+      "slot": "ring",
+      "unique": true,
+      "stats": {
+        "luck": 650,
+        "capacity": 0,
+        "digStrength": 0,
+        "digSpeed": 30,
+        "shakeStrength": 0,
+        "shakeSpeed": 30,
+        "sizeBoost": 55,
+        "modifierBoost": 110,
+        "walkSpeed": 4,
+        "jumpPower": 5.5
+      },
+      "rarity": "Ascended"
+    }
+]

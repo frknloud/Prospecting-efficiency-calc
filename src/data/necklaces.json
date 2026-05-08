@@ -1,1 +1,81 @@
-[]
+[
+  {
+      "name": "Pheonix Heart",
+      "slot": "necklace",
+      "stats": {
+        "luck": 325,
+        "capacity": 0,
+        "digStrength": 0,
+        "digSpeed": 0,
+        "shakeStrength": 0,
+        "shakeSpeed": 0,
+        "modifierBoost": 0,
+        "sizeBoost": -70,
+        "inventorySize": 450
+      },
+      "rarity": "Mythic"
+    },
+    {
+      "name": "Amulet of Life",
+      "slot": "necklace",
+      "stats": {
+        "luck": 425,
+        "capacity": 0,
+        "digStrength": 0,
+        "digSpeed": 0,
+        "shakeStrength": 0,
+        "shakeSpeed": 0,
+        "modifierBoost": 160,
+        "sizeBoost": 0
+      },
+      "rarity": "Mythic"
+    },
+    {
+      "name": "Frosthorn Pendant",
+      "slot": "necklace",
+      "stats": {
+        "luck": 400,
+        "capacity": 200,
+        "digStrength": 200,
+        "digSpeed": -50,
+        "shakeStrength": 0,
+        "shakeSpeed": 0,
+        "modifierBoost": 0,
+        "sizeBoost": 110
+      },
+      "rarity": "Exotic"
+    },
+    {
+      "name": "Venomshank",
+      "slot": "necklace",
+      "stats": {
+        "luck": 1300,
+        "capacity": 0,
+        "digStrength": -100,
+        "digSpeed": -60,
+        "shakeStrength": 0,
+        "shakeSpeed": 0,
+        "modifierBoost": 0,
+        "sizeBoost": 55,
+        "inventorySize": 325,
+        "sellBoost": 55
+      },
+      "rarity": "Exotic"
+    },
+    {
+      "name": "Meteor Core",
+      "slot": "necklace",
+      "stats": {
+        "luck": 900,
+        "capacity": 650,
+        "digStrength": 0,
+        "digSpeed": 0,
+        "shakeStrength": 0,
+        "shakeSpeed": 0,
+        "modifierBoost": 0,
+        "sizeBoost": 115,
+        "statusTimerSpeed": -30
+      },
+      "rarity": "Exotic"
+    }
+]

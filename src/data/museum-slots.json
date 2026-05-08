@@ -1,0 +1,110 @@
+[
+  {
+      "slotId": 1,
+      "rarity": "common",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 2,
+      "rarity": "common",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 3,
+      "rarity": "common",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 4,
+      "rarity": "uncommon",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 5,
+      "rarity": "uncommon",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 6,
+      "rarity": "uncommon",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 7,
+      "rarity": "rare",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 8,
+      "rarity": "rare",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 9,
+      "rarity": "rare",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 10,
+      "rarity": "epic",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 11,
+      "rarity": "epic",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 12,
+      "rarity": "epic",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 13,
+      "rarity": "legendary",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 14,
+      "rarity": "legendary",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 15,
+      "rarity": "legendary",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 16,
+      "rarity": "mythic",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 17,
+      "rarity": "mythic",
+      "mineral": null,
+      "modifier": null
+    },
+    {
+      "slotId": 18,
+      "rarity": "exotic",
+      "mineral": null,
+      "modifier": null
+    }
+]

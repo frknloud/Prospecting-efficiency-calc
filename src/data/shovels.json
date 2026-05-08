@@ -1,1 +1,44 @@
-[]
+[
+  {
+      "name": "Abyssal Shovel",
+      "slot": "shovel",
+      "stats": {
+        "luck": 0,
+        "capacity": 0,
+        "digStrength": 125,
+        "digSpeed": 80,
+        "shakeStrength": 0,
+        "shakeSpeed": 0,
+        "modifierBoost": 0,
+        "sizeBoost": 0
+      }
+    },
+    {
+      "name": "Venomspade Shovel",
+      "slot": "shovel",
+      "stats": {
+        "luck": 0,
+        "capacity": 0,
+        "digStrength": 200,
+        "digSpeed": 80,
+        "shakeStrength": 0,
+        "shakeSpeed": 0,
+        "modifierBoost": 0,
+        "sizeBoost": 0
+      }
+    },
+    {
+      "name": "Starcrusher",
+      "slot": "shovel",
+      "stats": {
+        "luck": 0,
+        "capacity": 0,
+        "digStrength": 300,
+        "digSpeed": 100,
+        "shakeStrength": 0,
+        "shakeSpeed": 0,
+        "modifierBoost": 0,
+        "sizeBoost": 0
+      }
+    }
+]

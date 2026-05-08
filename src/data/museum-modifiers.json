@@ -1,1 +1,110 @@
-[]
+[
+  {
+      "id": "perfect",
+      "name": "Perfect",
+      "affects": [
+        "luck",
+        "capacity",
+        "sizeBoost"
+      ]
+    },
+    {
+      "id": "treasured",
+      "name": "Treasured",
+      "affects": [
+        "luck"
+      ],
+      "isDouble": true
+    },
+    {
+      "id": "lunar",
+      "name": "Lunar",
+      "affects": [
+        "digSpeed",
+        "shakeSpeed",
+        "walkSpeed"
+      ]
+    },
+    {
+      "id": "voidtorn",
+      "name": "Voidtorn",
+      "affects": [
+        "luck",
+        "capacity"
+      ]
+    },
+    {
+      "id": "mutated",
+      "name": "Mutated",
+      "affects": [
+        "luck",
+        "digStrength",
+        "modifierBoost"
+      ]
+    },
+    {
+      "id": "cosmic",
+      "name": "Cosmic",
+      "affects": [
+        "capacity",
+        "shakeStrength"
+      ]
+    },
+    {
+      "id": "electrified",
+      "name": "Electrified",
+      "affects": [
+        "digSpeed",
+        "shakeSpeed"
+      ]
+    },
+    {
+      "id": "iridescent",
+      "name": "Iridescent",
+      "affects": [
+        "luck"
+      ]
+    },
+    {
+      "id": "crystalline",
+      "name": "Crystalline",
+      "affects": [
+        "sizeBoost"
+      ]
+    },
+    {
+      "id": "irradiated",
+      "name": "Irradiated",
+      "affects": [
+        "modifierBoost"
+      ]
+    },
+    {
+      "id": "scorching",
+      "name": "Scorching",
+      "affects": [
+        "digStrength"
+      ]
+    },
+    {
+      "id": "glowing",
+      "name": "Glowing",
+      "affects": [
+        "shakeSpeed"
+      ]
+    },
+    {
+      "id": "pure",
+      "name": "Pure",
+      "affects": [
+        "digSpeed"
+      ]
+    },
+    {
+      "id": "shiny",
+      "name": "Shiny",
+      "affects": [
+        "shakeStrength"
+      ]
+    }
+]

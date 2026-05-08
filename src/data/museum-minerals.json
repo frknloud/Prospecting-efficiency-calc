@@ -1,1 +1,546 @@
-[]
+[{
+      "id": "amethyst",
+      "name": "Amethyst",
+      "rarity": "common",
+      "stats": {
+        "digSpeed": 0.05
+      }
+    },
+    {
+      "id": "blue_ice",
+      "name": "Blue Ice",
+      "rarity": "common",
+      "stats": {
+        "digSpeed": 0.05
+      }
+    },
+    {
+      "id": "platinum",
+      "name": "Platinum",
+      "rarity": "common",
+      "stats": {
+        "digSpeed": 0.05
+      }
+    },
+    {
+      "id": "copper",
+      "name": "Copper",
+      "rarity": "common",
+      "stats": {
+        "sizeBoost": 0.04
+      }
+    },
+    {
+      "id": "obsidian",
+      "name": "Obsidian",
+      "rarity": "common",
+      "stats": {
+        "sizeBoost": 0.04
+      }
+    },
+    {
+      "id": "gold",
+      "name": "Gold",
+      "rarity": "common",
+      "stats": {
+        "sellBoost": 0.05
+      }
+    },
+    {
+      "id": "pearl",
+      "name": "Pearl",
+      "rarity": "common",
+      "stats": {
+        "shakeSpeed": 0.05
+      }
+    },
+    {
+      "id": "silver",
+      "name": "Silver",
+      "rarity": "common",
+      "stats": {
+        "shakeSpeed": 0.05
+      }
+    },
+    {
+      "id": "pyrite",
+      "name": "Pyrite",
+      "rarity": "common",
+      "stats": {
+        "capacity": 0.05
+      }
+    },
+    {
+      "id": "seashell",
+      "name": "Seashell",
+      "rarity": "common",
+      "stats": {
+        "capacity": 0.05
+      }
+    },
+    {
+      "id": "coral",
+      "name": "Coral",
+      "rarity": "uncommon",
+      "stats": {
+        "capacity": 0.08
+      }
+    },
+    {
+      "id": "electrum",
+      "name": "Electrum",
+      "rarity": "uncommon",
+      "stats": {
+        "sellBoost": 0.08
+      }
+    },
+    {
+      "id": "glowberry",
+      "name": "Glowberry",
+      "rarity": "uncommon",
+      "stats": {
+        "sellBoost": 0.08
+      }
+    },
+    {
+      "id": "malachite",
+      "name": "Malachite",
+      "rarity": "uncommon",
+      "stats": {
+        "modifierBoost": 0.08
+      }
+    },
+    {
+      "id": "neodymium",
+      "name": "Neodymium",
+      "rarity": "uncommon",
+      "stats": {
+        "shakeStrength": 0.08
+      }
+    },
+    {
+      "id": "nickel",
+      "name": "Nickel",
+      "rarity": "uncommon",
+      "stats": {
+        "capacity": 0.08
+      }
+    },
+    {
+      "id": "rock_candy",
+      "name": "Rock Candy",
+      "rarity": "uncommon",
+      "stats": {
+        "sizeBoost": 0.05
+      }
+    },
+    {
+      "id": "sapphire",
+      "name": "Sapphire",
+      "rarity": "uncommon",
+      "stats": {
+        "digSpeed": 0.08
+      }
+    },
+    {
+      "id": "smoky_quartz",
+      "name": "Smoky Quartz",
+      "rarity": "uncommon",
+      "stats": {
+        "shakeStrength": 0.08
+      }
+    },
+    {
+      "id": "titanium",
+      "name": "Titanium",
+      "rarity": "uncommon",
+      "stats": {
+        "digSpeed": 0.08
+      }
+    },
+    {
+      "id": "topaz",
+      "name": "Topaz",
+      "rarity": "uncommon",
+      "stats": {
+        "capacity": 0.08
+      }
+    },
+    {
+      "id": "zircon",
+      "name": "Zircon",
+      "rarity": "uncommon",
+      "stats": {
+        "sizeBoost": 0.05
+      }
+    },
+    {
+      "id": "amber",
+      "name": "Amber",
+      "rarity": "rare",
+      "stats": {
+        "sellBoost": 0.13
+      }
+    },
+    {
+      "id": "azuralite",
+      "name": "Azuralite",
+      "rarity": "rare",
+      "stats": {
+        "digSpeed": 0.13
+      }
+    },
+    {
+      "id": "candy_cane",
+      "name": "Candy Cane",
+      "rarity": "rare",
+      "stats": {
+        "sizeBoost": 0.09
+      }
+    },
+    {
+      "id": "diopside",
+      "name": "Diopside",
+      "rarity": "rare",
+      "stats": {
+        "modifierBoost": 0.13
+      }
+    },
+    {
+      "id": "glacial_quartz",
+      "name": "Glacial Quartz",
+      "rarity": "rare",
+      "stats": {
+        "digSpeed": 0.13
+      }
+    },
+    {
+      "id": "gloomberry",
+      "name": "Gloomberry",
+      "rarity": "rare",
+      "stats": {
+        "digSpeed": 0.13
+      }
+    },
+    {
+      "id": "jade",
+      "name": "Jade",
+      "rarity": "rare",
+      "stats": {
+        "modifierBoost": 0.13
+      }
+    },
+    {
+      "id": "lapis_lazuli",
+      "name": "Lapis Lazuli",
+      "rarity": "rare",
+      "stats": {
+        "digSpeed": 0.13
+      }
+    },
+    {
+      "id": "meteoric_iron",
+      "name": "Meteoric Iron",
+      "rarity": "rare",
+      "stats": {
+        "shakeStrength": 0.13
+      }
+    },
+    {
+      "id": "onyx",
+      "name": "Onyx",
+      "rarity": "rare",
+      "stats": {
+        "modifierBoost": 0.13
+      }
+    },
+    {
+      "id": "peridot",
+      "name": "Peridot",
+      "rarity": "rare",
+      "stats": {
+        "luck": 0.13
+      }
+    },
+    {
+      "id": "pyrelith",
+      "name": "Pyrelith",
+      "rarity": "rare",
+      "stats": {
+        "sellBoost": 0.13
+      }
+    },
+    {
+      "id": "ruby",
+      "name": "Ruby",
+      "rarity": "rare",
+      "stats": {
+        "shakeStrength": 0.13
+      }
+    },
+    {
+      "id": "silver_clamshell",
+      "name": "Silver Clamshell",
+      "rarity": "rare",
+      "stats": {
+        "shakeSpeed": 0.13
+      }
+    },
+    {
+      "id": "ammonite_fossil",
+      "name": "Ammonite Fossil",
+      "rarity": "epic",
+      "stats": {
+        "capacity": 0.2
+      }
+    },
+    {
+      "id": "aurorite",
+      "name": "Aurorite",
+      "rarity": "epic",
+      "stats": {
+        "digSpeed": 0.2
+      }
+    },
+    {
+      "id": "emerald",
+      "name": "Emerald",
+      "rarity": "epic",
+      "stats": {
+        "luck": 0.2
+      }
+    },
+    {
+      "id": "glowmoss",
+      "name": "Glowmoss",
+      "rarity": "epic",
+      "stats": {
+        "modifierBoost": 0.2
+      }
+    },
+    {
+      "id": "golden_pearl",
+      "name": "Golden Pearl",
+      "rarity": "epic",
+      "stats": {
+        "capacity": 0.2
+      }
+    },
+    {
+      "id": "moonstone",
+      "name": "Moonstone",
+      "rarity": "epic",
+      "stats": {
+        "shakeSpeed": 0.2
+      }
+    },
+    {
+      "id": "osmium",
+      "name": "Osmium",
+      "rarity": "epic",
+      "stats": {
+        "sizeBoost": 0.2
+      }
+    },
+    {
+      "id": "catseye",
+      "name": "Catseye",
+      "rarity": "legendary",
+      "stats": {
+        "capacity": 0.3
+      }
+    },
+    {
+      "id": "diamond",
+      "name": "Diamond",
+      "rarity": "legendary",
+      "stats": {
+        "luck": 0.3
+      }
+    },
+    {
+      "id": "peppermint_prism",
+      "name": "Peppermint Prism",
+      "rarity": "legendary",
+      "stats": {
+        "modifierBoost": 0.3
+      }
+    },
+    {
+      "id": "rose_gold",
+      "name": "Rose Gold",
+      "rarity": "legendary",
+      "stats": {
+        "shakeStrength": 0.3
+      }
+    },
+    {
+      "id": "specterite",
+      "name": "Specterite",
+      "rarity": "legendary",
+      "stats": {
+        "shakeSpeed": 0.3
+      }
+    },
+    {
+      "id": "chrysoberyl",
+      "name": "Chrysoberyl",
+      "rarity": "mythic",
+      "stats": {
+        "luck": 0.5
+      }
+    },
+    {
+      "id": "inferlume",
+      "name": "Inferlume",
+      "rarity": "mythic",
+      "stats": {
+        "luck": 0.5
+      }
+    },
+    {
+      "id": "vortessence",
+      "name": "Vortessence",
+      "rarity": "mythic",
+      "stats": {
+        "capacity": 0.5
+      }
+    },
+    {
+      "id": "prismara",
+      "name": "Prismara",
+      "rarity": "mythic",
+      "stats": {
+        "luck": 0.25,
+        "capacity": 0.25,
+        "digStrength": 0.25,
+        "shakeStrength": 0.25
+      }
+    },
+    {
+      "id": "adamantine",
+      "name": "Adamantine",
+      "rarity": "exotic",
+      "stats": {
+        "modifierBoost": 0.8
+      }
+    },
+    {
+      "id": "astral spore",
+      "name": "Astral Spore",
+      "rarity": "exotic",
+      "stats": {
+        "digSpeed": 0.8
+      }
+    },
+    {
+      "id": "bloodstone",
+      "name": "Bloodstone",
+      "rarity": "exotic",
+      "stats": {
+        "sizeBoost": 0.56
+      }
+    },
+    {
+      "id": "celestium",
+      "name": "Celestium",
+      "rarity": "exotic",
+      "stats": {
+        "luck": 0.48,
+        "shakeSpeed": 0.48
+      }
+    },
+    {
+      "id": "cryonic artifact",
+      "name": "Cryonic Artifact",
+      "rarity": "exotic",
+      "stats": {
+        "digStrength": 1.2,
+        "shakeStrength": 1.2,
+        "digSpeed": -0.8,
+        "shakeSpeed": -0.8
+      }
+    },
+    {
+      "id": "dinosaur skull",
+      "name": "Dinosaur Skull",
+      "rarity": "exotic",
+      "stats": {
+        "sellBoost": 0.4,
+        "sizeBoost": 0.32
+      }
+    },
+    {
+      "id": "eternium",
+      "name": "Eternium",
+      "rarity": "exotic",
+      "stats": {
+        "luck": 0.32,
+        "digSpeed": 0.32,
+        "shakeSpeed": 0.32
+      }
+    },
+    {
+      "id": "north_star",
+      "name": "North Star",
+      "rarity": "exotic",
+      "stats": {
+        "luck": 0.2,
+        "capacity": 0.2,
+        "digSpeed": 0.2,
+        "shakeSpeed": 0.2
+      }
+    },
+    {
+      "id": "pumpkin soul",
+      "name": "Pumpkin Soul",
+      "rarity": "exotic",
+      "stats": {
+        "sizeBoost": 0.56
+      }
+    },
+    {
+      "id": "singularium",
+      "name": "Singularium",
+      "rarity": "exotic",
+      "stats": {
+        "capacity": 0.48,
+        "sizeBoost": 0.48
+      }
+    },
+    {
+      "id": "starpiercer",
+      "name": "Starpiercer",
+      "rarity": "exotic",
+      "stats": {
+        "digStrength": 0.48,
+        "shakeStrength": 0.48
+      }
+    },
+    {
+      "id": "umbrite",
+      "name": "Umbrite",
+      "rarity": "exotic",
+      "stats": {
+        "digSpeed": 0.4,
+        "shakeSpeed": 0.4
+      }
+    },
+    {
+      "id": "vineheart",
+      "name": "Vineheart",
+      "rarity": "exotic",
+      "stats": {
+        "luck": 0.8
+      }
+    },
+    {
+      "id": "voidstone",
+      "name": "Voidstone",
+      "rarity": "exotic",
+      "stats": {
+        "luck": 0.4,
+        "capacity": 0.4
+      }
+    }
+    ]

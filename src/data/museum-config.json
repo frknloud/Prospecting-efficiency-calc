@@ -1,0 +1,36 @@
+{
+  "stats": [
+    "luck",
+    "capacity",
+    "digStrength",
+    "digSpeed",
+    "shakeStrength",
+    "shakeSpeed",
+    "sizeBoost",
+    "modifierBoost",
+    "sellBoost",
+    "walkSpeed"
+  ],
+  "constraints": {
+    "uniqueMinerals": true,
+    "enforceRarityMatch": true
+  },
+  "raritySlots": {
+    "common": 3,
+    "uncommon": 3,
+    "rare": 3,
+    "epic": 3,
+    "legendary": 3,
+    "mythic": 2,
+    "exotic": 1
+  },
+  "rarityModifierBonus": {
+    "common": 0.005,
+    "uncommon": 0.0075,
+    "rare": 0.0125,
+    "epic": 0.02,
+    "legendary": 0.03,
+    "mythic": 0.05,
+    "exotic": 0.08
+  }
+}

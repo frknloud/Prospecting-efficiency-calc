@@ -1,1 +1,130 @@
-[]
+[
+  {
+      "name": "Helm of the Round",
+      "slot": "charm",
+      "stats": {
+        "luck": 100,
+        "capacity": 100,
+        "digStrength": 0,
+        "digSpeed": 0,
+        "shakeStrength": 0,
+        "shakeSpeed": 0,
+        "modifierBoost": 0,
+        "sizeBoost": 160,
+        "walkSpeed": -4
+      },
+      "rarity": "Mythic"
+    },
+    {
+      "name": "Cryogenic Preserver",
+      "slot": "charm",
+      "stats": {
+        "luck": 275,
+        "capacity": 0,
+        "digStrength": 0,
+        "digSpeed": 0,
+        "shakeStrength": 45,
+        "shakeSpeed": -40,
+        "modifierBoost": 0,
+        "sizeBoost": 0,
+        "sellBoost": 55
+      },
+      "rarity": "Mythic"
+    },
+    {
+      "name": "Fossilized Crown",
+      "slot": "charm",
+      "stats": {
+        "luck": 250,
+        "capacity": 225,
+        "digStrength": 0,
+        "digSpeed": 0,
+        "shakeStrength": 0,
+        "shakeSpeed": 32,
+        "modifierBoost": 0,
+        "sizeBoost": 55,
+        "sellBoost": 110
+      },
+      "rarity": "Exotic"
+    },
+    {
+      "name": "Antlers of Life",
+      "slot": "charm",
+      "stats": {
+        "luck": 640,
+        "capacity": 0,
+        "digStrength": 0,
+        "digSpeed": 44,
+        "shakeStrength": 0,
+        "shakeSpeed": 0,
+        "modifierBoost": 220,
+        "sizeBoost": 65
+      },
+      "rarity": "Exotic"
+    },
+    {
+      "name": "Excalibur",
+      "slot": "charm",
+      "stats": {
+        "luck": 550,
+        "capacity": 0,
+        "digStrength": 325,
+        "digSpeed": 0,
+        "shakeStrength": 0,
+        "shakeSpeed": 0,
+        "modifierBoost": 160,
+        "sizeBoost": 0,
+        "treasureMapChance": 175,
+        "walkSpeed": 5.5
+      },
+      "rarity": "Exotic"
+    },
+    {
+      "name": "Timelocked Soul",
+      "slot": "charm",
+      "stats": {
+        "luck": 999,
+        "capacity": 0,
+        "digStrength": 0,
+        "digSpeed": 110,
+        "shakeStrength": 0,
+        "shakeSpeed": 110,
+        "modifierBoost": 0,
+        "sizeBoost": 55,
+        "inventorySize": 500
+      },
+      "rarity": "Exotic"
+    },
+    {
+      "name": "Starlight Wings",
+      "slot": "charm",
+      "stats": {
+        "luck": 1000,
+        "capacity": 0,
+        "digStrength": 550,
+        "digSpeed": 0,
+        "shakeStrength": 200,
+        "shakeSpeed": 0,
+        "modifierBoost": 0,
+        "sizeBoost": 45,
+        "walkSpeed": 2
+      },
+      "rarity": "Exotic"
+    },
+    {
+      "name": "Clockwork",
+      "slot": "charm",
+      "stats": {
+        "luck": 0,
+        "capacity": 225,
+        "digStrength": 0,
+        "digSpeed": 0,
+        "shakeStrength": 0,
+        "shakeSpeed": 90,
+        "modifierBoost": 0,
+        "sizeBoost": 210,
+        "sellBoost": 110
+      },
+      "rarity": "Ascended"
+    }
+]
