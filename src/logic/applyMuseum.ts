@@ -2,31 +2,67 @@ import {
   MuseumMineral,
   MuseumModifier,
   PartialStats,
-  StatKey
+  StatKey,
+  Stats
 } from '../types';
 
-export function applyMuseumModifier(
+export function slotContribution(
   mineral: MuseumMineral,
   modifier: MuseumModifier | undefined,
   rarityBonus: number
 ): PartialStats {
-  const finalStats: PartialStats = {};
+  const contribution: PartialStats = {
+    ...mineral.stats
+  };
 
-  Object.entries(mineral.stats).forEach(([key, value]) => {
-    const statKey = key as StatKey;
+  if (!modifier) {
+    return contribution;
+  }
 
-    let modifiedValue = value ?? 0;
+  const modifierBonus = rarityBonus * (modifier.isDouble ? 2 : 1);
 
-    if (modifier?.affects.includes(statKey)) {
-      modifiedValue += rarityBonus;
-
-      if (modifier.isDouble) {
-        modifiedValue *= 2;
-      }
-    }
-
-    finalStats[statKey] = modifiedValue;
+  modifier.affects.forEach((statKey) => {
+    contribution[statKey] =
+      (contribution[statKey] ?? 0) + modifierBonus;
   });
 
-  return finalStats;
+  return contribution;
+}
+
+export function addMuseumContribution(
+  multipliers: PartialStats,
+  contribution: PartialStats
+): PartialStats {
+  const result: PartialStats = {
+    ...multipliers
+  };
+
+  Object.entries(contribution).forEach(([key, value]) => {
+    const statKey = key as StatKey;
+
+    result[statKey] =
+      (result[statKey] ?? 1) + Number(value ?? 0);
+  });
+
+  return result;
+}
+
+export function applyMuseum(
+  stats: Stats,
+  multipliers: PartialStats
+): Stats {
+  const result: Stats = {
+    ...stats
+  };
+
+  Object.entries(multipliers).forEach(([key, multiplier]) => {
+    const statKey = key as StatKey;
+
+    if (result[statKey] !== undefined) {
+      result[statKey] =
+        Number(result[statKey]) * Number(multiplier ?? 1);
+    }
+  });
+
+  return result;
 }
