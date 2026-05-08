@@ -107,7 +107,7 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
         </div>
       </div>
 
-      {statKeys.length > 0 && (
+      {(statKeys.length > 0 || selectedMineral?.minWeight) && (
         <div className="flex flex-wrap gap-2 pt-1">
           {statKeys.map((statKey) => (
             <StatBadge
@@ -115,6 +115,12 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
               statKey={statKey}
             />
           ))}
+
+          {selectedMineral?.minWeight && (
+            <div className="rounded-md px-2 py-1 text-xs font-semibold bg-slate-600 text-slate-200 border border-slate-500">
+              [min weight={selectedMineral.minWeight}]
+            </div>
+          )}
         </div>
       )}
     </div>
