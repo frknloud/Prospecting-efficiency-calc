@@ -1,10 +1,10 @@
-import { PartialStats, StatKey } from '../types';
+import { PartialStats, StatKey, Stats } from '../types';
 
 export function applyBuffs(
-  baseStats: PartialStats,
+  baseStats: Stats,
   enabledBuffs: Array<Record<string, any>>
-): PartialStats {
-  const result: PartialStats = {
+): Stats {
+  const result: Stats = {
     ...baseStats
   };
 
