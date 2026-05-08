@@ -7,11 +7,13 @@ import rings from './data/rings.json';
 import necklaces from './data/necklaces.json';
 import charms from './data/charms.json';
 import mutations from './data/mutations.json';
+import buffs from './data/buffs.json';
 
 import MuseumSlotSelector from './components/MuseumSlotSelector';
 import EquipmentSelector from './components/EquipmentSelector';
 import RingGrid from './components/RingGrid';
 import MutationSelector from './components/MutationSelector';
+import ToggleCard from './components/ToggleCard';
 
 import {
   MuseumSlotSelection,
@@ -22,6 +24,8 @@ import { calculateMuseumStats } from './logic/calculateMuseumStats';
 import { calculateStats } from './logic/calculateStats';
 import { calculateEfficiency } from './logic/calculateEfficiency';
 import { applyMutation } from './logic/applyMutations';
+import { applyBuffs } from './logic/applyBuffs';
+import { applyMuseum } from './logic/applyMuseum';
 
 const RING_SLOT_COUNT = 8;
 
@@ -43,6 +47,8 @@ export default function App() {
     string | null
   >(null);
 
+  const [enabledBuffs, setEnabledBuffs] = useState<string[]>([]);
+
   const [museumSlots, setMuseumSlots] = useState<
     MuseumSlotSelection[]
   >(
@@ -54,7 +60,7 @@ export default function App() {
     }))
   );
 
-  const museumStats = useMemo(
+  const museumMultipliers = useMemo(
     () => calculateMuseumStats(museumSlots),
     [museumSlots]
   );
@@ -62,17 +68,28 @@ export default function App() {
   const selectedEquipment = useMemo(() => {
     const pan = pans.find((item) => item.name === selectedPan);
     const shovel = shovels.find((item) => item.name === selectedShovel);
-    const necklace = necklaces.find((item) => item.name === selectedNecklace);
+
+    const necklace = necklaces.find(
+      (item) => item.name === selectedNecklace
+    );
+
     const necklaceMutation = mutations.find(
       (mutation) => mutation.name === selectedNecklaceMutation
     );
-    const charm = charms.find((item) => item.name === selectedCharm);
+
+    const charm = charms.find(
+      (item) => item.name === selectedCharm
+    );
+
     const charmMutation = mutations.find(
       (mutation) => mutation.name === selectedCharmMutation
     );
 
     const selectedRingItems = selectedRings.map((ringName, index) => {
-      const ring = rings.find((item) => item.name === ringName);
+      const ring = rings.find(
+        (item) => item.name === ringName
+      );
+
       const mutation = mutations.find(
         (item) => item.name === selectedRingMutations[index]
       );
@@ -91,13 +108,19 @@ export default function App() {
       necklace
         ? {
             ...necklace,
-            stats: applyMutation(necklace.stats, necklaceMutation)
+            stats: applyMutation(
+              necklace.stats,
+              necklaceMutation
+            )
           }
         : undefined,
       charm
         ? {
             ...charm,
-            stats: applyMutation(charm.stats, charmMutation)
+            stats: applyMutation(
+              charm.stats,
+              charmMutation
+            )
           }
         : undefined,
       ...selectedRingItems
@@ -113,9 +136,27 @@ export default function App() {
     selectedCharmMutation
   ]);
 
+  const baseStats = useMemo(
+    () => calculateStats(selectedEquipment),
+    [selectedEquipment]
+  );
+
+  const activeBuffs = useMemo(
+    () =>
+      buffs.filter((buff) =>
+        enabledBuffs.includes(buff.id)
+      ),
+    [enabledBuffs]
+  );
+
+  const buffedStats = useMemo(
+    () => applyBuffs(baseStats, activeBuffs),
+    [baseStats, activeBuffs]
+  );
+
   const totalStats = useMemo(
-    () => calculateStats(selectedEquipment, museumStats),
-    [selectedEquipment, museumStats]
+    () => applyMuseum(buffedStats, museumMultipliers),
+    [buffedStats, museumMultipliers]
   );
 
   const efficiencyResult = useMemo(
@@ -145,6 +186,16 @@ export default function App() {
         mutationIndex === index ? value : mutation
       )
     );
+  }
+
+  function toggleBuff(buffId: string) {
+    setEnabledBuffs((prev) => {
+      if (prev.includes(buffId)) {
+        return prev.filter((id) => id !== buffId);
+      }
+
+      return [...prev, buffId];
+    });
   }
 
   return (
@@ -208,6 +259,23 @@ export default function App() {
                 value={selectedCharmMutation}
                 onChange={setSelectedCharmMutation}
               />
+            </div>
+
+            <div className="pt-4 border-t border-slate-700">
+              <h3 className="text-xl font-semibold mb-3">
+                Totems
+              </h3>
+
+              <div className="grid grid-cols-1 gap-3">
+                {buffs.map((buff) => (
+                  <ToggleCard
+                    key={buff.id}
+                    label={buff.name}
+                    enabled={enabledBuffs.includes(buff.id)}
+                    onToggle={() => toggleBuff(buff.id)}
+                  />
+                ))}
+              </div>
             </div>
 
             <div className="pt-4 border-t border-slate-700">
