@@ -12,7 +12,6 @@ import enchants from './data/enchants.json';
 
 import MuseumSlotSelector from './components/MuseumSlotSelector';
 import EquipmentSelector from './components/EquipmentSelector';
-import RingGrid from './components/RingGrid';
 import MutationSelector from './components/MutationSelector';
 import ToggleCard from './components/ToggleCard';
 import EnchantSelector from './components/EnchantSelector';
@@ -29,42 +28,32 @@ import { applyMutation } from './logic/applyMutations';
 import { applyBuffs } from './logic/applyBuffs';
 import { applyMuseum } from './logic/applyMuseum';
 import { applyEnchant } from './logic/applyEnchants';
+import { filterAvailableRings } from './logic/filterAvailableRings';
 
 const RING_SLOT_COUNT = 8;
 
 export default function App() {
   const [selectedPan, setSelectedPan] = useState<string | null>(null);
-  const [selectedPanEnchant, setSelectedPanEnchant] = useState<
-    string | null
-  >(null);
-
+  const [selectedPanEnchant, setSelectedPanEnchant] = useState<string | null>(null);
   const [selectedShovel, setSelectedShovel] = useState<string | null>(null);
 
   const [selectedRings, setSelectedRings] = useState<Array<string | null>>(
     Array(RING_SLOT_COUNT).fill(null)
   );
 
-  const [selectedRingMutations, setSelectedRingMutations] = useState<
-    Array<string | null>
-  >(Array(RING_SLOT_COUNT).fill(null));
+  const [selectedRingMutations, setSelectedRingMutations] = useState<Array<string | null>>(
+    Array(RING_SLOT_COUNT).fill(null)
+  );
 
   const [selectedNecklace, setSelectedNecklace] = useState<string | null>(null);
-
-  const [selectedNecklaceMutation, setSelectedNecklaceMutation] = useState<
-    string | null
-  >(null);
+  const [selectedNecklaceMutation, setSelectedNecklaceMutation] = useState<string | null>(null);
 
   const [selectedCharm, setSelectedCharm] = useState<string | null>(null);
-
-  const [selectedCharmMutation, setSelectedCharmMutation] = useState<
-    string | null
-  >(null);
+  const [selectedCharmMutation, setSelectedCharmMutation] = useState<string | null>(null);
 
   const [enabledBuffs, setEnabledBuffs] = useState<string[]>([]);
 
-  const [museumSlots, setMuseumSlots] = useState<
-    MuseumSlotSelection[]
-  >(
+  const [museumSlots, setMuseumSlots] = useState<MuseumSlotSelection[]>(
     museumSlotsData.map((slot) => ({
       slotId: slot.slotId,
       rarity: slot.rarity as Rarity,
@@ -104,9 +93,7 @@ export default function App() {
     );
 
     const selectedRingItems = selectedRings.map((ringName, index) => {
-      const ring = rings.find(
-        (item) => item.name === ringName
-      );
+      const ring = rings.find((item) => item.name === ringName);
 
       const mutation = mutations.find(
         (item) => item.name === selectedRingMutations[index]
@@ -124,29 +111,20 @@ export default function App() {
       pan
         ? {
             ...pan,
-            stats: applyEnchant(
-              pan.stats,
-              panEnchant
-            )
+            stats: applyEnchant(pan.stats, panEnchant)
           }
         : undefined,
       shovel,
       necklace
         ? {
             ...necklace,
-            stats: applyMutation(
-              necklace.stats,
-              necklaceMutation
-            )
+            stats: applyMutation(necklace.stats, necklaceMutation)
           }
         : undefined,
       charm
         ? {
             ...charm,
-            stats: applyMutation(
-              charm.stats,
-              charmMutation
-            )
+            stats: applyMutation(charm.stats, charmMutation)
           }
         : undefined,
       ...selectedRingItems
@@ -169,10 +147,7 @@ export default function App() {
   );
 
   const activeBuffs = useMemo(
-    () =>
-      buffs.filter((buff) =>
-        enabledBuffs.includes(buff.id)
-      ),
+    () => buffs.filter((buff) => enabledBuffs.includes(buff.id)),
     [enabledBuffs]
   );
 
@@ -302,30 +277,41 @@ export default function App() {
                 Rings
               </h3>
 
-              <RingGrid
-                rings={rings}
-                values={selectedRings}
-                onChange={updateRing}
-              />
-            </div>
-
-            <div className="pt-4 border-t border-slate-700">
-              <h3 className="text-xl font-semibold mb-3">
-                Ring Mutations
-              </h3>
-
               <div className="space-y-3">
-                {selectedRingMutations.map((value, index) => (
-                  <MutationSelector
-                    key={index}
-                    label={`Ring ${index + 1} Mutation`}
-                    mutations={mutations}
-                    value={value}
-                    onChange={(newValue) =>
-                      updateRingMutation(index, newValue)
-                    }
-                  />
-                ))}
+                {selectedRings.map((value, index) => {
+                  const availableRings = filterAvailableRings(
+                    rings,
+                    selectedRings,
+                    index
+                  );
+
+                  return (
+                    <div
+                      key={index}
+                      className="grid grid-cols-1 md:grid-cols-2 gap-3"
+                    >
+                      <EquipmentSelector
+                        label={`Ring ${index + 1}`}
+                        items={availableRings}
+                        value={value}
+                        getName={(item) => item.name}
+                        getId={(item) => item.id ?? item.name}
+                        onChange={(newValue) =>
+                          updateRing(index, newValue)
+                        }
+                      />
+
+                      <MutationSelector
+                        label={`Ring ${index + 1} Mutation`}
+                        mutations={mutations}
+                        value={selectedRingMutations[index]}
+                        onChange={(newValue) =>
+                          updateRingMutation(index, newValue)
+                        }
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -393,9 +379,7 @@ export default function App() {
 
                 <div className="flex justify-between bg-slate-700 rounded-lg px-4 py-2">
                   <span>Cycle Time</span>
-                  <span>
-                    {efficiencyResult.cycleTime.toFixed(2)}
-                  </span>
+                  <span>{efficiencyResult.cycleTime.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -411,13 +395,9 @@ export default function App() {
                     key={key}
                     className="flex justify-between bg-slate-700 rounded-lg px-4 py-2"
                   >
-                    <span className="capitalize">
-                      {key}
-                    </span>
+                    <span className="capitalize">{key}</span>
 
-                    <span>
-                      {Number(value).toFixed(2)}
-                    </span>
+                    <span>{Number(value).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
