@@ -1,16 +1,25 @@
-interface Props<T> {
+interface BaseItem {
+  id?: string;
+  name: string;
+}
+
+interface Props<T extends BaseItem> {
   label: string;
   items: T[];
   value: string | null;
   getName: (item: T) => string;
+  getId?: (item: T) => string;
   onChange: (value: string | null) => void;
 }
 
-export default function EquipmentSelector<T>({
+export default function EquipmentSelector<
+  T extends BaseItem
+>({
   label,
   items,
   value,
   getName,
+  getId,
   onChange
 }: Props<T>) {
   return (
@@ -28,9 +37,10 @@ export default function EquipmentSelector<T>({
 
         {items.map((item) => {
           const name = getName(item);
+          const id = getId ? getId(item) : item.id ?? name;
 
           return (
-            <option key={name} value={name}>
+            <option key={id} value={id}>
               {name}
             </option>
           );
