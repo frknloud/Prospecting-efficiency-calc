@@ -6,9 +6,12 @@ import shovels from './data/shovels.json';
 import rings from './data/rings.json';
 import necklaces from './data/necklaces.json';
 import charms from './data/charms.json';
+import mutations from './data/mutations.json';
 
 import MuseumSlotSelector from './components/MuseumSlotSelector';
 import EquipmentSelector from './components/EquipmentSelector';
+import RingGrid from './components/RingGrid';
+import MutationSelector from './components/MutationSelector';
 
 import {
   MuseumSlotSelection,
@@ -18,13 +21,27 @@ import {
 import { calculateMuseumStats } from './logic/calculateMuseumStats';
 import { calculateStats } from './logic/calculateStats';
 import { calculateEfficiency } from './logic/calculateEfficiency';
+import { applyMutation } from './logic/applyMutations';
+
+const RING_SLOT_COUNT = 8;
 
 export default function App() {
   const [selectedPan, setSelectedPan] = useState<string | null>(null);
   const [selectedShovel, setSelectedShovel] = useState<string | null>(null);
-  const [selectedRing, setSelectedRing] = useState<string | null>(null);
+  const [selectedRings, setSelectedRings] = useState<Array<string | null>>(
+    Array(RING_SLOT_COUNT).fill(null)
+  );
+  const [selectedRingMutations, setSelectedRingMutations] = useState<
+    Array<string | null>
+  >(Array(RING_SLOT_COUNT).fill(null));
   const [selectedNecklace, setSelectedNecklace] = useState<string | null>(null);
+  const [selectedNecklaceMutation, setSelectedNecklaceMutation] = useState<
+    string | null
+  >(null);
   const [selectedCharm, setSelectedCharm] = useState<string | null>(null);
+  const [selectedCharmMutation, setSelectedCharmMutation] = useState<
+    string | null
+  >(null);
 
   const [museumSlots, setMuseumSlots] = useState<
     MuseumSlotSelection[]
@@ -43,19 +60,57 @@ export default function App() {
   );
 
   const selectedEquipment = useMemo(() => {
+    const pan = pans.find((item) => item.name === selectedPan);
+    const shovel = shovels.find((item) => item.name === selectedShovel);
+    const necklace = necklaces.find((item) => item.name === selectedNecklace);
+    const necklaceMutation = mutations.find(
+      (mutation) => mutation.name === selectedNecklaceMutation
+    );
+    const charm = charms.find((item) => item.name === selectedCharm);
+    const charmMutation = mutations.find(
+      (mutation) => mutation.name === selectedCharmMutation
+    );
+
+    const selectedRingItems = selectedRings.map((ringName, index) => {
+      const ring = rings.find((item) => item.name === ringName);
+      const mutation = mutations.find(
+        (item) => item.name === selectedRingMutations[index]
+      );
+
+      if (!ring) return undefined;
+
+      return {
+        ...ring,
+        stats: applyMutation(ring.stats, mutation)
+      };
+    });
+
     return [
-      pans.find((item) => item.name === selectedPan),
-      shovels.find((item) => item.name === selectedShovel),
-      rings.find((item) => item.name === selectedRing),
-      necklaces.find((item) => item.name === selectedNecklace),
-      charms.find((item) => item.name === selectedCharm)
+      pan,
+      shovel,
+      necklace
+        ? {
+            ...necklace,
+            stats: applyMutation(necklace.stats, necklaceMutation)
+          }
+        : undefined,
+      charm
+        ? {
+            ...charm,
+            stats: applyMutation(charm.stats, charmMutation)
+          }
+        : undefined,
+      ...selectedRingItems
     ];
   }, [
     selectedPan,
     selectedShovel,
-    selectedRing,
+    selectedRings,
+    selectedRingMutations,
     selectedNecklace,
-    selectedCharm
+    selectedNecklaceMutation,
+    selectedCharm,
+    selectedCharmMutation
   ]);
 
   const totalStats = useMemo(
@@ -72,6 +127,22 @@ export default function App() {
     setMuseumSlots((prev) =>
       prev.map((slot) =>
         slot.slotId === updated.slotId ? updated : slot
+      )
+    );
+  }
+
+  function updateRing(index: number, value: string | null) {
+    setSelectedRings((prev) =>
+      prev.map((ring, ringIndex) =>
+        ringIndex === index ? value : ring
+      )
+    );
+  }
+
+  function updateRingMutation(index: number, value: string | null) {
+    setSelectedRingMutations((prev) =>
+      prev.map((mutation, mutationIndex) =>
+        mutationIndex === index ? value : mutation
       )
     );
   }
@@ -105,29 +176,75 @@ export default function App() {
               onChange={setSelectedShovel}
             />
 
-            <EquipmentSelector
-              label="Ring"
-              items={rings}
-              value={selectedRing}
-              getName={(item) => item.name}
-              onChange={setSelectedRing}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <EquipmentSelector
+                label="Necklace"
+                items={necklaces}
+                value={selectedNecklace}
+                getName={(item) => item.name}
+                onChange={setSelectedNecklace}
+              />
 
-            <EquipmentSelector
-              label="Necklace"
-              items={necklaces}
-              value={selectedNecklace}
-              getName={(item) => item.name}
-              onChange={setSelectedNecklace}
-            />
+              <MutationSelector
+                label="Necklace Mutation"
+                mutations={mutations}
+                value={selectedNecklaceMutation}
+                onChange={setSelectedNecklaceMutation}
+              />
+            </div>
 
-            <EquipmentSelector
-              label="Charm"
-              items={charms}
-              value={selectedCharm}
-              getName={(item) => item.name}
-              onChange={setSelectedCharm}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <EquipmentSelector
+                label="Charm"
+                items={charms}
+                value={selectedCharm}
+                getName={(item) => item.name}
+                onChange={setSelectedCharm}
+              />
+
+              <MutationSelector
+                label="Charm Mutation"
+                mutations={mutations}
+                value={selectedCharmMutation}
+                onChange={setSelectedCharmMutation}
+              />
+            </div>
+
+            <div className="pt-4 border-t border-slate-700">
+              <h3 className="text-xl font-semibold mb-3">
+                Rings
+              </h3>
+
+              <RingGrid
+                rings={rings}
+                values={selectedRings}
+                onChange={updateRing}
+              />
+            </div>
+
+            <div className="pt-4 border-t border-slate-700">
+              <h3 className="text-xl font-semibold mb-3">
+                Ring Mutations
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {selectedRingMutations.map((value, index) => (
+                  <div
+                    key={index}
+                    className="bg-slate-700 rounded-xl p-3"
+                  >
+                    <MutationSelector
+                      label={`Ring ${index + 1} Mutation`}
+                      mutations={mutations}
+                      value={value}
+                      onChange={(newValue) =>
+                        updateRingMutation(index, newValue)
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
 
           <section className="bg-slate-800 rounded-2xl p-6 shadow-lg">
