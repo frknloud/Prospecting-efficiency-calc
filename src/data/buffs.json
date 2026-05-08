@@ -1,7 +1,5 @@
-{
-  "enabledBuffs": [],
-  "buffs": [
-    {
+[
+  {
       "id": "luck_totem",
       "name": "Luck Totem",
       "stats": {
@@ -25,5 +23,4 @@
         "digSpeed": 0.5
       }
     }
-  ]
-}
+]
