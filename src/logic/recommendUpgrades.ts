@@ -76,6 +76,16 @@ function evaluateBuild(build: BuildState) {
   return calculateEfficiency(stats);
 }
 
+function recommendationKey(
+  recommendation: UpgradeRecommendation
+): string {
+  return [
+    recommendation.slot,
+    recommendation.itemName,
+    recommendation.mutationName
+  ].join('|');
+}
+
 export function recommendUpgrades(
   build: BuildState,
   ringSlotLimit = 8
@@ -86,16 +96,33 @@ export function recommendUpgrades(
 
   const activeRings = build.rings.slice(0, ringSlotLimit);
 
+  const seenRecommendations = new Set<string>();
+
   rings.forEach((ring) => {
     mutations.forEach((mutation) => {
-      activeRings.forEach((_, index) => {
-        const updatedRings = build.rings.map((ringSelection, ringIndex) =>
+      const alreadyEquipped = activeRings.some(
+        (equippedRing) =>
+          equippedRing.ringId === ring.name &&
+          equippedRing.mutationId === mutation.name
+      );
+
+      if (alreadyEquipped) return;
+
+      activeRings.forEach((ringSelection, index) => {
+        if (
+          ringSelection.ringId === ring.name &&
+          ringSelection.mutationId === mutation.name
+        ) {
+          return;
+        }
+
+        const updatedRings = build.rings.map((existingRing, ringIndex) =>
           ringIndex === index
             ? {
                 ringId: ring.name,
                 mutationId: mutation.name
               }
-            : ringSelection
+            : existingRing
         );
 
         const testBuild: BuildState = {
@@ -109,20 +136,40 @@ export function recommendUpgrades(
 
         if (gain <= 0) return;
 
-        recommendations.push({
+        const recommendation: UpgradeRecommendation = {
           slot: `Ring ${index + 1}`,
           itemName: ring.name,
           mutationName: mutation.name,
           efficiencyGain: gain,
           percentGain: (gain / current.efficiency) * 100,
           digsImproved: result.digsRequired < current.digsRequired
+        };
+
+        const key = recommendationKey({
+          ...recommendation,
+          slot: 'Ring'
         });
+
+        if (seenRecommendations.has(key)) {
+          return;
+        }
+
+        seenRecommendations.add(key);
+
+        recommendations.push(recommendation);
       });
     });
   });
 
   necklaces.forEach((necklace) => {
     mutations.forEach((mutation) => {
+      if (
+        build.necklaceId === necklace.name &&
+        build.necklaceMutationId === mutation.name
+      ) {
+        return;
+      }
+
       const testBuild: BuildState = {
         ...build,
         necklaceId: necklace.name,
@@ -148,6 +195,13 @@ export function recommendUpgrades(
 
   charms.forEach((charm) => {
     mutations.forEach((mutation) => {
+      if (
+        build.charmId === charm.name &&
+        build.charmMutationId === mutation.name
+      ) {
+        return;
+      }
+
       const testBuild: BuildState = {
         ...build,
         charmId: charm.name,
