@@ -15,6 +15,8 @@ import EnchantSelector from './EnchantSelector';
 import { filterAvailableRings } from '../logic/filterAvailableRings';
 
 interface Props {
+  ringSlotLimit: 6 | 8;
+  setRingSlotLimit: (value: 6 | 8) => void;
   selectedPan: string | null;
   selectedPanEnchant: string | null;
   selectedShovel: string | null;
@@ -38,9 +40,29 @@ interface Props {
 }
 
 export default function EquipmentPanel(props: Props) {
+  const visibleRings = props.selectedRings.slice(0, props.ringSlotLimit);
+
   return (
     <section className="bg-slate-800 rounded-2xl p-4 shadow-lg space-y-4 text-sm">
-      <h2 className="text-xl font-semibold">Equipment</h2>
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-xl font-semibold">Equipment</h2>
+
+        <div className="flex items-center gap-2 bg-slate-700 rounded-xl p-1">
+          <button
+            className={`px-3 py-1 rounded-lg text-sm font-semibold transition ${props.ringSlotLimit === 6 ? 'bg-indigo-600 text-white' : 'text-slate-300'}`}
+            onClick={() => props.setRingSlotLimit(6)}
+          >
+            6 Rings
+          </button>
+
+          <button
+            className={`px-3 py-1 rounded-lg text-sm font-semibold transition ${props.ringSlotLimit === 8 ? 'bg-indigo-600 text-white' : 'text-slate-300'}`}
+            onClick={() => props.setRingSlotLimit(8)}
+          >
+            8 Rings
+          </button>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         <EquipmentSelector
@@ -105,8 +127,12 @@ export default function EquipmentPanel(props: Props) {
         <h3 className="text-lg font-semibold mb-2">Rings</h3>
 
         <div className="space-y-2">
-          {props.selectedRings.map((value, index) => {
-            const availableRings = filterAvailableRings(rings, props.selectedRings, index);
+          {visibleRings.map((value, index) => {
+            const availableRings = filterAvailableRings(
+              rings,
+              props.selectedRings,
+              index
+            );
 
             return (
               <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-2">
