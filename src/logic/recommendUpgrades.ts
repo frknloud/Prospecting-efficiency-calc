@@ -22,6 +22,10 @@ export interface UpgradeRecommendation {
   digsImproved: boolean;
 }
 
+const PRISMATIC_MUTATION = mutations.find(
+  (mutation) => mutation.name === 'Prismatic'
+);
+
 function evaluateBuild(build: BuildState) {
   const selectedEquipment = [
     build.panId
@@ -98,130 +102,134 @@ export function recommendUpgrades(
 
   const seenRecommendations = new Set<string>();
 
+  if (!PRISMATIC_MUTATION) {
+    return [];
+  }
+
   rings.forEach((ring) => {
-    mutations.forEach((mutation) => {
-      const alreadyEquipped = activeRings.some(
-        (equippedRing) =>
-          equippedRing.ringId === ring.name &&
-          equippedRing.mutationId === mutation.name
+    const mutation = PRISMATIC_MUTATION;
+
+    const alreadyEquipped = activeRings.some(
+      (equippedRing) =>
+        equippedRing.ringId === ring.name &&
+        equippedRing.mutationId === mutation.name
+    );
+
+    if (alreadyEquipped) return;
+
+    activeRings.forEach((ringSelection, index) => {
+      if (
+        ringSelection.ringId === ring.name &&
+        ringSelection.mutationId === mutation.name
+      ) {
+        return;
+      }
+
+      const updatedRings = build.rings.map((existingRing, ringIndex) =>
+        ringIndex === index
+          ? {
+              ringId: ring.name,
+              mutationId: mutation.name
+            }
+          : existingRing
       );
 
-      if (alreadyEquipped) return;
+      const testBuild: BuildState = {
+        ...build,
+        rings: updatedRings
+      };
 
-      activeRings.forEach((ringSelection, index) => {
-        if (
-          ringSelection.ringId === ring.name &&
-          ringSelection.mutationId === mutation.name
-        ) {
-          return;
-        }
+      const result = evaluateBuild(testBuild);
 
-        const updatedRings = build.rings.map((existingRing, ringIndex) =>
-          ringIndex === index
-            ? {
-                ringId: ring.name,
-                mutationId: mutation.name
-              }
-            : existingRing
-        );
+      const gain = result.efficiency - current.efficiency;
 
-        const testBuild: BuildState = {
-          ...build,
-          rings: updatedRings
-        };
+      if (gain <= 0) return;
 
-        const result = evaluateBuild(testBuild);
+      const recommendation: UpgradeRecommendation = {
+        slot: `Ring ${index + 1}`,
+        itemName: ring.name,
+        mutationName: mutation.name,
+        efficiencyGain: gain,
+        percentGain: (gain / current.efficiency) * 100,
+        digsImproved: result.digsRequired < current.digsRequired
+      };
 
-        const gain = result.efficiency - current.efficiency;
-
-        if (gain <= 0) return;
-
-        const recommendation: UpgradeRecommendation = {
-          slot: `Ring ${index + 1}`,
-          itemName: ring.name,
-          mutationName: mutation.name,
-          efficiencyGain: gain,
-          percentGain: (gain / current.efficiency) * 100,
-          digsImproved: result.digsRequired < current.digsRequired
-        };
-
-        const key = recommendationKey({
-          ...recommendation,
-          slot: 'Ring'
-        });
-
-        if (seenRecommendations.has(key)) {
-          return;
-        }
-
-        seenRecommendations.add(key);
-
-        recommendations.push(recommendation);
+      const key = recommendationKey({
+        ...recommendation,
+        slot: 'Ring'
       });
+
+      if (seenRecommendations.has(key)) {
+        return;
+      }
+
+      seenRecommendations.add(key);
+
+      recommendations.push(recommendation);
     });
   });
 
   necklaces.forEach((necklace) => {
-    mutations.forEach((mutation) => {
-      if (
-        build.necklaceId === necklace.name &&
-        build.necklaceMutationId === mutation.name
-      ) {
-        return;
-      }
+    const mutation = PRISMATIC_MUTATION;
 
-      const testBuild: BuildState = {
-        ...build,
-        necklaceId: necklace.name,
-        necklaceMutationId: mutation.name
-      };
+    if (
+      build.necklaceId === necklace.name &&
+      build.necklaceMutationId === mutation.name
+    ) {
+      return;
+    }
 
-      const result = evaluateBuild(testBuild);
+    const testBuild: BuildState = {
+      ...build,
+      necklaceId: necklace.name,
+      necklaceMutationId: mutation.name
+    };
 
-      const gain = result.efficiency - current.efficiency;
+    const result = evaluateBuild(testBuild);
 
-      if (gain <= 0) return;
+    const gain = result.efficiency - current.efficiency;
 
-      recommendations.push({
-        slot: 'Necklace',
-        itemName: necklace.name,
-        mutationName: mutation.name,
-        efficiencyGain: gain,
-        percentGain: (gain / current.efficiency) * 100,
-        digsImproved: result.digsRequired < current.digsRequired
-      });
+    if (gain <= 0) return;
+
+    recommendations.push({
+      slot: 'Necklace',
+      itemName: necklace.name,
+      mutationName: mutation.name,
+      efficiencyGain: gain,
+      percentGain: (gain / current.efficiency) * 100,
+      digsImproved: result.digsRequired < current.digsRequired
     });
   });
 
   charms.forEach((charm) => {
-    mutations.forEach((mutation) => {
-      if (
-        build.charmId === charm.name &&
-        build.charmMutationId === mutation.name
-      ) {
-        return;
-      }
+    const mutation = PRISMATIC_MUTATION;
 
-      const testBuild: BuildState = {
-        ...build,
-        charmId: charm.name,
-        charmMutationId: mutation.name
-      };
+    if (
+      build.charmId === charm.name &&
+      build.charmMutationId === mutation.name
+    ) {
+      return;
+    }
 
-      const result = evaluateBuild(testBuild);
+    const testBuild: BuildState = {
+      ...build,
+      charmId: charm.name,
+      charmMutationId: mutation.name
+    };
 
-      const gain = result.efficiency - current.efficiency;
+    const result = evaluateBuild(testBuild);
 
-      if (gain <= 0) return;
+    const gain = result.efficiency - current.efficiency;
 
-      recommendations.push({
-        slot: 'Charm',
-        itemName: charm.name,
-        mutationName: mutation.name,
-        efficiencyGain: gain,
-        percentGain: (gain / current.efficiency) * 100,
-        digsImproved: result.digsRequired < current.digsRequired
-      });
+    if (gain <= 0) return;
+
+    recommendations.push({
+      slot: 'Charm',
+      itemName: charm.name,
+      mutationName: mutation.name,
+      efficiencyGain: gain,
+      percentGain: (gain / current.efficiency) * 100,
+      digsImproved: result.digsRequired < current.digsRequired
     });
   });
 
