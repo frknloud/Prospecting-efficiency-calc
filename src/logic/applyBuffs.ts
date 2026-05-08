@@ -12,8 +12,10 @@ export function applyBuffs(
     Object.entries(buff.stats ?? {}).forEach(([key, value]) => {
       const statKey = key as StatKey;
 
-      result[statKey] =
-        (result[statKey] ?? 0) + Number(value);
+      if (result[statKey] !== undefined) {
+        result[statKey] =
+          Number(result[statKey]) * (1 + Number(value));
+      }
     });
   });
 
