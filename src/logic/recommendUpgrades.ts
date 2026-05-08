@@ -76,24 +76,31 @@ function evaluateBuild(build: BuildState) {
   return calculateEfficiency(stats);
 }
 
-export function recommendUpgrades(build: BuildState): UpgradeRecommendation[] {
+export function recommendUpgrades(
+  build: BuildState,
+  ringSlotLimit = 8
+): UpgradeRecommendation[] {
   const current = evaluateBuild(build);
 
   const recommendations: UpgradeRecommendation[] = [];
 
+  const activeRings = build.rings.slice(0, ringSlotLimit);
+
   rings.forEach((ring) => {
     mutations.forEach((mutation) => {
-      build.rings.forEach((_, index) => {
+      activeRings.forEach((_, index) => {
+        const updatedRings = build.rings.map((ringSelection, ringIndex) =>
+          ringIndex === index
+            ? {
+                ringId: ring.name,
+                mutationId: mutation.name
+              }
+            : ringSelection
+        );
+
         const testBuild: BuildState = {
           ...build,
-          rings: build.rings.map((ringSelection, ringIndex) =>
-            ringIndex === index
-              ? {
-                  ringId: ring.name,
-                  mutationId: mutation.name
-                }
-              : ringSelection
-          )
+          rings: updatedRings
         };
 
         const result = evaluateBuild(testBuild);
