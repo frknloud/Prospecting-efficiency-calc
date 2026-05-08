@@ -1,17 +1,29 @@
-[
-  {
-    "id": "luck-totem",
-    "name": "Luck Totem",
-    "stats": {}
-  },
-  {
-    "id": "strength-totem",
-    "name": "Strength Totem",
-    "stats": {}
-  },
-  {
-    "id": "luminant-totem",
-    "name": "Luminant Totem",
-    "stats": {}
-  }
-]
+{
+  "enabledBuffs": [],
+  "buffs": [
+    {
+      "id": "luck_totem",
+      "name": "Luck Totem",
+      "stats": {
+        "luck": 1
+      }
+    },
+    {
+      "id": "strength_totem",
+      "name": "Strength Totem",
+      "stats": {
+        "digStrength": 1,
+        "shakeStrength": 1
+      }
+    },
+    {
+      "id": "luminant_totem",
+      "name": "Luminant Totem",
+      "stats": {
+        "capacity": 0.5,
+        "digStrength": 0.5,
+        "digSpeed": 0.5
+      }
+    }
+  ]
+}
