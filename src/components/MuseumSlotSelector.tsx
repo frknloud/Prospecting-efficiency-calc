@@ -1,6 +1,7 @@
 import minerals from '../data/museum-minerals.json';
 import modifiers from '../data/museum-modifiers.json';
 import { MuseumSlotSelection } from '../types';
+import { filterValidMuseumModifiers } from '../logic/museumValidation';
 import StatBadge from './StatBadge';
 
 interface Props {
@@ -25,6 +26,11 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
 
   const selectedMineral = minerals.find(
     (mineral) => mineral.id === slot.mineralId
+  );
+
+  const availableModifiers = filterValidMuseumModifiers(
+    selectedMineral,
+    modifiers
   );
 
   const selectedModifier = modifiers.find(
@@ -69,7 +75,8 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
             onChange={(e) =>
               onChange({
                 ...slot,
-                mineralId: e.target.value || null
+                mineralId: e.target.value || null,
+                modifierId: null
               })
             }
           >
@@ -98,7 +105,7 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
           >
             <option value="">No Modifier</option>
 
-            {modifiers.map((modifier) => (
+            {availableModifiers.map((modifier) => (
               <option key={modifier.id} value={modifier.id}>
                 {modifier.name}
               </option>
