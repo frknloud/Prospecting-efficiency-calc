@@ -1,0 +1,17 @@
+[
+  {
+    "id": "luck-totem",
+    "name": "Luck Totem",
+    "stats": {}
+  },
+  {
+    "id": "strength-totem",
+    "name": "Strength Totem",
+    "stats": {}
+  },
+  {
+    "id": "luminant-totem",
+    "name": "Luminant Totem",
+    "stats": {}
+  }
+]
