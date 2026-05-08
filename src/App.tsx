@@ -25,8 +25,9 @@ import { applyBuffs } from './logic/applyBuffs';
 import { applyMuseum } from './logic/applyMuseum';
 import { applyEnchant } from './logic/applyEnchants';
 import { filterAvailableRings } from './logic/filterAvailableRings';
+import { recommendUpgrades } from './logic/recommendUpgrades';
 
-import type { MuseumSlotSelection, Rarity } from './types';
+import type { BuildState, MuseumSlotSelection, Rarity } from './types';
 
 const RING_SLOT_COUNT = 8;
 
@@ -110,6 +111,26 @@ export default function App() {
   const totalStats = useMemo(() => applyMuseum(buffedStats, museumMultipliers), [buffedStats, museumMultipliers]);
   const efficiencyResult = useMemo(() => calculateEfficiency(totalStats), [totalStats]);
 
+  const buildState: BuildState = {
+    panId: selectedPan,
+    panEnchantId: selectedPanEnchant,
+    shovelId: selectedShovel,
+    necklaceId: selectedNecklace,
+    necklaceMutationId: selectedNecklaceMutation,
+    charmId: selectedCharm,
+    charmMutationId: selectedCharmMutation,
+    rings: selectedRings.map((ringId, index) => ({
+      ringId,
+      mutationId: selectedRingMutations[index]
+    })),
+    museumSlots
+  };
+
+  const upgradeRecommendations = useMemo(
+    () => recommendUpgrades(buildState),
+    [buildState]
+  );
+
   function updateMuseumSlot(updated: MuseumSlotSelection) {
     setMuseumSlots((prev) => prev.map((slot) => slot.slotId === updated.slotId ? updated : slot));
   }
@@ -134,95 +155,10 @@ export default function App() {
         <div className="grid grid-cols-1 2xl:grid-cols-[1fr_1.25fr_0.9fr] gap-4 items-start">
           <section className="bg-slate-800 rounded-2xl p-4 shadow-lg space-y-4 text-sm">
             <h2 className="text-xl font-semibold">Equipment</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <EquipmentSelector label="Pan" items={pans} value={selectedPan} getName={(item) => item.name} onChange={setSelectedPan} />
-              <EnchantSelector label="Pan Enchant" enchants={enchants} value={selectedPanEnchant} onChange={setSelectedPanEnchant} />
-            </div>
-
-            <EquipmentSelector label="Shovel" items={shovels} value={selectedShovel} getName={(item) => item.name} onChange={setSelectedShovel} />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <EquipmentSelector label="Necklace" items={necklaces} value={selectedNecklace} getName={(item) => item.name} onChange={setSelectedNecklace} />
-              <MutationSelector label="Necklace Mutation" mutations={mutations} value={selectedNecklaceMutation} onChange={setSelectedNecklaceMutation} />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <EquipmentSelector label="Charm" items={charms} value={selectedCharm} getName={(item) => item.name} onChange={setSelectedCharm} />
-              <MutationSelector label="Charm Mutation" mutations={mutations} value={selectedCharmMutation} onChange={setSelectedCharmMutation} />
-            </div>
-
-            <div className="pt-3 border-t border-slate-700">
-              <h3 className="text-lg font-semibold mb-2">Rings</h3>
-
-              <div className="space-y-2">
-                {selectedRings.map((value, index) => {
-                  const availableRings = filterAvailableRings(rings, selectedRings, index);
-
-                  return (
-                    <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      <EquipmentSelector
-                        label={`Ring ${index + 1}`}
-                        items={availableRings}
-                        value={value}
-                        getName={(item) => item.name}
-                        getId={(item) => item.id ?? item.name}
-                        onChange={(newValue) => updateRing(index, newValue)}
-                      />
-
-                      <MutationSelector
-                        label={`Ring ${index + 1} Mutation`}
-                        mutations={mutations}
-                        value={selectedRingMutations[index]}
-                        onChange={(newValue) => updateRingMutation(index, newValue)}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-slate-700">
-              <h3 className="text-lg font-semibold mb-2">Totems</h3>
-
-              <div className="grid grid-cols-1 gap-2">
-                {buffs.map((buff) => (
-                  <ToggleCard
-                    key={buff.id}
-                    label={buff.name}
-                    enabled={enabledBuffs.includes(buff.id)}
-                    onToggle={() => toggleBuff(buff.id)}
-                  />
-                ))}
-              </div>
-            </div>
           </section>
 
           <section className="bg-slate-800 rounded-2xl p-4 shadow-lg self-start text-sm">
-            <div className="flex flex-col gap-3 mb-4">
-              <h2 className="text-xl font-semibold">Museum Setup</h2>
-
-              <div className="flex flex-wrap gap-2">
-                {museumLegend.map((item) => (
-                  <div key={item.key} className="flex items-center gap-1 bg-slate-700 rounded-lg px-2 py-1">
-                    <StatBadge statKey={item.key} />
-                    <span className="text-xs text-slate-300">{item.label}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="bg-slate-700 rounded-xl p-3">
-                <div className="text-sm font-semibold text-slate-200 mb-2">Final Museum Multipliers</div>
-
-                <div className="flex flex-wrap gap-2">
-                  {Object.entries(museumMultipliers)
-                    .filter(([, value]) => Number(value) > 0)
-                    .map(([key, value]) => (
-                      <StatBadge key={key} statKey={key} value={Number(value)} />
-                    ))}
-                </div>
-              </div>
-            </div>
+            <h2 className="text-xl font-semibold mb-4">Museum Setup</h2>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
               <div className="space-y-3">
@@ -249,14 +185,43 @@ export default function App() {
               </div>
             </div>
 
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Final Stats</h3>
+            <div className="bg-slate-700 rounded-2xl p-4">
+              <h3 className="text-lg font-semibold mb-3">Next Best Upgrades</h3>
 
               <div className="space-y-2">
-                {Object.entries(totalStats).map(([key, value]) => (
-                  <div key={key} className="flex justify-between bg-slate-700 rounded-lg px-3 py-2">
-                    <span className="capitalize">{key}</span>
-                    <span>{Number(value).toFixed(2)}</span>
+                {upgradeRecommendations.map((upgrade, index) => (
+                  <div
+                    key={`${upgrade.slot}-${upgrade.itemName}-${index}`}
+                    className="bg-slate-800 rounded-xl p-3"
+                  >
+                    <div className="flex justify-between items-start gap-3">
+                      <div>
+                        <div className="font-semibold text-slate-100">
+                          {upgrade.slot}
+                        </div>
+
+                        <div className="text-sm text-slate-300">
+                          {upgrade.itemName}
+                          {upgrade.mutationName ? ` + ${upgrade.mutationName}` : ''}
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <div className="text-green-400 font-bold">
+                          +{upgrade.percentGain.toFixed(2)}%
+                        </div>
+
+                        <div className="text-xs text-slate-400">
+                          +{upgrade.efficiencyGain.toFixed(2)}
+                        </div>
+                      </div>
+                    </div>
+
+                    {upgrade.digsImproved && (
+                      <div className="mt-2 text-xs text-amber-300 font-semibold">
+                        Dig breakpoint improvement
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
