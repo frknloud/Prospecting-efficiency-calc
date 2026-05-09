@@ -21,12 +21,19 @@ const rarityStyles: Record<string, string> = {
 
 export default function MuseumSlotSelector({ slot, onChange }: Props) {
   const availableMinerals = minerals.filter(
-    (mineral) => mineral.rarity === slot.rarity
+    (mineral) =>
+      !usedMinerals.includes(mineral.id) ||
+      mineral.id === slot.mineralId
   );
 
   const selectedMineral = minerals.find(
     (mineral) => mineral.id === slot.mineralId
   );
+
+  const usedMinerals = allSlots
+    .filter((s) => s.slotId !== slot.slotId)
+    .map((s) => s.mineralId)
+    .filter(Boolean);
 
   const availableModifiers = filterValidMuseumModifiers(
     selectedMineral,
@@ -48,17 +55,6 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
       ...mineralStats,
       ...modifierStats
     ])
-  );
-
-  const usedMinerals = allSlots
-    .filter((s) => s.slotId !== slot.slotId)
-    .map((s) => s.mineralId)
-    .filter(Boolean);
-  
-  const availableMinerals = minerals.filter(
-    (mineral) =>
-      !usedMinerals.includes(mineral.id) ||
-      mineral.id === slot.mineralId
   );
 
   const rarityClass =
