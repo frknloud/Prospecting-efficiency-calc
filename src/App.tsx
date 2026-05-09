@@ -14,6 +14,8 @@ import MuseumSlotSelector from './components/MuseumSlotSelector';
 import EquipmentPanel from './components/EquipmentPanel';
 import StatBadge from './components/StatBadge';
 
+import CalculatorTab from './components/tabs/CalculatorTab';
+
 import { calculateMuseumStats } from './logic/calculateMuseumStats';
 import { calculateStats } from './logic/calculateStats';
 import { calculateEfficiency } from './logic/calculateEfficiency';
@@ -370,117 +372,57 @@ export default function App() {
         </div>
         
       {activeTab === 'calculator' && (
+          <CalculatorTab
+              ringSlotLimit={ringSlotLimit}
+             setRingSlotLimit={setRingSlotLimit}
 
-        <div className="grid grid-cols-1 2xl:grid-cols-[1fr_1.25fr_0.9fr] gap-4 items-start">
-          <EquipmentPanel
-            ringSlotLimit={ringSlotLimit}
-            setRingSlotLimit={setRingSlotLimit}
-            selectedPan={selectedPan}
-            selectedPanEnchant={selectedPanEnchant}
-            selectedShovel={selectedShovel}
-            selectedNecklace={selectedNecklace}
-            selectedNecklaceMutation={selectedNecklaceMutation}
-            selectedCharm={selectedCharm}
-            selectedCharmMutation={selectedCharmMutation}
-            selectedRings={selectedRings}
-            selectedRingMutations={selectedRingMutations}
-            enabledBuffs={enabledBuffs}
-            setSelectedPan={setSelectedPan}
-            setSelectedPanEnchant={setSelectedPanEnchant}
-            setSelectedShovel={setSelectedShovel}
-            setSelectedNecklace={setSelectedNecklace}
-            setSelectedNecklaceMutation={setSelectedNecklaceMutation}
-            setSelectedCharm={setSelectedCharm}
-            setSelectedCharmMutation={setSelectedCharmMutation}
-            updateRing={updateRing}
-            updateRingMutation={updateRingMutation}
-            toggleBuff={toggleBuff}
-            enabledRingIds={enabledRingIds}
-            toggleRingEnabled={toggleRingEnabled}
-          />
+              selectedPan={selectedPan}
+              selectedPanEnchant={selectedPanEnchant}
+              selectedShovel={selectedShovel}
+          
+              selectedNecklace={selectedNecklace}
+              selectedNecklaceMutation={selectedNecklaceMutation}
 
-          <section className="bg-slate-800 rounded-2xl p-4 shadow-lg self-start text-sm">
-            <h2 className="text-xl font-semibold mb-4">Museum Setup</h2>
+              selectedCharm={selectedCharm}
+              selectedCharmMutation={selectedCharmMutation}
 
-            <div className="bg-slate-700 rounded-xl p-4 mb-4">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-300 mb-3">
-                Final Museum Multipliers
-              </h3>
+              selectedRings={selectedRings}
+              selectedRingMutations={selectedRingMutations}
 
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                {Object.entries(museumMultipliers)
-                  .filter(([key]) =>
-                    museumLegend.includes(key as StatKey)
-                  )
-                  .map(([key, value]) => (
-                    <div
-                      key={key}
-                      className="flex justify-between bg-slate-800 rounded-lg px-3 py-2"
-                    >
-                      <span className="flex items-center gap-2 text-slate-300">
-                        <StatBadge statKey={key as StatKey} />
-                        {statDisplayNames[key as StatKey]}
-                      </span>
+              enabledBuffs={enabledBuffs}
+              enabledRingIds={enabledRingIds}
 
-                      <span className="font-semibold text-indigo-300">
-                        {typeof value === 'number'
-                          ? value.toFixed(2)
-                          : String(value)}
-                      </span>
-                    </div>
-                  ))}
-              </div>
-            </div>
+              setSelectedPan={setSelectedPan}
+              setSelectedPanEnchant={setSelectedPanEnchant}
+              setSelectedShovel={setSelectedShovel}
+          
+              setSelectedNecklace={setSelectedNecklace}
+              setSelectedNecklaceMutation={setSelectedNecklaceMutation}
+          
+              setSelectedCharm={setSelectedCharm}
+              setSelectedCharmMutation={setSelectedCharmMutation}
+          
+              updateRing={updateRing}
+              updateRingMutation={updateRingMutation}
 
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
-              <div className="space-y-3">
-                {museumColumnOne.map((slot) => (
-                  <MuseumSlotSelector
-                    key={slot.slotId}
-                    slot={slot}
-                    allSlots={museumSlots}
-                    onChange={updateMuseumSlot}
-                  />
-                ))}
-              </div>
+              toggleBuff={toggleBuff}
+              toggleRingEnabled={toggleRingEnabled}
 
-              <div className="space-y-3">
-                {museumColumnTwo.map((slot) => (
-                  <MuseumSlotSelector
-                    key={slot.slotId}
-                    slot={slot}
-                    allSlots={museumSlots}
-                    onChange={updateMuseumSlot}
-                  />
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="bg-slate-800 rounded-2xl p-4 shadow-lg space-y-4 self-start text-sm">
-            <div>
-              <h2 className="text-xl font-semibold mb-3">Efficiency Score</h2>
-
-              <div className="bg-indigo-600 rounded-2xl p-4 text-center">
-                <div className="text-xs uppercase tracking-wide text-indigo-200 mb-1">Efficiency</div>
-                <div className="text-4xl font-bold">{efficiencyResult.efficiency.toFixed(2)}</div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Final Stats</h3>
-
-              <div className="space-y-2">
-                {Object.entries(totalStats).map(([key, value]) => (
-                  <div key={key} className="flex justify-between bg-slate-700 rounded-lg px-3 py-2">
-                    <span className="capitalize">{key}</span>
-                    <span>{Number(value).toFixed(2)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        </div>
+              museumMultipliers={museumMultipliers}
+              museumLegend={museumLegend}
+              statDisplayNames={statDisplayNames}
+          
+              museumColumnOne={museumColumnOne}
+              museumColumnTwo={museumColumnTwo}
+          
+              museumSlots={museumSlots}
+          
+              updateMuseumSlot={updateMuseumSlot}
+          
+              totalStats={totalStats}
+          
+              efficiencyResult={efficiencyResult}
+            />
       )}
       
       {activeTab === 'breakdown' && (
