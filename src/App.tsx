@@ -373,10 +373,11 @@ export default function App() {
               <div className="space-y-3">
                 {museumColumnOne.map((slot) => (
                   <MuseumSlotSelector
+                    key={slot.slotId}
                     slot={slot}
                     allSlots={museumSlots}
                     onChange={updateMuseumSlot}
-                 />
+                  />
                 ))}
               </div>
 
@@ -385,6 +386,7 @@ export default function App() {
                   <MuseumSlotSelector
                     key={slot.slotId}
                     slot={slot}
+                    allSlots={museumSlots}
                     onChange={updateMuseumSlot}
                   />
                 ))}
