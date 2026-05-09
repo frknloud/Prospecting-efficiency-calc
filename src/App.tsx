@@ -698,7 +698,7 @@ export default function App() {
                     {' × '}
                     {efficiencyBreakdown.timePerDig.toFixed(2)}
                     {' = '}
-                    {efficiencyBreakdown.totalDigTime.toFixed(2).toFixed(2)}s
+                    {efficiencyBreakdown.totalDigTime.toFixed(2)}s
                   </div>
                 </div>
 
