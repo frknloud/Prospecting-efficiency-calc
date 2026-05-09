@@ -26,6 +26,7 @@ import { applyMuseum } from './logic/applyMuseum';
 import { applyEnchant } from './logic/applyEnchants';
 import { recommendUpgrades } from './logic/recommendUpgrades';
 import { isBuildReadyForRecommendations } from './logic/isBuildReadyForRecommendations';
+import { calculateEfficiencyBreakdown } from './logic/calculateEfficiencyBreakdown';
 
 import type { BuildState, MuseumSlotSelection, Rarity, StatKey } from './types';
 
@@ -264,6 +265,11 @@ export default function App() {
     [totalStats]
   );
 
+  const efficiencyBreakdown = useMemo(
+    () => calculateEfficiencyBreakdown(totalStats),
+    [totalStats]
+  );
+
   const buildState: BuildState = {
     panId: selectedPan,
     panEnchantId: selectedPanEnchant,
@@ -427,35 +433,157 @@ export default function App() {
       )}
       
       {activeTab === 'breakdown' && (
-	<section className="bg-slate-800 rounded-2xl p-6 shadow-lg">
-          <h2 className="text-2xl font-bold mb-4">
-            Efficiency Breakdown
-          </h2>
+        <section className="space-y-4">
+      
+          <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
+            <h2 className="text-2xl font-bold mb-4">
+              Efficiency Formula
+            </h2>
 
-          <div className="space-y-4">
-            <div className="bg-slate-700 rounded-xl p-4">
-              <div className="text-lg font-semibold mb-2">
-                Core Formula
-              </div>
-      
-              <div className="text-slate-300">
-                Luck and Capacity increase score while
-                shake/dig time lowers efficiency.
-              </div>
-            </div>
-      
-            <div className="bg-slate-700 rounded-xl p-4">
-              <div className="font-semibold mb-2">
-                Current Efficiency
-              </div>
-      
-              <div className="text-4xl font-bold text-indigo-300">
-                {efficiencyResult.efficiency.toFixed(2)}
-              </div>
+            <div className="text-slate-300 text-lg leading-relaxed">
+              Efficiency =
+              (Luck × √Capacity)
+              ÷
+              (Shake Time + Dig Time + Base Delay)
             </div>
           </div>
+
+          <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
+            <h2 className="text-xl font-bold mb-4">
+              Live Formula
+            </h2>
+      
+            <div className="text-slate-200 text-lg space-y-2 font-mono">
+      
+              <div>
+                ({efficiencyBreakdown.numerator.luck.toFixed(2)}
+                ×
+                √{efficiencyBreakdown.numerator.capacity.toFixed(2)})
+              </div>
+      
+              <div>
+                ÷
+              </div>
+      
+              <div>
+                (
+                {efficiencyBreakdown.shake.duration.toFixed(2)}
+                +
+                {efficiencyBreakdown.dig.duration.toFixed(2)}
+                +
+                {efficiencyBreakdown.denominator.baseDelay.toFixed(2)}
+                )
+              </div>
+      
+            </div>
+          </div>
+      
+          <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
+            <h2 className="text-xl font-bold mb-4">
+              Numerator Breakdown
+            </h2>
+      
+            <div className="space-y-2">
+      
+              <div className="flex justify-between">
+                <span>Luck</span>
+      
+                <span>
+                  {efficiencyBreakdown.numerator.luck.toFixed(2)}
+                </span>
+              </div>
+      
+              <div className="flex justify-between">
+                <span>√Capacity</span>
+      
+                <span>
+                  {efficiencyBreakdown.numerator.sqrtCapacity.toFixed(2)}
+                </span>
+              </div>
+      
+              <div className="flex justify-between font-bold text-indigo-300">
+                <span>Numerator Total</span>
+      
+                <span>
+                  {efficiencyBreakdown.numerator.total.toFixed(2)}
+                </span>
+              </div>
+      
+            </div>
+          </div>
+      
+          <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
+            <h2 className="text-xl font-bold mb-4">
+              Shake Phase
+            </h2>
+      
+            <div className="space-y-2">
+      
+              <div className="flex justify-between">
+                <span>Shakes Required</span>
+      
+                <span>
+                  {efficiencyBreakdown.shake.shakesRequired.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Shake Duration</span>
+
+                <span>
+                  {efficiencyBreakdown.shake.duration.toFixed(2)}s
+                </span>
+              </div>
+
+            </div>
+          </div>
+
+          <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
+            <h2 className="text-xl font-bold mb-4">
+              Dig Phase
+            </h2>
+
+            <div className="space-y-2">
+
+              <div className="flex justify-between">
+                <span>Digs Required</span>
+
+                <span>
+                  {efficiencyBreakdown.dig.digsRequired}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Time Per Dig</span>
+
+                <span>
+                  {efficiencyBreakdown.dig.timePerDig.toFixed(2)}s
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Total Dig Time</span>
+
+                <span>
+                  {efficiencyBreakdown.dig.duration.toFixed(2)}s
+                </span>
+              </div>
+
+            </div>
+          </div>
+
+          <div className="bg-indigo-700 rounded-2xl p-6 shadow-lg">
+            <h2 className="text-xl font-bold mb-2">
+              Final Efficiency
+            </h2>
+
+            <div className="text-5xl font-bold">
+              {efficiencyBreakdown.finalEfficiency.toFixed(2)}
+            </div>
+          </div>
+
         </section>
-      )}      
+      )}     
 
       {activeTab === 'upgrades' && (
           <UpgradesTab
