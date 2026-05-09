@@ -33,11 +33,17 @@ export default function MuseumSlotSelector({
     .map((s: MuseumSlotSelection) => s.mineralId)
     .filter(Boolean);
 
-  const availableMinerals = minerals.filter(
-    (mineral) =>
+  const availableMinerals = minerals.filter((mineral) => {
+    const rarityMatches =
+      mineral.rarity.toLowerCase() ===
+      slot.rarity.toLowerCase();
+
+    const notAlreadyUsed =
       !usedMinerals.includes(mineral.id) ||
-      mineral.id === slot.mineralId
-  );
+      mineral.id === slot.mineralId;
+
+    return rarityMatches && notAlreadyUsed;
+  });
 
   const selectedMineral = minerals.find(
     (mineral) => mineral.id === slot.mineralId
