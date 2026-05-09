@@ -394,18 +394,24 @@ export default function App() {
 
           <section className="bg-slate-800 rounded-2xl p-4 shadow-lg space-y-4 self-start text-sm">
             <div>
-              <h2 className="text-xl font-semibold mb-3">
-                Efficiency Score
-              </h2>
+              <h2 className="text-xl font-semibold mb-3">Efficiency Score</h2>
 
               <div className="bg-indigo-600 rounded-2xl p-4 text-center">
-                <div className="text-xs uppercase tracking-wide text-indigo-200 mb-1">
-                  Efficiency
-                </div>
+                <div className="text-xs uppercase tracking-wide text-indigo-200 mb-1">Efficiency</div>
+                <div className="text-4xl font-bold">{efficiencyResult.efficiency.toFixed(2)}</div>
+              </div>
+            </div>
 
-                <div className="text-4xl font-bold">
-                  {efficiencyResult.efficiency.toFixed(2)}
-                </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Final Stats</h3>
+
+              <div className="space-y-2">
+                {Object.entries(totalStats).map(([key, value]) => (
+                  <div key={key} className="flex justify-between bg-slate-700 rounded-lg px-3 py-2">
+                    <span className="capitalize">{key}</span>
+                    <span>{Number(value).toFixed(2)}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
