@@ -21,7 +21,9 @@ export interface EfficiencyCoreResult {
 
   shakeTime: number;
 
-  digTime: number;
+  timePerDig: number;
+
+  totalDigTime: number;
 
   totalShakes: number;
 
@@ -82,13 +84,16 @@ export function efficiencyCore(
   const shakeTime =
     totalShakes / r;
 
-  const digTime =
+  const timePerDig =
     digTimePerDig(d);
+
+  const totalDigTime =
+    digsRequired * timePerDig;
 
   const cycleTime =
     shakeTime +
     FIXED_CYCLE_TIME +
-    digsRequired * digTime;
+    totalDigTime;
 
   const efficiency =
     (L * Math.sqrt(C)) /
@@ -103,7 +108,9 @@ export function efficiencyCore(
 
     shakeTime,
 
-    digTime,
+    timePerDig,
+    
+    totalDigTime,
 
     totalShakes,
 

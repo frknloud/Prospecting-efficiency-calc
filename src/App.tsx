@@ -27,6 +27,7 @@ import { applyEnchant } from './logic/applyEnchants';
 import { recommendUpgrades } from './logic/recommendUpgrades';
 import { isBuildReadyForRecommendations } from './logic/isBuildReadyForRecommendations';
 import { efficiencyCore } from './logic/engine/efficiencyCore';
+import { FIXED_CYCLE_TIME } from './logic/engine/constants';
 
 import type { BuildState, MuseumSlotSelection, Rarity, StatKey } from './types';
 
@@ -180,11 +181,11 @@ export default function App() {
   const activeRings = selectedRings.slice(0, ringSlotLimit);
   const activeRingMutations = selectedRingMutations.slice(0, ringSlotLimit);
 
-  const availableRings = useMemo(
+/*  const availableRings = useMemo(
     () => rings.filter((ring) => enabledRingIds.includes(ring.name)),
     [enabledRingIds]
   );
-
+*/
   const selectedEquipment = useMemo(() => {
     const pan = pans.find((item) => item.name === selectedPan);
     const panEnchant = enchants.find((item) => item.name === selectedPanEnchant);
@@ -462,9 +463,9 @@ export default function App() {
 
                 <div className="text-indigo-300">
                   (
-                  {efficiencyBreakdown.numerator.luck.toFixed(2)}
+                  {totalStats.luck.toFixed(2)}
                   {' × '}
-                  {efficiencyBreakdown.numerator.sqrtCapacity.toFixed(2)}
+                  {Math.sqrt(totalStats.capacity ?? 0).toFixed(2)}
                   )
                 </div>
               </div>
@@ -476,11 +477,11 @@ export default function App() {
 
                 <div className="text-indigo-300">
                   (
-                  {efficiencyBreakdown.shake.duration.toFixed(2)}
+                  Shake: {efficiencyBreakdown.shakeTime.toFixed(2)}
                   {' + '}
-                  {efficiencyBreakdown.dig.duration.toFixed(2)}
+                  Dig: {efficiencyBreakdown.totalDigTime.toFixed(2)}
                   {' + '}
-                  {efficiencyBreakdown.denominator.baseDelay.toFixed(2)}
+                  Base: {FIXED_CYCLE_TIME.toFixed(2)}
                   )
                 </div>
               </div>
@@ -491,7 +492,7 @@ export default function App() {
                 </div>
 
                 <div className="font-bold text-indigo-300 text-xl">
-                  {efficiencyBreakdown.finalEfficiency.toFixed(2)}
+                  {efficiencyBreakdown.efficiency.toFixed(2)}
                 </div>
               </div>
 
@@ -511,7 +512,7 @@ export default function App() {
                 </div>
 
                 <div className="text-indigo-300">
-                  {efficiencyBreakdown.numerator.luck.toFixed(2)}
+                  {totalStats.luck.toFixed(2)}
                 </div>
               </div>
 
@@ -521,7 +522,7 @@ export default function App() {
                 </div>
 
                 <div className="text-indigo-300">
-                  {efficiencyBreakdown.numerator.capacity.toFixed(2)}
+                  {totalStats.capacity.toFixed(2)}
                 </div>
               </div>
 
@@ -532,9 +533,9 @@ export default function App() {
 
                 <div className="text-indigo-300">
                   √
-                  {efficiencyBreakdown.numerator.capacity.toFixed(2)}
+                  {totalStats.capacity.toFixed(2)}
                   {' = '}
-                  {efficiencyBreakdown.numerator.sqrtCapacity.toFixed(2)}
+                  {Math.sqrt(totalStats.capacity ?? 0).toFixed(2)}
                 </div>
               </div>
 
@@ -544,9 +545,9 @@ export default function App() {
                 </div>
 
                 <div className="text-slate-300">
-                  {efficiencyBreakdown.numerator.luck.toFixed(2)}
+                  {totalStats.luck.toFixed(2)}
                   {' × '}
-                  {efficiencyBreakdown.numerator.sqrtCapacity.toFixed(2)}
+                  {Math.sqrt(totalStats.capacity ?? 0).toFixed(2)}
                 </div>
               </div>
 
@@ -556,7 +557,10 @@ export default function App() {
                 </div>
 
                 <div className="font-bold text-indigo-300 text-lg">
-                  {efficiencyBreakdown.numerator.total.toFixed(2)}
+                  {(
+                    (totalStats.luck ?? 0) *
+                    Math.sqrt(totalStats.capacity ?? 0)
+                  ).toFixed(2)}
                 </div>
               </div>
 
@@ -680,7 +684,7 @@ export default function App() {
                   </div>
 
                   <div className="text-indigo-300">
-                    {efficiencyBreakdown.digTime.toFixed(2)}s
+                    {efficiencyBreakdown.timePerDig.toFixed(2)}s
                   </div>
                 </div>
 
@@ -692,18 +696,28 @@ export default function App() {
                   <div className="font-bold text-indigo-300">
                     {efficiencyBreakdown.digsRequired}
                     {' × '}
-                    {efficiencyBreakdown.digTime.toFixed(2)}
+                    {efficiencyBreakdown.timePerDig.toFixed(2)}
                     {' = '}
-                    {(
-                      efficiencyBreakdown.digsRequired *
-                      efficiencyBreakdown.digTime
-                    ).toFixed(2)}s
+                    {efficiencyBreakdown.totalDigTime.toFixed(2).toFixed(2)}s
                   </div>
                 </div>
 
               </div>
             </div>
+            <div className="bg-indigo-700 rounded-2xl p-6 shadow-lg">
+              <h2 className="text-xl font-bold mb-4">
+                Final Cycle Time
+              </h2>
 
+              <div className="text-5xl font-bold">
+                {efficiencyBreakdown.cycleTime.toFixed(2)}s
+              </div>
+
+              <div className="mt-3 text-sm text-indigo-200">
+                Full mining cycle duration including:
+                shaking, digging, and fixed delays.
+              </div>
+            </div>
         </section>
       )}   
 
