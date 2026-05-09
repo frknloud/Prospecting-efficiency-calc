@@ -50,6 +50,17 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
     ])
   );
 
+  const usedMinerals = allSlots
+    .filter((s) => s.slotId !== slot.slotId)
+    .map((s) => s.mineralId)
+    .filter(Boolean);
+  
+  const availableMinerals = minerals.filter(
+    (mineral) =>
+      !usedMinerals.includes(mineral.id) ||
+      mineral.id === slot.mineralId
+  );
+
   const rarityClass =
     rarityStyles[slot.rarity.toLowerCase()] ?? 'bg-slate-700 text-slate-100';
 
