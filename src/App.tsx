@@ -339,21 +339,6 @@ export default function App() {
           <section className="bg-slate-800 rounded-2xl p-4 shadow-lg self-start text-sm">
             <h2 className="text-xl font-semibold mb-4">Museum Setup</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-4">
-              {museumLegend.map((stat) => (
-                <div
-                  key={stat}
-                  className="flex items-center gap-3 bg-slate-800 rounded-xl px-4 py-3 border border-slate-700"
-                >
-                  <StatBadge statKey={stat} />
-
-                  <span className="text-sm font-medium text-slate-100">
-                    {statDisplayNames[stat]}
-                  </span>
-                </div>
-              ))}
-            </div>
-
             <div className="bg-slate-700 rounded-xl p-4 mb-4">
               <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-300 mb-3">
                 Final Museum Multipliers
