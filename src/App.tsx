@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import museumSlotsData from './data/museum-slots.json';
 import pans from './data/pans.json';
@@ -24,11 +24,12 @@ import { applyEnchant } from './logic/applyEnchants';
 import { recommendUpgrades } from './logic/recommendUpgrades';
 import { isBuildReadyForRecommendations } from './logic/isBuildReadyForRecommendations';
 
-import type { BuildState, MuseumSlotSelection, Rarity } from './types';
+import type { BuildState, MuseumSlotSelection, Rarity, StatKey } from './types';
 
+const STORAGE_KEY = 'prospecting-build-v1';
 const RING_SLOT_COUNT = 8;
 
-const museumLegend = [
+const museumLegend: StatKey[] = [
   'luck',
   'capacity',
   'digStrength',
@@ -40,34 +41,119 @@ const museumLegend = [
   'sellBoost'
 ];
 
-export default function App() {
-  const [ringSlotLimit, setRingSlotLimit] = useState<6 | 8>(8);
+const statDisplayNames: Record<StatKey, string> = {
+  luck: 'Luck',
+  capacity: 'Capacity',
+  digStrength: 'Dig Strength',
+  digSpeed: 'Dig Speed',
+  shakeStrength: 'Shake Strength',
+  shakeSpeed: 'Shake Speed',
+  sizeBoost: 'Size Boost',
+  modifierBoost: 'Modifier Boost',
+  sellBoost: 'Sell Boost',
+  walkSpeed: 'Walk Speed'
+};
 
-  const [selectedPan, setSelectedPan] = useState<string | null>(null);
-  const [selectedPanEnchant, setSelectedPanEnchant] = useState<string | null>(null);
-  const [selectedShovel, setSelectedShovel] = useState<string | null>(null);
-  const [selectedNecklace, setSelectedNecklace] = useState<string | null>(null);
-  const [selectedNecklaceMutation, setSelectedNecklaceMutation] = useState<string | null>(null);
-  const [selectedCharm, setSelectedCharm] = useState<string | null>(null);
-  const [selectedCharmMutation, setSelectedCharmMutation] = useState<string | null>(null);
-  const [enabledBuffs, setEnabledBuffs] = useState<string[]>([]);
+function loadSavedBuild() {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+export default function App() {
+  const savedBuild = useMemo(() => loadSavedBuild(), []);
+
+  const [ringSlotLimit, setRingSlotLimit] = useState<6 | 8>(
+    savedBuild?.ringSlotLimit ?? 8
+  );
+
+  const [selectedPan, setSelectedPan] = useState<string | null>(
+    savedBuild?.selectedPan ?? null
+  );
+
+  const [selectedPanEnchant, setSelectedPanEnchant] = useState<string | null>(
+    savedBuild?.selectedPanEnchant ?? null
+  );
+
+  const [selectedShovel, setSelectedShovel] = useState<string | null>(
+    savedBuild?.selectedShovel ?? null
+  );
+
+  const [selectedNecklace, setSelectedNecklace] = useState<string | null>(
+    savedBuild?.selectedNecklace ?? null
+  );
+
+  const [selectedNecklaceMutation, setSelectedNecklaceMutation] = useState<string | null>(
+    savedBuild?.selectedNecklaceMutation ?? null
+  );
+
+  const [selectedCharm, setSelectedCharm] = useState<string | null>(
+    savedBuild?.selectedCharm ?? null
+  );
+
+  const [selectedCharmMutation, setSelectedCharmMutation] = useState<string | null>(
+    savedBuild?.selectedCharmMutation ?? null
+  );
+
+  const [enabledBuffs, setEnabledBuffs] = useState<string[]>(
+    savedBuild?.enabledBuffs ?? []
+  );
 
   const [selectedRings, setSelectedRings] = useState<Array<string | null>>(
-    Array(RING_SLOT_COUNT).fill(null)
+    savedBuild?.selectedRings ?? Array(RING_SLOT_COUNT).fill(null)
   );
 
   const [selectedRingMutations, setSelectedRingMutations] = useState<Array<string | null>>(
-    Array(RING_SLOT_COUNT).fill(null)
+    savedBuild?.selectedRingMutations ?? Array(RING_SLOT_COUNT).fill(null)
   );
 
   const [museumSlots, setMuseumSlots] = useState<MuseumSlotSelection[]>(
-    museumSlotsData.map((slot) => ({
-      slotId: slot.slotId,
-      rarity: slot.rarity as Rarity,
-      mineralId: null,
-      modifierId: null
-    }))
+    savedBuild?.museumSlots ??
+      museumSlotsData.map((slot) => ({
+        slotId: slot.slotId,
+        rarity: slot.rarity as Rarity,
+        mineralId: null,
+        modifierId: null
+      }))
   );
+
+  useEffect(() => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        ringSlotLimit,
+        selectedPan,
+        selectedPanEnchant,
+        selectedShovel,
+        selectedNecklace,
+        selectedNecklaceMutation,
+        selectedCharm,
+        selectedCharmMutation,
+        enabledBuffs,
+        selectedRings,
+        selectedRingMutations,
+        museumSlots
+      })
+    );
+  }, [
+    ringSlotLimit,
+    selectedPan,
+    selectedPanEnchant,
+    selectedShovel,
+    selectedNecklace,
+    selectedNecklaceMutation,
+    selectedCharm,
+    selectedCharmMutation,
+    enabledBuffs,
+    selectedRings,
+    selectedRingMutations,
+    museumSlots
+  ]);
 
   const museumColumnOne = museumSlots.filter((slot) => slot.slotId <= 9);
   const museumColumnTwo = museumSlots.filter((slot) => slot.slotId >= 10);
@@ -253,12 +339,18 @@ export default function App() {
           <section className="bg-slate-800 rounded-2xl p-4 shadow-lg self-start text-sm">
             <h2 className="text-xl font-semibold mb-4">Museum Setup</h2>
 
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-4">
               {museumLegend.map((stat) => (
-                <StatBadge
+                <div
                   key={stat}
-                  statKey={stat}
-                />
+                  className="flex items-center gap-3 bg-slate-800 rounded-xl px-4 py-3 border border-slate-700"
+                >
+                  <StatBadge statKey={stat} />
+
+                  <span className="text-sm font-medium text-slate-100">
+                    {statDisplayNames[stat]}
+                  </span>
+                </div>
               ))}
             </div>
 
@@ -268,20 +360,27 @@ export default function App() {
               </h3>
 
               <div className="grid grid-cols-2 gap-2 text-sm">
-                {Object.entries(museumMultipliers).map(([key, value]) => (
-                  <div
-                    key={key}
-                    className="flex justify-between bg-slate-800 rounded-lg px-3 py-2"
-                  >
-                    <span className="text-slate-300">{key}</span>
+                {Object.entries(museumMultipliers)
+                  .filter(([key]) =>
+                    museumLegend.includes(key as StatKey)
+                  )
+                  .map(([key, value]) => (
+                    <div
+                      key={key}
+                      className="flex justify-between bg-slate-800 rounded-lg px-3 py-2"
+                    >
+                      <span className="flex items-center gap-2 text-slate-300">
+                        <StatBadge statKey={key as StatKey} />
+                        {statDisplayNames[key as StatKey]}
+                      </span>
 
-                    <span className="font-semibold text-indigo-300">
-                      {typeof value === 'number'
-                        ? value.toFixed(2)
-                        : String(value)}
-                    </span>
-                  </div>
-                ))}
+                      <span className="font-semibold text-indigo-300">
+                        {typeof value === 'number'
+                          ? value.toFixed(2)
+                          : String(value)}
+                      </span>
+                    </div>
+                  ))}
               </div>
             </div>
 
