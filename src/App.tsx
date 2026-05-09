@@ -125,6 +125,10 @@ export default function App() {
         modifierId: null
       }))
   );
+  
+  const [activeTab, setActiveTab] = useState<
+    'calculator' | 'breakdown' | 'upgrades'
+  >('calculator');  
 
   useEffect(() => {
     localStorage.setItem(
@@ -330,6 +334,43 @@ export default function App() {
           Prospecting Efficiency Calculator
         </h1>
 
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={() => setActiveTab('calculator')}
+            className={`px-4 py-2 rounded-xl font-semibold ${
+              activeTab === 'calculator'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-slate-700 text-slate-300'
+            }`}
+          >
+            Calculator
+          </button>
+
+          <button
+            onClick={() => setActiveTab('breakdown')}
+            className={`px-4 py-2 rounded-xl font-semibold ${
+              activeTab === 'breakdown'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-slate-700 text-slate-300'
+            }`}
+          >
+            Efficiency Breakdown
+          </button>
+
+          <button
+            onClick={() => setActiveTab('upgrades')}
+            className={`px-4 py-2 rounded-xl font-semibold ${
+              activeTab === 'upgrades'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-slate-700 text-slate-300'
+            }`}
+          >
+            Upgrade Advisor
+          </button>
+        </div>
+        
+      {activeTab === 'calculator' && (
+
         <div className="grid grid-cols-1 2xl:grid-cols-[1fr_1.25fr_0.9fr] gap-4 items-start">
           <EquipmentPanel
             ringSlotLimit={ringSlotLimit}
@@ -438,7 +479,42 @@ export default function App() {
                 ))}
               </div>
             </div>
+          </section>
+        </div>
+      )}
+      
+      {activeTab === 'breakdown' && (
+	  <section className="bg-slate-800 rounded-2xl p-6 shadow-lg">
+          <h2 className="text-2xl font-bold mb-4">
+            Efficiency Breakdown
+          </h2>
 
+          <div className="space-y-4">
+            <div className="bg-slate-700 rounded-xl p-4">
+              <div className="text-lg font-semibold mb-2">
+                Core Formula
+              </div>
+      
+              <div className="text-slate-300">
+                Luck and Capacity increase score while
+                shake/dig time lowers efficiency.
+              </div>
+            </div>
+      
+            <div className="bg-slate-700 rounded-xl p-4">
+              <div className="font-semibold mb-2">
+                Current Efficiency
+              </div>
+      
+              <div className="text-4xl font-bold text-indigo-300">
+                {efficiencyResult.efficiency.toFixed(2)}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}      
+
+      {activeTab === 'upgrades' && (
             <div className="bg-slate-700 rounded-2xl p-4">
               <h3 className="text-lg font-semibold mb-3">
                 Next Best Upgrades
@@ -490,8 +566,8 @@ export default function App() {
                 </div>
               )}
             </div>
-          </section>
-        </div>
+      )}
+        
       </div>
     </main>
   );
