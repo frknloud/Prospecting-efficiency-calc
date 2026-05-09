@@ -1,9 +1,11 @@
 import minerals from '../data/museum-minerals.json';
 import modifiers from '../data/museum-modifiers.json';
-import { MuseumSlotSelection } from '../types';
-import { filterValidMuseumModifiers } from '../logic/museumValidation';
-import StatBadge from './StatBadge';
+
 import type { MuseumSlotSelection } from '../types';
+
+import { filterValidMuseumModifiers } from '../logic/museumValidation';
+
+import StatBadge from './StatBadge';
 
 interface Props {
   slot: MuseumSlotSelection;
@@ -21,17 +23,11 @@ const rarityStyles: Record<string, string> = {
   exotic: 'bg-red-700 text-red-100'
 };
 
-export default function MuseumSlotSelector({ slot, onChange }: Props) {
-  const availableMinerals = minerals.filter(
-    (mineral) =>
-      !usedMinerals.includes(mineral.id) ||
-      mineral.id === slot.mineralId
-  );
-
-  const selectedMineral = minerals.find(
-    (mineral) => mineral.id === slot.mineralId
-  );
-
+export default function MuseumSlotSelector({
+  slot,
+  allSlots,
+  onChange
+}: Props) {
   const usedMinerals = allSlots
     .filter((s: MuseumSlotSelection) => s.slotId !== slot.slotId)
     .map((s: MuseumSlotSelection) => s.mineralId)
@@ -43,13 +39,20 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
       mineral.id === slot.mineralId
   );
 
+  const selectedMineral = minerals.find(
+    (mineral) => mineral.id === slot.mineralId
+  );
+
+  const availableModifiers = filterValidMuseumModifiers(
+    modifiers,
+    selectedMineral
+  );
+
   const selectedModifier = modifiers.find(
     (modifier) => modifier.id === slot.modifierId
   );
 
-  const mineralStats = Object.keys(
-    selectedMineral?.stats ?? {}
-  );
+  const mineralStats = Object.keys(selectedMineral?.stats ?? {});
 
   const modifierStats = selectedModifier?.affects ?? [];
 
@@ -61,7 +64,8 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
   );
 
   const rarityClass =
-    rarityStyles[slot.rarity.toLowerCase()] ?? 'bg-slate-700 text-slate-100';
+    rarityStyles[slot.rarity.toLowerCase()] ??
+    'bg-slate-700 text-slate-100';
 
   return (
     <div className="bg-slate-700 rounded-xl p-4 space-y-3">
@@ -70,17 +74,21 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
           Slot {slot.slotId}
         </div>
 
-        <div className={`text-xs px-2 py-1 rounded-full font-semibold uppercase tracking-wide ${rarityClass}`}>
+        <div
+          className={`text-xs px-2 py-1 rounded-full font-semibold uppercase tracking-wide ${rarityClass}`}
+        >
           {slot.rarity}
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm mb-1 text-slate-300">Mineral</label>
+          <label className="block text-sm mb-1 text-slate-300">
+            Mineral
+          </label>
 
           <select
-  	    className="w-full bg-slate-800 rounded-lg px-3 py-2"
+            className="w-full bg-slate-800 rounded-lg px-3 py-2"
             value={slot.mineralId ?? ''}
             onChange={(e) =>
               onChange({
@@ -89,19 +97,21 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
                 modifierId: null
               })
             }
-         >
-  <option value="">Select Mineral</option>
+          >
+            <option value="">Select Mineral</option>
 
-  {availableMinerals.map((mineral) => (
-    <option key={mineral.id} value={mineral.id}>
-      {mineral.name}
-    </option>
-  ))}
-</select>
+            {availableMinerals.map((mineral) => (
+              <option key={mineral.id} value={mineral.id}>
+                {mineral.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
-          <label className="block text-sm mb-1 text-slate-300">Modifier</label>
+          <label className="block text-sm mb-1 text-slate-300">
+            Modifier
+          </label>
 
           <select
             className="w-full bg-slate-800 rounded-lg px-3 py-2"
