@@ -76,15 +76,15 @@ export default function MuseumSlotSelector({
   return (
     <div className="bg-slate-700 rounded-xl p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <div className="font-semibold text-slate-100">
-          Slot {slot.slotId}
-        </div>
-
         <div
           className={`text-xs px-2 py-1 rounded-full font-semibold uppercase tracking-wide ${rarityClass}`}
         >
           {slot.rarity}
         </div>
+        
+        <div className="font-semibold text-slate-100">
+          Slot {slot.slotId}
+        </div>        
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
