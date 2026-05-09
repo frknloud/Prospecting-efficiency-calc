@@ -61,7 +61,8 @@ export function efficiencyCore(
       cycleTime: Infinity,
       digsRequired: Infinity,
       shakeTime: Infinity,
-      digTime: Infinity,
+      timePerDig: Infinity,
+      totalDigTime: Infinity,
       totalShakes: Infinity,
       r: 0
     };
