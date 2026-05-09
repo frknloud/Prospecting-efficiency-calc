@@ -44,8 +44,8 @@ export default function MuseumSlotSelector({
   );
 
   const availableModifiers = filterValidMuseumModifiers(
-    modifiers,
-    selectedMineral
+    selectedMineral,
+    modifiers
   );
 
   const selectedModifier = modifiers.find(
