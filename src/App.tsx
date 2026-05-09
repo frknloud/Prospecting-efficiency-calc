@@ -433,14 +433,14 @@ export default function App() {
       )}
       
       {activeTab === 'breakdown' && (
-        <section className="space-y-4">
-      
+        <section className="space-y-4 max-w-5xl">
+
           <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
             <h2 className="text-2xl font-bold mb-4">
               Efficiency Formula
             </h2>
 
-            <div className="text-slate-300 text-lg leading-relaxed">
+            <div className="text-slate-300 text-lg leading-relaxed font-mono">
               Efficiency =
               (Luck × √Capacity)
               ÷
@@ -449,141 +449,250 @@ export default function App() {
           </div>
 
           <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold mb-4">
+            <h2 className="text-xl font-bold mb-5">
               Live Formula
             </h2>
-      
-            <div className="text-slate-200 text-lg space-y-2 font-mono">
-      
-              <div>
-                ({efficiencyBreakdown.numerator.luck.toFixed(2)}
-                ×
-                √{efficiencyBreakdown.numerator.capacity.toFixed(2)})
+
+            <div className="space-y-3 font-mono text-sm">
+
+              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="text-slate-400">
+                  Numerator
+                </div>
+
+                <div className="text-indigo-300">
+                  (
+                  {efficiencyBreakdown.numerator.luck.toFixed(2)}
+                  {' × '}
+                  {efficiencyBreakdown.numerator.sqrtCapacity.toFixed(2)}
+                  )
+                </div>
               </div>
-      
-              <div>
-                ÷
+
+              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="text-slate-400">
+                  Denominator
+                </div>
+
+                <div className="text-indigo-300">
+                  (
+                  {efficiencyBreakdown.shake.duration.toFixed(2)}
+                  {' + '}
+                  {efficiencyBreakdown.dig.duration.toFixed(2)}
+                  {' + '}
+                  {efficiencyBreakdown.denominator.baseDelay.toFixed(2)}
+                  )
+                </div>
               </div>
-      
-              <div>
-                (
-                {efficiencyBreakdown.shake.duration.toFixed(2)}
-                +
-                {efficiencyBreakdown.dig.duration.toFixed(2)}
-                +
-                {efficiencyBreakdown.denominator.baseDelay.toFixed(2)}
-                )
+
+              <div className="border-t border-indigo-500 pt-3 mt-3 grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="font-bold text-indigo-300">
+                  Final Efficiency
+                </div>
+
+                <div className="font-bold text-indigo-300 text-xl">
+                  {efficiencyBreakdown.finalEfficiency.toFixed(2)}
+                </div>
               </div>
-      
+
             </div>
           </div>
-      
+
           <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold mb-4">
+            <h2 className="text-xl font-bold mb-5">
               Numerator Breakdown
             </h2>
-      
-            <div className="space-y-2">
-      
-              <div className="flex justify-between">
-                <span>Luck</span>
-      
-                <span>
+
+            <div className="space-y-3 font-mono text-sm">
+
+              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="text-slate-400">
+                  Luck
+                </div>
+
+                <div className="text-indigo-300">
                   {efficiencyBreakdown.numerator.luck.toFixed(2)}
-                </span>
+                </div>
               </div>
-      
-              <div className="flex justify-between">
-                <span>√Capacity</span>
-      
-                <span>
+
+              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="text-slate-400">
+                  Capacity
+                </div>
+
+                <div className="text-indigo-300">
+                  {efficiencyBreakdown.numerator.capacity.toFixed(2)}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="text-slate-400">
+                  √Capacity
+                </div>
+
+                <div className="text-indigo-300">
+                  √
+                  {efficiencyBreakdown.numerator.capacity.toFixed(2)}
+                  {' = '}
                   {efficiencyBreakdown.numerator.sqrtCapacity.toFixed(2)}
-                </span>
+                </div>
               </div>
-      
-              <div className="flex justify-between font-bold text-indigo-300">
-                <span>Numerator Total</span>
-      
-                <span>
+
+              <div className="border-t border-slate-600 pt-3 mt-3 grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="font-semibold text-slate-200">
+                  Formula
+                </div>
+
+                <div className="text-slate-300">
+                  {efficiencyBreakdown.numerator.luck.toFixed(2)}
+                  {' × '}
+                  {efficiencyBreakdown.numerator.sqrtCapacity.toFixed(2)}
+                </div>
+              </div>
+
+              <div className="border-t border-indigo-500 pt-3 mt-3 grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="font-bold text-indigo-300">
+                  Numerator Total
+                </div>
+
+                <div className="font-bold text-indigo-300 text-lg">
                   {efficiencyBreakdown.numerator.total.toFixed(2)}
-                </span>
+                </div>
               </div>
-      
+
             </div>
           </div>
-      
+
           <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold mb-4">
+            <h2 className="text-xl font-bold mb-5">
               Shake Phase
             </h2>
-      
-            <div className="space-y-2">
-      
-              <div className="flex justify-between">
-                <span>Shakes Required</span>
-      
-                <span>
-                  {efficiencyBreakdown.shake.shakesRequired.toFixed(2)}
-                </span>
+
+            <div className="space-y-3 font-mono text-sm">
+
+              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="text-slate-400">
+                  Capacity
+                </div>
+
+                <div className="text-indigo-300">
+                  {efficiencyBreakdown.shake.capacity.toFixed(2)}
+                </div>
               </div>
 
-              <div className="flex justify-between">
-                <span>Shake Duration</span>
+              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="text-slate-400">
+                  Shake Strength
+                </div>
 
-                <span>
+                <div className="text-indigo-300">
+                  {efficiencyBreakdown.shake.shakeStrength.toFixed(2)}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="text-slate-400">
+                  Shakes Required
+                </div>
+
+                <div className="text-indigo-300">
+                  {efficiencyBreakdown.shake.shakesRequired.toFixed(2)}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="text-slate-400">
+                  Shake Speed
+                </div>
+
+                <div className="text-indigo-300">
+                  {efficiencyBreakdown.shake.shakeSpeed.toFixed(2)}
+                </div>
+              </div>
+
+              <div className="border-t border-slate-600 pt-3 mt-3 grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="font-semibold text-slate-200">
+                  Shake Duration
+                </div>
+
+                <div className="text-slate-300">
+                  {efficiencyBreakdown.shake.shakesRequired.toFixed(2)}
+                  {' ÷ '}
+                  {efficiencyBreakdown.shake.shakeSpeed.toFixed(2)}
+                  {' = '}
                   {efficiencyBreakdown.shake.duration.toFixed(2)}s
-                </span>
+                </div>
               </div>
 
             </div>
           </div>
 
           <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold mb-4">
+            <h2 className="text-xl font-bold mb-5">
               Dig Phase
             </h2>
 
-            <div className="space-y-2">
+            <div className="space-y-3 font-mono text-sm">
 
-              <div className="flex justify-between">
-                <span>Digs Required</span>
+              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="text-slate-400">
+                  Dig Strength
+                </div>
 
-                <span>
+                <div className="text-indigo-300">
+                  {efficiencyBreakdown.dig.digStrength.toFixed(2)}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="text-slate-400">
+                  Digs Required
+                </div>
+
+                <div className="text-indigo-300">
                   {efficiencyBreakdown.dig.digsRequired}
-                </span>
+                </div>
               </div>
 
-              <div className="flex justify-between">
-                <span>Time Per Dig</span>
+              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="text-slate-400">
+                  Dig Speed
+                </div>
 
-                <span>
+                <div className="text-indigo-300">
+                  {efficiencyBreakdown.dig.digSpeed.toFixed(2)}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="text-slate-400">
+                  Time Per Dig
+                </div>
+
+                <div className="text-indigo-300">
                   {efficiencyBreakdown.dig.timePerDig.toFixed(2)}s
-                </span>
+                </div>
               </div>
 
-              <div className="flex justify-between">
-                <span>Total Dig Time</span>
+              <div className="border-t border-slate-600 pt-3 mt-3 grid grid-cols-[220px_auto] gap-x-4 items-center">
+                <div className="font-semibold text-slate-200">
+                  Total Dig Time
+                </div>
 
-                <span>
+                <div className="text-slate-300">
+                  {efficiencyBreakdown.dig.digsRequired}
+                  {' × '}
+                  {efficiencyBreakdown.dig.timePerDig.toFixed(2)}
+                  {' = '}
                   {efficiencyBreakdown.dig.duration.toFixed(2)}s
-                </span>
+                </div>
               </div>
 
-            </div>
-          </div>
-
-          <div className="bg-indigo-700 rounded-2xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold mb-2">
-              Final Efficiency
-            </h2>
-
-            <div className="text-5xl font-bold">
-              {efficiencyBreakdown.finalEfficiency.toFixed(2)}
             </div>
           </div>
 
         </section>
-      )}     
+      )}   
 
       {activeTab === 'upgrades' && (
           <UpgradesTab
