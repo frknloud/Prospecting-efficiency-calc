@@ -170,8 +170,8 @@ export default function EquipmentPanel(props: Props) {
             >
               <input
                 type="checkbox"
-                checked={enabledRingIds.includes(ring.name)}
-                onChange={() => toggleRingEnabled(ring.name)}
+                checked={props.enabledRingIds.includes(ring.name)}
+                onChange={() => props.toggleRingEnabled(ring.name)}
              />
 
               {ring.name}
