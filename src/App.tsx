@@ -26,7 +26,7 @@ import { applyMuseum } from './logic/applyMuseum';
 import { applyEnchant } from './logic/applyEnchants';
 import { recommendUpgrades } from './logic/recommendUpgrades';
 import { isBuildReadyForRecommendations } from './logic/isBuildReadyForRecommendations';
-import { calculateEfficiencyBreakdown } from './logic/calculateEfficiencyBreakdown';
+import { efficiencyCore } from './logic/engine/efficiencyCore';
 
 import type { BuildState, MuseumSlotSelection, Rarity, StatKey } from './types';
 
@@ -266,7 +266,7 @@ export default function App() {
   );
 
   const efficiencyBreakdown = useMemo(
-    () => calculateEfficiencyBreakdown(totalStats),
+    () => efficiencyCore(totalStats),
     [totalStats]
   );
 
@@ -564,132 +564,145 @@ export default function App() {
           </div>
 
           <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold mb-5">
-              Shake Phase
-            </h2>
+              <h2 className="text-xl font-bold mb-5">
+                Shake Phase
+              </h2>
 
-            <div className="space-y-3 font-mono text-sm">
+              <div className="space-y-3 font-mono text-sm">
 
-              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="text-slate-400">
-                  Capacity
+                <div className="grid grid-cols-[240px_auto] gap-x-4 items-center">
+                  <div className="text-slate-400">
+                    Capacity
+                  </div>
+
+                  <div className="text-indigo-300">
+                    {totalStats.capacity.toFixed(2)}
+                  </div>
                 </div>
 
-                <div className="text-indigo-300">
-                  {efficiencyBreakdown.shake.capacity.toFixed(2)}
+                <div className="grid grid-cols-[240px_auto] gap-x-4 items-center">
+                  <div className="text-slate-400">
+                    Shake Strength
+                  </div>
+
+                  <div className="text-indigo-300">
+                    {totalStats.shakeStrength.toFixed(2)}
+                  </div>
                 </div>
+
+                <div className="grid grid-cols-[240px_auto] gap-x-4 items-center">
+                  <div className="text-slate-400">
+                    Shake Speed Stat
+                  </div>
+
+                  <div className="text-indigo-300">
+                    {totalStats.shakeSpeed.toFixed(2)}
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-600 pt-3 mt-3 grid grid-cols-[240px_auto] gap-x-4 items-center">
+                  <div className="font-semibold text-slate-200">
+                    Real Shakes/sec (r)
+                  </div>
+
+                  <div className="text-amber-300">
+                    {efficiencyBreakdown.r.toFixed(2)}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-[240px_auto] gap-x-4 items-center">
+                  <div className="text-slate-400">
+                    Total Shakes
+                  </div>
+
+                  <div className="text-indigo-300">
+                    {efficiencyBreakdown.totalShakes.toFixed(2)}
+                  </div>
+                </div>
+
+                <div className="border-t border-indigo-500 pt-3 mt-3 grid grid-cols-[240px_auto] gap-x-4 items-center">
+                  <div className="font-bold text-indigo-300">
+                    Shake Duration
+                  </div>
+
+                  <div className="font-bold text-indigo-300">
+                    {efficiencyBreakdown.totalShakes.toFixed(2)}
+                    {' ÷ '}
+                    {efficiencyBreakdown.r.toFixed(2)}
+                    {' = '}
+                    {efficiencyBreakdown.shakeTime.toFixed(2)}s
+                  </div>
+                </div>
+
               </div>
-
-              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="text-slate-400">
-                  Shake Strength
-                </div>
-
-                <div className="text-indigo-300">
-                  {efficiencyBreakdown.shake.shakeStrength.toFixed(2)}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="text-slate-400">
-                  Shakes Required
-                </div>
-
-                <div className="text-indigo-300">
-                  {efficiencyBreakdown.shake.shakesRequired.toFixed(2)}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="text-slate-400">
-                  Shake Speed
-                </div>
-
-                <div className="text-indigo-300">
-                  {efficiencyBreakdown.shake.shakeSpeed.toFixed(2)}
-                </div>
-              </div>
-
-              <div className="border-t border-slate-600 pt-3 mt-3 grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="font-semibold text-slate-200">
-                  Shake Duration
-                </div>
-
-                <div className="text-slate-300">
-                  {efficiencyBreakdown.shake.shakesRequired.toFixed(2)}
-                  {' ÷ '}
-                  {efficiencyBreakdown.shake.shakeSpeed.toFixed(2)}
-                  {' = '}
-                  {efficiencyBreakdown.shake.duration.toFixed(2)}s
-                </div>
-              </div>
-
             </div>
-          </div>
 
           <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold mb-5">
-              Dig Phase
-            </h2>
+              <h2 className="text-xl font-bold mb-5">
+                Dig Phase
+              </h2>
 
-            <div className="space-y-3 font-mono text-sm">
+              <div className="space-y-3 font-mono text-sm">
 
-              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="text-slate-400">
-                  Dig Strength
+                <div className="grid grid-cols-[240px_auto] gap-x-4 items-center">
+                  <div className="text-slate-400">
+                    Dig Strength
+                  </div>
+
+                  <div className="text-indigo-300">
+                    {totalStats.digStrength.toFixed(2)}
+                  </div>
                 </div>
 
-                <div className="text-indigo-300">
-                  {efficiencyBreakdown.dig.digStrength.toFixed(2)}
+                <div className="grid grid-cols-[240px_auto] gap-x-4 items-center">
+                  <div className="text-slate-400">
+                    Dig Speed
+                  </div>
+
+                  <div className="text-indigo-300">
+                    {totalStats.digSpeed.toFixed(2)}
+                  </div>
                 </div>
+
+                <div className="border-t border-slate-600 pt-3 mt-3 grid grid-cols-[240px_auto] gap-x-4 items-center">
+                  <div className="font-semibold text-slate-200">
+                    Digs Required
+                  </div>
+
+                  <div className="text-amber-300">
+                    {efficiencyBreakdown.digsRequired}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-[240px_auto] gap-x-4 items-center">
+                  <div className="text-slate-400">
+                    Time Per Dig
+                  </div>
+
+                  <div className="text-indigo-300">
+                    {efficiencyBreakdown.digTime.toFixed(2)}s
+                  </div>
+                </div>
+
+                <div className="border-t border-indigo-500 pt-3 mt-3 grid grid-cols-[240px_auto] gap-x-4 items-center">
+                  <div className="font-bold text-indigo-300">
+                    Total Dig Time
+                  </div>
+
+                  <div className="font-bold text-indigo-300">
+                    {efficiencyBreakdown.digsRequired}
+                    {' × '}
+                    {efficiencyBreakdown.digTime.toFixed(2)}
+                    {' = '}
+                    {(
+                      efficiencyBreakdown.digsRequired *
+                      efficiencyBreakdown.digTime
+                    ).toFixed(2)}s
+                  </div>
+                </div>
+
               </div>
-
-              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="text-slate-400">
-                  Digs Required
-                </div>
-
-                <div className="text-indigo-300">
-                  {efficiencyBreakdown.dig.digsRequired}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="text-slate-400">
-                  Dig Speed
-                </div>
-
-                <div className="text-indigo-300">
-                  {efficiencyBreakdown.dig.digSpeed.toFixed(2)}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="text-slate-400">
-                  Time Per Dig
-                </div>
-
-                <div className="text-indigo-300">
-                  {efficiencyBreakdown.dig.timePerDig.toFixed(2)}s
-                </div>
-              </div>
-
-              <div className="border-t border-slate-600 pt-3 mt-3 grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="font-semibold text-slate-200">
-                  Total Dig Time
-                </div>
-
-                <div className="text-slate-300">
-                  {efficiencyBreakdown.dig.digsRequired}
-                  {' × '}
-                  {efficiencyBreakdown.dig.timePerDig.toFixed(2)}
-                  {' = '}
-                  {efficiencyBreakdown.dig.duration.toFixed(2)}s
-                </div>
-              </div>
-
             </div>
-          </div>
 
         </section>
       )}   
