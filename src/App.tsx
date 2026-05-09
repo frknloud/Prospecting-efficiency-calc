@@ -112,6 +112,10 @@ export default function App() {
     savedBuild?.selectedRingMutations ?? Array(RING_SLOT_COUNT).fill(null)
   );
 
+  const [enabledRingIds, setEnabledRingIds] = useState<string[]>(
+    savedBuild?.enabledRingIds ?? rings.map((ring) => ring.name)
+  );
+
   const [museumSlots, setMuseumSlots] = useState<MuseumSlotSelection[]>(
     savedBuild?.museumSlots ??
       museumSlotsData.map((slot) => ({
@@ -135,6 +139,7 @@ export default function App() {
         selectedCharm,
         selectedCharmMutation,
         enabledBuffs,
+        enabledRingIds,
         selectedRings,
         selectedRingMutations,
         museumSlots
@@ -150,6 +155,7 @@ export default function App() {
     selectedCharm,
     selectedCharmMutation,
     enabledBuffs,
+    enabledRingIds,
     selectedRings,
     selectedRingMutations,
     museumSlots
@@ -165,6 +171,11 @@ export default function App() {
 
   const activeRings = selectedRings.slice(0, ringSlotLimit);
   const activeRingMutations = selectedRingMutations.slice(0, ringSlotLimit);
+
+  const availableRings = useMemo(
+    () => rings.filter((ring) => enabledRingIds.includes(ring.name)),
+    [enabledRingIds]
+  );
 
   const selectedEquipment = useMemo(() => {
     const pan = pans.find((item) => item.name === selectedPan);
@@ -258,7 +269,8 @@ export default function App() {
       ringId,
       mutationId: activeRingMutations[index]
     })),
-    museumSlots
+    museumSlots,
+    enabledRingIds
   };
 
   const showRecommendations = isBuildReadyForRecommendations(buildState);
@@ -303,6 +315,14 @@ export default function App() {
     );
   }
 
+  function toggleRingEnabled(ringName: string) {
+    setEnabledRingIds((prev) =>
+      prev.includes(ringName)
+        ? prev.filter((id) => id !== ringName)
+        : [...prev, ringName]
+    );
+  }
+
   return (
     <main className="min-h-screen p-4 bg-slate-900 text-white overflow-x-hidden">
       <div className="max-w-[1800px] mx-auto">
@@ -334,6 +354,8 @@ export default function App() {
             updateRing={updateRing}
             updateRingMutation={updateRingMutation}
             toggleBuff={toggleBuff}
+            enabledRingIds={enabledRingIds}
+            toggleRingEnabled={toggleRingEnabled}
           />
 
           <section className="bg-slate-800 rounded-2xl p-4 shadow-lg self-start text-sm">

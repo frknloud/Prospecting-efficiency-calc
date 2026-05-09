@@ -106,9 +106,23 @@ export function recommendUpgrades(
     return [];
   }
 
-  rings.forEach((ring) => {
-    const mutation = PRISMATIC_MUTATION;
+  const availableRings = rings.filter(
+    (ring) =>
+      !build.enabledRingIds ||
+      build.enabledRingIds.includes(ring.name)
+  );
 
+  availableRings.forEach((ring) => {
+    const mutation = PRISMATIC_MUTATION;
+    if (ring.unique) {
+      const alreadyUsingRing = activeRings.some(
+        (equippedRing) => equippedRing.ringId === ring.name
+      );
+
+      if (alreadyUsingRing) {
+        return;
+      }
+    }
     const alreadyEquipped = activeRings.some(
       (equippedRing) =>
         equippedRing.ringId === ring.name &&

@@ -37,6 +37,8 @@ interface Props {
   updateRing: (index: number, value: string | null) => void;
   updateRingMutation: (index: number, value: string | null) => void;
   toggleBuff: (buffId: string) => void;
+  enabledRingIds: string[];
+  toggleRingEnabled: (ringName: string) => void;
 }
 
 export default function EquipmentPanel(props: Props) {
@@ -156,6 +158,27 @@ export default function EquipmentPanel(props: Props) {
           })}
         </div>
       </div>
+      
+      <div className="bg-slate-700 rounded-xl p-3 mt-4">
+        <div className="font-semibold mb-2">Enabled Rings</div>
+
+        <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+          {rings.map((ring) => (
+            <label
+              key={ring.name}
+              className="flex items-center gap-2 text-sm"
+            >
+              <input
+                type="checkbox"
+                checked={enabledRingIds.includes(ring.name)}
+                onChange={() => toggleRingEnabled(ring.name)}
+             />
+
+              {ring.name}
+            </label>
+          ))}
+        </div>
+      </div>      
 
       <div className="pt-3 border-t border-slate-700">
         <h3 className="text-lg font-semibold mb-2">Totems</h3>

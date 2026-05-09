@@ -91,6 +91,7 @@ export interface BuildState {
   charmId: string | null;
   charmMutationId: string | null;
   rings: RingSelection[];
+  enabledRingIds?: string[];
   museumSlots: MuseumSlotSelection[];
 }
 
