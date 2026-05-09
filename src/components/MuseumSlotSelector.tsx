@@ -3,9 +3,11 @@ import modifiers from '../data/museum-modifiers.json';
 import { MuseumSlotSelection } from '../types';
 import { filterValidMuseumModifiers } from '../logic/museumValidation';
 import StatBadge from './StatBadge';
+import type { MuseumSlotSelection } from '../types';
 
 interface Props {
   slot: MuseumSlotSelection;
+  allSlots: MuseumSlotSelection[];
   onChange: (slot: MuseumSlotSelection) => void;
 }
 
@@ -31,13 +33,14 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
   );
 
   const usedMinerals = allSlots
-    .filter((s) => s.slotId !== slot.slotId)
-    .map((s) => s.mineralId)
+    .filter((s: MuseumSlotSelection) => s.slotId !== slot.slotId)
+    .map((s: MuseumSlotSelection) => s.mineralId)
     .filter(Boolean);
 
-  const availableModifiers = filterValidMuseumModifiers(
-    selectedMineral,
-    modifiers
+  const availableMinerals = minerals.filter(
+    (mineral) =>
+      !usedMinerals.includes(mineral.id) ||
+      mineral.id === slot.mineralId
   );
 
   const selectedModifier = modifiers.find(
@@ -77,7 +80,7 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
           <label className="block text-sm mb-1 text-slate-300">Mineral</label>
 
           <select
-            className="w-full bg-slate-800 rounded-lg px-3 py-2"
+  	    className="w-full bg-slate-800 rounded-lg px-3 py-2"
             value={slot.mineralId ?? ''}
             onChange={(e) =>
               onChange({
@@ -86,15 +89,15 @@ export default function MuseumSlotSelector({ slot, onChange }: Props) {
                 modifierId: null
               })
             }
-          >
-            <option value="">Select Mineral</option>
+         >
+  <option value="">Select Mineral</option>
 
-            {availableMinerals.map((mineral) => (
-              <option key={mineral.id} value={mineral.id}>
-                {mineral.name}
-              </option>
-            ))}
-          </select>
+  {availableMinerals.map((mineral) => (
+    <option key={mineral.id} value={mineral.id}>
+      {mineral.name}
+    </option>
+  ))}
+</select>
         </div>
 
         <div>
