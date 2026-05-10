@@ -23,7 +23,7 @@ export interface UpgradeRecommendation {
 }
 
 const PRISMATIC_MUTATION = mutations.find(
-  (mutation) => mutation.name === 'Prismatic'
+  (mutation) => mutation.id === 'prismatic'
 );
 
 function evaluateBuild(build: BuildState) {
@@ -33,7 +33,7 @@ function evaluateBuild(build: BuildState) {
           ...pans.find((item) => item.id === build.panId),
           stats: applyEnchant(
             pans.find((item) => item.id === build.panId)?.stats ?? {},
-            enchants.find((item) => item.name === build.panEnchantId)
+            enchants.find((item) => item.id === build.panEnchantId)
           )
         }
       : undefined,
@@ -45,7 +45,7 @@ function evaluateBuild(build: BuildState) {
           ...necklaces.find((item) => item.id === build.necklaceId),
           stats: applyMutation(
             necklaces.find((item) => item.id === build.necklaceId)?.stats ?? {},
-            mutations.find((item) => item.name === build.necklaceMutationId)
+            mutations.find((item) => item.id === build.necklaceMutationId)
           )
         }
       : undefined,
@@ -55,7 +55,7 @@ function evaluateBuild(build: BuildState) {
           ...charms.find((item) => item.id === build.charmId),
           stats: applyMutation(
             charms.find((item) => item.id === build.charmId)?.stats ?? {},
-            mutations.find((item) => item.name === build.charmMutationId)
+            mutations.find((item) => item.id === build.charmMutationId)
           )
         }
       : undefined,
@@ -69,7 +69,7 @@ function evaluateBuild(build: BuildState) {
         ...ring,
         stats: applyMutation(
           ring.stats,
-          mutations.find((item) => item.name === ringSelection.mutationId)
+          mutations.find((item) => item.id === ringSelection.mutationId)
         )
       };
     })
@@ -126,7 +126,7 @@ export function recommendUpgrades(
     const alreadyEquipped = activeRings.some(
       (equippedRing) =>
         equippedRing.ringId === ring.id &&
-        equippedRing.mutationId === mutation.name
+        equippedRing.mutationId === mutation.id
     );
 
     if (alreadyEquipped) return;
@@ -134,7 +134,7 @@ export function recommendUpgrades(
     activeRings.forEach((ringSelection, index) => {
       if (
         ringSelection.ringId === ring.id &&
-        ringSelection.mutationId === mutation.name
+        ringSelection.mutationId === mutation.id
       ) {
         return;
       }
@@ -143,7 +143,7 @@ export function recommendUpgrades(
         ringIndex === index
           ? {
               ringId: ring.id,
-              mutationId: mutation.name
+              mutationId: mutation.id
             }
           : existingRing
       );
@@ -188,7 +188,7 @@ export function recommendUpgrades(
 
     if (
       build.necklaceId === necklace.id &&
-      build.necklaceMutationId === mutation.name
+      build.necklaceMutationId === mutation.id
     ) {
       return;
     }
@@ -196,7 +196,7 @@ export function recommendUpgrades(
     const testBuild: BuildState = {
       ...build,
       necklaceId: necklace.id,
-      necklaceMutationId: mutation.name
+      necklaceMutationId: mutation.id
     };
 
     const result = evaluateBuild(testBuild);
@@ -220,7 +220,7 @@ export function recommendUpgrades(
 
     if (
       build.charmId === charm.id &&
-      build.charmMutationId === mutation.name
+      build.charmMutationId === mutation.id
     ) {
       return;
     }
@@ -228,7 +228,7 @@ export function recommendUpgrades(
     const testBuild: BuildState = {
       ...build,
       charmId: charm.id,
-      charmMutationId: mutation.name
+      charmMutationId: mutation.id
     };
 
     const result = evaluateBuild(testBuild);
