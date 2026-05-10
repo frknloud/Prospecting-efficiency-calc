@@ -201,8 +201,8 @@ export default function App() {
     const charm = charms.find((item) => item.id === selectedCharm);
     const charmMutation = mutations.find((item) => item.id === selectedCharmMutation);
 
-    const ringItems = activeRings.map((ringName, index) => {
-      const ring = rings.find((item) => item.id === ringName);
+    const ringItems = activeRings.map((ringId, index) => {
+      const ring = rings.find((item) => item.id === ringId);
       const mutation = mutations.find((item) => item.id === activeRingMutations[index]);
 
       if (!ring) return undefined;
@@ -335,11 +335,11 @@ export default function App() {
     );
   }
 
-  function toggleRingEnabled(ringName: string) {
+  function toggleRingEnabled(ringId: string) {
     setEnabledRingIds((prev) =>
-      prev.includes(ringName)
-        ? prev.filter((id) => id !== ringName)
-        : [...prev, ringName]
+      prev.includes(ringId)
+        ? prev.filter((id) => id !== ringId)
+        : [...prev, ringId]
     );
   }
 
