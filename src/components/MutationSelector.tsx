@@ -1,6 +1,4 @@
-interface Mutation {
-  name: string;
-}
+import type { Mutation } from '../types';
 
 interface Props {
   label: string;
