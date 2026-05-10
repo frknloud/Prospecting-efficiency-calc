@@ -1,13 +1,10 @@
 import EquipmentSelector from './EquipmentSelector';
 
+import type { EquipmentItem } from '../types';
+
 import { filterAvailableRings } from '../logic/filterAvailableRings';
 
-interface RingItem {
-  id: string;
-  name: string;
-  unique?: boolean;
-  [key: string]: unknown;
-}
+type RingItem = EquipmentItem;
 
 interface Props {
   rings: RingItem[];
