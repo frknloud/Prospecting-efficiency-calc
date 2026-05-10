@@ -29,7 +29,7 @@ import { isBuildReadyForRecommendations } from './logic/isBuildReadyForRecommend
 import { efficiencyCore } from './logic/engine/efficiencyCore';
 import { FIXED_CYCLE_TIME } from './logic/engine/constants';
 
-import type { BuildState, MuseumSlotSelection, Rarity, StatKey } from './types';
+import type { BuildState, MuseumSlotSelection, Rarity, StatKey } from './types/index';
 
 const STORAGE_KEY = 'prospecting-build-v1';
 const RING_SLOT_COUNT = 8;
