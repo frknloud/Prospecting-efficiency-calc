@@ -41,7 +41,9 @@ export interface Mutation {
 export interface Enchant {
   id: string;
   name: string;
-  stats?: PartialStats;
+  allowedSlots?: string;
+  flat?: PartialStats;
+  multiplier?: PartialStats;
 }
 
 export interface MuseumMineral {
