@@ -33,6 +33,7 @@ export interface EquipmentItem {
 export interface Mutation {
   id: string;
   name: string;
+  multiplier?: number;
   multipliers?: PartialStats;
   flat?: PartialStats;
 }
