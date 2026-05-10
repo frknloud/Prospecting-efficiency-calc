@@ -30,8 +30,8 @@ export default function MutationSelector({
 
         {mutations.map((mutation) => (
           <option
-            key={mutation.name}
-            value={mutation.name}
+            key={mutation.id}
+            value={mutation.id}
           >
             {mutation.name}
           </option>
