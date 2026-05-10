@@ -31,7 +31,7 @@ import { FIXED_CYCLE_TIME } from './logic/engine/constants';
 
 import type { BuildState, MuseumSlotSelection, Rarity, StatKey, EquipmentItem } from './types/';
 
-const STORAGE_KEY = 'prospecting-build-v1';
+const STORAGE_KEY = 'prospecting-build-v2';
 const RING_SLOT_COUNT = 8;
 
 const pans: EquipmentItem[] = rawPans;
