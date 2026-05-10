@@ -1,6 +1,4 @@
-interface Enchant {
-  name: string;
-}
+import type { Enchant } from '../types';
 
 interface Props {
   label: string;
