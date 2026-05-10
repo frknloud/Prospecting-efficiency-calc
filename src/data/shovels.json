@@ -1,6 +1,7 @@
 [
   {
       "name": "Abyssal Shovel",
+      "id": "abyssal-shovel",
       "slot": "shovel",
       "stats": {
         "luck": 0,
@@ -15,6 +16,7 @@
     },
     {
       "name": "Venomspade Shovel",
+      "id": "venomspade-shovel",
       "slot": "shovel",
       "stats": {
         "luck": 0,
@@ -29,6 +31,7 @@
     },
     {
       "name": "Starcrusher",
+      "id": "starcrusher",
       "slot": "shovel",
       "stats": {
         "luck": 0,
