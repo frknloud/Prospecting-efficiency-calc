@@ -1,6 +1,7 @@
 [
   {
       "name": "Helm of the Round",
+      "id": "helm-of-the-round",
       "slot": "charm",
       "stats": {
         "luck": 100,
@@ -17,6 +18,7 @@
     },
     {
       "name": "Cryogenic Preserver",
+      "id": "cryogenic-preserver",
       "slot": "charm",
       "stats": {
         "luck": 275,
@@ -33,6 +35,7 @@
     },
     {
       "name": "Fossilized Crown",
+      "id": "fossilized-crown",
       "slot": "charm",
       "stats": {
         "luck": 250,
@@ -49,6 +52,7 @@
     },
     {
       "name": "Antlers of Life",
+      "id": "antlers-of-life",
       "slot": "charm",
       "stats": {
         "luck": 640,
@@ -64,6 +68,7 @@
     },
     {
       "name": "Excalibur",
+      "id": "excalibur",
       "slot": "charm",
       "stats": {
         "luck": 550,
@@ -81,6 +86,7 @@
     },
     {
       "name": "Timelocked Soul",
+      "id": "timelocked-soul",
       "slot": "charm",
       "stats": {
         "luck": 999,
@@ -97,6 +103,7 @@
     },
     {
       "name": "Starlight Wings",
+      "id": "starlight-wings",
       "slot": "charm",
       "stats": {
         "luck": 1000,
@@ -113,6 +120,7 @@
     },
     {
       "name": "Clockwork",
+      "id": "clockwork",
       "slot": "charm",
       "stats": {
         "luck": 0,
