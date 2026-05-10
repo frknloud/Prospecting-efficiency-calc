@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import museumSlotsData from './data/museum-slots.json';
-import pans from './data/pans.json';
-import shovels from './data/shovels.json';
-import rings from './data/rings.json';
-import necklaces from './data/necklaces.json';
-import charms from './data/charms.json';
+import rawPans from './data/pans.json';
+import rawShovels from './data/shovels.json';
+import rawRings from './data/rings.json';
+import rawNecklaces from './data/necklaces.json';
+import rawCharms from './data/charms.json';
 import mutations from './data/mutations.json';
 import buffs from './data/buffs.json';
 import enchants from './data/enchants.json';
@@ -29,10 +29,16 @@ import { isBuildReadyForRecommendations } from './logic/isBuildReadyForRecommend
 import { efficiencyCore } from './logic/engine/efficiencyCore';
 import { FIXED_CYCLE_TIME } from './logic/engine/constants';
 
-import type { BuildState, MuseumSlotSelection, Rarity, StatKey } from './types/index';
+import type { BuildState, MuseumSlotSelection, Rarity, StatKey, EquipmentItem } from './types/index';
 
 const STORAGE_KEY = 'prospecting-build-v1';
 const RING_SLOT_COUNT = 8;
+
+const pans: EquipmentItem[] = rawPans;
+const shovels: EquipmentItem[] = rawShovels;
+const rings: EquipmentItem[] = rawRings;
+const necklaces: EquipmentItem[] = rawNecklaces;
+const charms: EquipmentItem[] = rawCharms;
 
 const museumLegend: StatKey[] = [
   'luck',
