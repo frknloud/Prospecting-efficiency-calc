@@ -12,7 +12,15 @@ import MutationSelector from './MutationSelector';
 import ToggleCard from './ToggleCard';
 import EnchantSelector from './EnchantSelector';
 
+import type { EquipmentItem } from '../types';
+
 import { filterAvailableRings } from '../logic/filterAvailableRings';
+
+const typedPans: EquipmentItem[] = pans;
+const typedShovels: EquipmentItem[] = shovels;
+const typedRings: EquipmentItem[] = rings;
+const typedNecklaces: EquipmentItem[] = necklaces;
+const typedCharms: EquipmentItem[] = charms;
 
 interface Props {
   ringSlotLimit: 6 | 8;
@@ -69,7 +77,7 @@ export default function EquipmentPanel(props: Props) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         <EquipmentSelector
           label="Pan"
-          items={pans}
+          items={typedPans}
           value={props.selectedPan}
           getName={(item) => item.name}
           onChange={props.setSelectedPan}
@@ -85,7 +93,7 @@ export default function EquipmentPanel(props: Props) {
 
       <EquipmentSelector
         label="Shovel"
-        items={shovels}
+        items={typedShovels}
         value={props.selectedShovel}
         getName={(item) => item.name}
         onChange={props.setSelectedShovel}
@@ -94,7 +102,7 @@ export default function EquipmentPanel(props: Props) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         <EquipmentSelector
           label="Necklace"
-          items={necklaces}
+          items={typedNecklaces}
           value={props.selectedNecklace}
           getName={(item) => item.name}
           onChange={props.setSelectedNecklace}
@@ -111,7 +119,7 @@ export default function EquipmentPanel(props: Props) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         <EquipmentSelector
           label="Charm"
-          items={charms}
+          items={typedCharms}
           value={props.selectedCharm}
           getName={(item) => item.name}
           onChange={props.setSelectedCharm}
@@ -131,7 +139,7 @@ export default function EquipmentPanel(props: Props) {
         <div className="space-y-2">
           {visibleRings.map((value, index) => {
             const availableRings = filterAvailableRings(
-              rings,
+              typedRings,
               props.selectedRings,
               index
             );
@@ -163,7 +171,7 @@ export default function EquipmentPanel(props: Props) {
         <div className="font-semibold mb-2">Enabled Rings</div>
 
         <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
-          {rings.map((ring) => (
+          {typedRings.map((ring) => (
             <label
               key={ring.id}
               className="flex items-center gap-2 text-sm"
