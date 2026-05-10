@@ -174,7 +174,7 @@ export default function EquipmentPanel(props: Props) {
                 onChange={() => props.toggleRingEnabled(ring.id)}
              />
 
-              {ring.id}
+              {ring.name}
             </label>
           ))}
         </div>
