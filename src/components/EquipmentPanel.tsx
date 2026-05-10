@@ -143,7 +143,7 @@ export default function EquipmentPanel(props: Props) {
                   items={availableRings}
                   value={value}
                   getName={(item) => item.name}
-                  getId={(item) => item.id ?? item.name}
+                  getId={(item) => item.id ?? item.id}
                   onChange={(newValue) => props.updateRing(index, newValue)}
                 />
 
@@ -165,16 +165,16 @@ export default function EquipmentPanel(props: Props) {
         <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
           {rings.map((ring) => (
             <label
-              key={ring.name}
+              key={ring.id}
               className="flex items-center gap-2 text-sm"
             >
               <input
                 type="checkbox"
-                checked={props.enabledRingIds.includes(ring.name)}
-                onChange={() => props.toggleRingEnabled(ring.name)}
+                checked={props.enabledRingIds.includes(ring.id)}
+                onChange={() => props.toggleRingEnabled(ring.id)}
              />
 
-              {ring.name}
+              {ring.id}
             </label>
           ))}
         </div>
