@@ -8,7 +8,7 @@ interface Props<T extends BaseItem> {
   items: T[];
   value: string | null;
   getName: (item: T) => string;
-  getId: (item: T) => string;
+  getId?: (item: T) => string;
   onChange: (value: string | null) => void;
 }
 
