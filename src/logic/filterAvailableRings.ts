@@ -1,13 +1,8 @@
-interface RingItem {
-  id?: string;
-  name: string;
-  unique?: boolean;
-  [key: string]: unknown;
-}
+import type { EquipmentItem } from '../types';
 
 export function filterAvailableRings(
-  allRings: RingItem[],
-  selectedRingIds: Array<string | null>,
+  rings: EquipmentItem[],
+  selectedRings: Array<string | null>,
   currentIndex: number
 ): RingItem[] {
   const selectedUniqueIds = new Set(
