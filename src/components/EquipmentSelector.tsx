@@ -1,5 +1,5 @@
 interface BaseItem {
-  id?: string;
+  id: string;
   name: string;
 }
 
@@ -8,7 +8,7 @@ interface Props<T extends BaseItem> {
   items: T[];
   value: string | null;
   getName: (item: T) => string;
-  getId?: (item: T) => string;
+  getId: (item: T) => string;
   onChange: (value: string | null) => void;
 }
 
@@ -37,7 +37,7 @@ export default function EquipmentSelector<
 
         {items.map((item) => {
           const name = getName(item);
-          const id = getId ? getId(item) : item.id ?? name;
+          const id = getId ? getId(item) : item.id;
 
           return (
             <option key={id} value={id}>
