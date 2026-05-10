@@ -187,16 +187,16 @@ export default function App() {
   );
 */
   const selectedEquipment = useMemo(() => {
-    const pan = pans.find((item) => item.name === selectedPan);
+    const pan = pans.find((item) => item.id === selectedPan);
     const panEnchant = enchants.find((item) => item.name === selectedPanEnchant);
-    const shovel = shovels.find((item) => item.name === selectedShovel);
-    const necklace = necklaces.find((item) => item.name === selectedNecklace);
+    const shovel = shovels.find((item) => item.id === selectedShovel);
+    const necklace = necklaces.find((item) => item.id === selectedNecklace);
     const necklaceMutation = mutations.find((item) => item.name === selectedNecklaceMutation);
-    const charm = charms.find((item) => item.name === selectedCharm);
+    const charm = charms.find((item) => item.id === selectedCharm);
     const charmMutation = mutations.find((item) => item.name === selectedCharmMutation);
 
     const ringItems = activeRings.map((ringName, index) => {
-      const ring = rings.find((item) => item.name === ringName);
+      const ring = rings.find((item) => item.id === ringName);
       const mutation = mutations.find((item) => item.name === activeRingMutations[index]);
 
       if (!ring) return undefined;
