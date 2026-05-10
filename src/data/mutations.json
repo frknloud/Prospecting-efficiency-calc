@@ -1,46 +1,53 @@
 [
   {
-      "name": "Silver",
-      "multiplier": 1.1,
-      "flat": {}
-    },
-    {
-      "name": "Gold",
-      "multiplier": 1.2,
-      "flat": {}
-    },
-    {
-      "name": "Diamond",
-      "multiplier": 1.35,
-      "flat": {}
-    },
-    {
-      "name": "Granite",
-      "multiplier": 1.35,
-      "flat": {
-        "digStrength": 24,
-        "shakeStrength": 6
-      }
-    },
-    {
-      "name": "Overclocked",
-      "multiplier": 1.35,
-      "flat": {
-        "digSpeed": 10,
-        "shakeSpeed": 10
-      }
-    },
-    {
-      "name": "Festive",
-      "multiplier": 1.4,
-      "flat": {
-        "luck": 50,
-        "sizeBoost": 10
-      }
-    },
-    {
-      "name": "Prismatic",
-      "multiplier": 1.6,
-      "flat": {}
+    "id": "silver",
+    "name": "Silver",
+    "multiplier": 1.1,
+    "flat": {}
+  },
+  {
+    "id": "gold",
+    "name": "Gold",
+    "multiplier": 1.2,
+    "flat": {}
+  },
+  {
+    "id": "diamond",
+    "name": "Diamond",
+    "multiplier": 1.35,
+    "flat": {}
+  },
+  {
+    "id": "granite",
+    "name": "Granite",
+    "multiplier": 1.35,
+    "flat": {
+      "digStrength": 24,
+      "shakeStrength": 6
     }
+  },
+  {
+    "id": "overclocked",
+    "name": "Overclocked",
+    "multiplier": 1.35,
+    "flat": {
+      "digSpeed": 10,
+      "shakeSpeed": 10
+    }
+  },
+  {
+    "id": "festive",
+    "name": "Festive",
+    "multiplier": 1.4,
+    "flat": {
+      "luck": 50,
+      "sizeBoost": 10
+    }
+  },
+  {
+    "id": "prismatic",
+    "name": "Prismatic",
+    "multiplier": 1.6,
+    "flat": {}
+  }
 ]
