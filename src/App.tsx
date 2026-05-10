@@ -124,7 +124,7 @@ export default function App() {
   );
 
   const [enabledRingIds, setEnabledRingIds] = useState<string[]>(
-    savedBuild?.enabledRingIds ?? rings.map((ring) => ring.name)
+    savedBuild?.enabledRingIds ?? rings.map((ring) => ring.id)
   );
 
   const [museumSlots, setMuseumSlots] = useState<MuseumSlotSelection[]>(
