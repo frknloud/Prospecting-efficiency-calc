@@ -188,22 +188,22 @@ export default function App() {
   const activeRingMutations = selectedRingMutations.slice(0, ringSlotLimit);
 
 /*  const availableRings = useMemo(
-    () => rings.filter((ring) => enabledRingIds.includes(ring.name)),
+    () => rings.filter((ring) => enabledRingIds.includes(ring.)),
     [enabledRingIds]
   );
 */
   const selectedEquipment = useMemo(() => {
     const pan = pans.find((item) => item.id === selectedPan);
-    const panEnchant = enchants.find((item) => item.name === selectedPanEnchant);
+    const panEnchant = enchants.find((item) => item.id === selectedPanEnchant);
     const shovel = shovels.find((item) => item.id === selectedShovel);
     const necklace = necklaces.find((item) => item.id === selectedNecklace);
-    const necklaceMutation = mutations.find((item) => item.name === selectedNecklaceMutation);
+    const necklaceMutation = mutations.find((item) => item.id === selectedNecklaceMutation);
     const charm = charms.find((item) => item.id === selectedCharm);
-    const charmMutation = mutations.find((item) => item.name === selectedCharmMutation);
+    const charmMutation = mutations.find((item) => item.id === selectedCharmMutation);
 
     const ringItems = activeRings.map((ringName, index) => {
       const ring = rings.find((item) => item.id === ringName);
-      const mutation = mutations.find((item) => item.name === activeRingMutations[index]);
+      const mutation = mutations.find((item) => item.id === activeRingMutations[index]);
 
       if (!ring) return undefined;
 
