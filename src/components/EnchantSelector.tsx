@@ -29,7 +29,7 @@ export default function EnchantSelector({
         <option value="">No Enchant</option>
 
         {enchants.map((enchant) => (
-          <option key={enchant.name} value={enchant.name}>
+          <option key={enchant.id} value={enchant.id}>
             {enchant.name}
           </option>
         ))}
