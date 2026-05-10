@@ -3,7 +3,7 @@ import EquipmentSelector from './EquipmentSelector';
 import { filterAvailableRings } from '../logic/filterAvailableRings';
 
 interface RingItem {
-  id?: string;
+  id: string;
   name: string;
   unique?: boolean;
   [key: string]: unknown;
