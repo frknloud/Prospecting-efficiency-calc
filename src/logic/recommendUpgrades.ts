@@ -168,10 +168,7 @@ export function recommendUpgrades(
         digsImproved: result.digsRequired < current.digsRequired
       };
 
-      const key = recommendationKey({
-        ...recommendation,
-        slot: 'Ring'
-      });
+      const key = recommendationKey(recommendation);
 
       if (seenRecommendations.has(key)) {
         return;
