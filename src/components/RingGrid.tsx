@@ -36,7 +36,7 @@ export default function RingGrid({
             items={availableRings}
             value={value}
             getName={(item) => item.name}
-            getId={(item) => item.id ?? item.name}
+            getId={(item) => item.id}
             onChange={(newValue) =>
               onChange(index, newValue)
             }
