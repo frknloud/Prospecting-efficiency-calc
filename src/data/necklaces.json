@@ -1,6 +1,7 @@
 [
   {
       "name": "Pheonix Heart",
+      "id": "pheonix-heart",
       "slot": "necklace",
       "stats": {
         "luck": 325,
@@ -17,6 +18,7 @@
     },
     {
       "name": "Amulet of Life",
+      "id": "amulet-of-life",
       "slot": "necklace",
       "stats": {
         "luck": 425,
@@ -32,6 +34,7 @@
     },
     {
       "name": "Frosthorn Pendant",
+      "id": "frosthorn-pendant",
       "slot": "necklace",
       "stats": {
         "luck": 400,
@@ -47,6 +50,7 @@
     },
     {
       "name": "Venomshank",
+      "id": "venomshank",
       "slot": "necklace",
       "stats": {
         "luck": 1300,
@@ -64,6 +68,7 @@
     },
     {
       "name": "Meteor Core",
+      "id": "meteor-core",
       "slot": "necklace",
       "stats": {
         "luck": 900,
