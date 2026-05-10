@@ -143,7 +143,7 @@ export default function EquipmentPanel(props: Props) {
                   items={availableRings}
                   value={value}
                   getName={(item) => item.name}
-                  getId={(item) => item.id ?? item.id}
+                  getId={(item) => item.id}
                   onChange={(newValue) => props.updateRing(index, newValue)}
                 />
 
