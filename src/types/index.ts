@@ -28,6 +28,7 @@ export interface EquipmentItem {
   name: string;
   slot: string;
   stats: PartialStats;
+  unique?: boolean;
 }
 
 export interface Mutation {
