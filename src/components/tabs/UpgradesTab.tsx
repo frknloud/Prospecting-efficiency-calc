@@ -25,47 +25,51 @@ export default function UpgradesTab({
                 <div className="text-sm text-slate-400">
                   Select most of your build before upgrade recommendations appear.
                 </div>
-              ) : (
-                <div className="space-y-2">
-                  {upgradeRecommendations.map((upgrade, index) => (
-                    <div
-                      key={`${upgrade.slot}-${upgrade.itemName}-${index}`}
-                      className="bg-slate-800 rounded-xl p-3"
-                    >
-                      <div className="flex justify-between items-start gap-3">
-                        <div>
-                          <div className="font-semibold text-slate-100">
-                            {upgrade.slot}
-                          </div>
+              ) : upgradeRecommendations.length === 0 ? (
+							  <div className="text-sm text-slate-400">
+							    No upgrade recommendations found for the current build.
+ 							 </div>
+							) : (
+ 							 <div className="space-y-2">
+    							{upgradeRecommendations.map((upgrade, index) => (
+      							<div
+   							     key={`${upgrade.slot}-${upgrade.itemName}-${index}`}
+        							className="bg-slate-800 rounded-xl p-3"
+      							>
+     							   <div className="flex justify-between items-start gap-3">
+         				 			<div>
+         							   <div className="font-semibold text-slate-100">
+             							 {upgrade.slot}
+          						  </div>
 
-                          <div className="text-sm text-slate-300">
-                            {upgrade.itemName}
-                            {upgrade.mutationName
-                              ? ` + ${upgrade.mutationName}`
-                              : ''}
-                          </div>
-                        </div>
+          						  <div className="text-sm text-slate-300">
+							              {upgrade.itemName}
+							              {upgrade.mutationName
+							                ? ` + ${upgrade.mutationName}`
+							                : ''}
+ 							           </div>
+      						    </div>
 
-                        <div className="text-right">
-                          <div className="text-green-400 font-bold">
-                            +{upgrade.percentGain.toFixed(2)}%
-                          </div>
+     						     <div className="text-right">
+            						<div className="text-green-400 font-bold">
+          						    +{upgrade.percentGain.toFixed(2)}%
+           						 </div>
 
-                          <div className="text-xs text-slate-400">
-                            +{upgrade.efficiencyGain.toFixed(2)}
-                          </div>
-                        </div>
-                      </div>
+            					<div className="text-xs text-slate-400">
+           						   +{upgrade.efficiencyGain.toFixed(2)}
+         					   </div>
+         					 </div>
+       					 </div>
 
-                      {upgrade.digsImproved && (
-                        <div className="mt-2 text-xs text-amber-300 font-semibold">
-                          Dig breakpoint improvement
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+        {upgrade.digsImproved && (
+          <div className="mt-2 text-xs text-amber-300 font-semibold">
+            Dig breakpoint improvement
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+)}
             </div>
   );
 }            
