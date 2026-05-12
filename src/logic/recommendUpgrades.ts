@@ -106,6 +106,12 @@ export function recommendUpgrades(
     return [];
   }
 
+  enchants.filter(
+    (enchant) =>
+      !enchant.allowedSlots ||
+      enchant.allowedSlots.includes('pan')
+  )
+  
   const availableRings = rings.filter(
     (ring) =>
       !build.enabledRingIds ||
@@ -180,6 +186,96 @@ export function recommendUpgrades(
     });
   });
 
+  pans.forEach((pan) => {
+    if (build.panId === pan.id) {
+      return;
+    }
+
+    const testBuild: BuildState = {
+      ...build,
+      panId: pan.id
+    };
+
+    const result = evaluateBuild(testBuild);
+
+    const gain =
+      result.efficiency - current.efficiency;
+
+    if (gain <= 0) return;
+
+    recommendations.push({
+      slot: 'Pan',
+      itemName: pan.name,
+      mutationName: null,
+      efficiencyGain: gain,
+      percentGain:
+        (gain / current.efficiency) * 100,
+      digsImproved:
+        result.digsRequired <
+        current.digsRequired
+    });
+  });
+
+  enchants.forEach((enchant) => {
+    if (build.panEnchantId === enchant.id) {
+      return;
+    }
+
+    const testBuild: BuildState = {
+      ...build,
+      panEnchantId: enchant.id
+    };
+
+    const result = evaluateBuild(testBuild);
+
+    const gain =
+      result.efficiency - current.efficiency;
+
+    if (gain <= 0) return;
+
+    recommendations.push({
+      slot: 'Pan Enchant',
+      itemName: enchant.name,
+      mutationName: null,
+      efficiencyGain: gain,
+      percentGain:
+        (gain / current.efficiency) * 100,
+      digsImproved:
+        result.digsRequired <
+        current.digsRequired
+    });
+  });
+
+  shovels.forEach((shovel) => {
+    if (build.shovelId === shovel.id) {
+      return;
+    }
+
+    const testBuild: BuildState = {
+      ...build,
+      shovelId: shovel.id
+    };
+
+    const result = evaluateBuild(testBuild);
+
+    const gain =
+      result.efficiency - current.efficiency;
+
+    if (gain <= 0) return;
+
+    recommendations.push({
+      slot: 'Shovel',
+      itemName: shovel.name,
+      mutationName: null,
+      efficiencyGain: gain,
+      percentGain:
+        (gain / current.efficiency) * 100,
+      digsImproved:
+        result.digsRequired <
+        current.digsRequired
+    });
+  });
+  
   necklaces.forEach((necklace) => {
     const mutation = PRISMATIC_MUTATION;
 
