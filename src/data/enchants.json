@@ -185,5 +185,81 @@
       "capacity": 0.75,
       "luck": 1.4
     }
+  },
+  {
+    "id": "mystical",
+    "name": "Mystical",
+    "allowedSlots": "pan",
+    "flat": {
+      "luck": 100,
+      "capacity": 100
+    },
+    "multiplier": {
+      "luck": 1.4,
+      "capacity": 1.4
+    }
+  },
+  {
+    "id": "devouring",
+    "name": "Devouring",
+    "allowedSlots": "pan",
+    "flat": {
+      "luck": 200
+    },
+    "multiplier": {
+      "luck": 1.5
+    }
+  },
+  {
+    "id": "irregular",
+    "name": "Irregular",
+    "allowedSlots": "pan",
+    "flat": {
+      "luck": 66,
+      "modifierBoost": 66
+    },
+    "multiplier": {
+      "luck": 1.25
+    }
+  },
+  {
+    "id": "cursed",
+    "name": "Cursed",
+    "allowedSlots": "pan",
+    "flat": {
+      "luck": -100,
+      "capacity": -100,
+      "sizeBoost": 50,
+      "modifierBoost": 50
+    },
+    "multiplier": {
+      "luck": 0.7,
+      "capacity": 0.7
+    }
+  },
+  {
+    "id": "starstruck",
+    "name": "Starstruck",
+    "allowedSlots": "pan",
+    "flat": {
+      "luck": 75,
+      "sizeBoost": 20,
+      "sellBoost": 20
+    },
+    "multiplier": {
+      "luck": 1.3
+    }
+  },
+  {
+    "id": "hyperspeed",
+    "name": "Hyperspeed",
+    "allowedSlots": "pan",
+    "flat": {
+      "shakeStrength": 10,
+      "shakeSpeed": 40
+    },
+    "multiplier": {
+      "shakeStrength": 1.3
+    }
   }
 ]
