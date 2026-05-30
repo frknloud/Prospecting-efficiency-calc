@@ -1,8 +1,8 @@
-import EquipmentSelector from './EquipmentSelector';
+import EquipmentSelector from "./EquipmentSelector";
 
-import type { EquipmentItem } from '../types';
+import type { EquipmentItem } from "../engine/types";
 
-import { filterAvailableRings } from '../logic/filterAvailableRings';
+import { filterAvailableRings } from "../helpers/filterAvailableRings";
 
 type RingItem = EquipmentItem;
 
@@ -12,19 +12,11 @@ interface Props {
   onChange: (index: number, value: string | null) => void;
 }
 
-export default function RingGrid({
-  rings,
-  values,
-  onChange
-}: Props) {
+export default function RingGrid({ rings, values, onChange }: Props) {
   return (
     <div className="space-y-3">
       {values.map((value, index) => {
-        const availableRings = filterAvailableRings(
-          rings,
-          values,
-          index
-        );
+        const availableRings = filterAvailableRings(rings, values, index);
 
         return (
           <EquipmentSelector
@@ -34,9 +26,7 @@ export default function RingGrid({
             value={value}
             getName={(item) => item.name}
             getId={(item) => item.id}
-            onChange={(newValue) =>
-              onChange(index, newValue)
-            }
+            onChange={(newValue) => onChange(index, newValue)}
           />
         );
       })}

@@ -1,0 +1,246 @@
+{
+  "boostRelics": [
+    {
+      "id": "luckTotem",
+      "name": "Luck Totem",
+      "flat": {},
+      "multipliers": {
+        "luck": 1
+      }
+    },
+    {
+      "id": "strengthTotem",
+      "name": "Strength Totem",
+      "flat": {},
+      "multipliers": {
+        "digStrength": 1,
+        "shakeStrength": 1
+      }
+    },
+    {
+      "id": "luminantTotem",
+      "name": "Luminant Totem",
+      "flat": {
+        "digSpeed": 50,
+        "shakeSpeed": 50
+      },
+      "multipliers": {
+        "capacity": 0.5
+      }
+    },
+    {
+      "id": "friendshipTotem",
+      "name": "Friendship Totem",
+      "flat": {},
+      "multipliers": {
+        "luck": 0.2
+      }
+    },
+    {
+      "id": "luckBooster",
+      "name": "Luck Booster",
+      "flat": {},
+      "multipliers": {
+        "luck": 1
+      }
+    },
+    {
+      "id": "xpCookie",
+      "name": "XP Cookie",
+      "flat": {},
+      "multipliers": {
+        "luck": 1,
+        "capacity": 1,
+        "digStrength": 1,
+        "digSpeed": 1,
+        "shakeStrength": 1,
+        "shakeSpeed": 1,
+        "sellBoost": 1,
+        "sizeBoost": 1,
+        "modifierBoost": 1,
+        "walkSpeed": 1
+      }
+    },
+    {
+      "id": "ghostGummy",
+      "name": "Ghost Gummy",
+      "flat": {},
+      "multipliers": {
+        "digStrength": 0.5,
+        "shakeStrength": 0.5
+      }
+    },
+    {
+      "id": "candyCorn",
+      "name": "Candy Corn",
+      "flat": {},
+      "multipliers": {
+        "luck": 0.5
+      }
+    },
+    {
+      "id": "gingerbreadCookie",
+      "name": "Gingerbread Cookie",
+      "flat": {},
+      "multipliers": {
+        "luck": 0.5
+      }
+    }
+  ],
+  "potions": [
+    {
+      "id": "merchantsPotion",
+      "name": "Merchant's Potion",
+      "flat": {
+        "sellBoost": 100
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "basicLuckPotion",
+      "name": "Basic Luck Potion",
+      "flat": {
+        "luck": 5
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "basicCapacityPotion",
+      "name": "Basic Capacity Potion",
+      "flat": {
+        "capacity": 25
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "greaterLuckPotion",
+      "name": "Greater Luck Potion",
+      "flat": {
+        "luck": 10
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "greaterCapacityPotion",
+      "name": "Greater Capacity Potion",
+      "flat": {
+        "capacity": 50
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "volcanicLuckPotion",
+      "name": "Volcanic Luck Potion",
+      "flat": {
+        "luck": 20
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "volcanicStrengthPotion",
+      "name": "Volcanic Strength Potion",
+      "flat": {
+        "digStrength": 5
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "supremeLuckPotion",
+      "name": "Supreme Luck Potion",
+      "flat": {
+        "luck": 50
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "frozenLuckPotion",
+      "name": "Frozen Luck Potion",
+      "flat": {
+        "luck": 100
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "frozenSpeedPotion",
+      "name": "Frozen Speed Potion",
+      "flat": {
+        "digSpeed": 20,
+        "shakeSpeed": 20
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "cryonicBrew",
+      "name": "Cryonic Brew",
+      "flat": {
+        "luck": 300,
+        "capacity": 200,
+        "walkSpeed": 3
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "witchesBrew",
+      "name": "Witches Brew",
+      "flat": {
+        "luck": 500,
+        "digStrength": 50
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "ambrosia",
+      "name": "Ambrosia",
+      "flat": {
+        "luck": 1111
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "cosmicPotion",
+      "name": "Cosmic Potion",
+      "flat": {
+        "luck": 250,
+        "digStrength": 75,
+        "digSpeed": 20,
+        "modifierBoost": 20
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "stardustShake",
+      "name": "Stardust Shake",
+      "flat": {
+        "luck": 1500,
+        "sizeBoost": 30
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "instabilityPotion",
+      "name": "Instability Potion",
+      "flat": {
+        "modifierBoost": 100
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "quakePotion",
+      "name": "Quake Potion",
+      "flat": {
+        "digStrength": 30,
+        "shakeStrength": 5
+      },
+      "multipliers": {}
+    },
+    {
+      "id": "blitzPotion",
+      "name": "Blitz Potion",
+      "flat": {
+        "digSpeed": 60,
+        "shakeSpeed": 60
+      },
+      "multipliers": {}
+    }
+  ]
+}

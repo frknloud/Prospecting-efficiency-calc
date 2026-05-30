@@ -1,11 +1,11 @@
-import { PartialStats, StatKey, Stats } from '../types';
+import { PartialStats, StatKey, Stats } from "../engine/types";
 
 export function applyBuffs(
   baseStats: Stats,
-  enabledBuffs: Array<Record<string, any>>
+  enabledBuffs: Array<Record<string, any>>,
 ): Stats {
   const result: Stats = {
-    ...baseStats
+    ...baseStats,
   };
 
   enabledBuffs.forEach((buff) => {
@@ -13,8 +13,7 @@ export function applyBuffs(
       const statKey = key as StatKey;
 
       if (result[statKey] !== undefined) {
-        result[statKey] =
-          Number(result[statKey]) * (1 + Number(value));
+        result[statKey] = Number(result[statKey]) * (1 + Number(value));
       }
     });
   });

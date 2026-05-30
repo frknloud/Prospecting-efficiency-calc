@@ -1,0 +1,102 @@
+[
+  {
+    "region": "start",
+    "name": null,
+    "limitedTimeDigSites": [
+      "hauntedCreek",
+      "northPole"
+    ]
+  },
+  {
+    "region": "rubbleCreek",
+    "name": "Rubble Creek",
+    "digSites": [
+      "rubbleCreekSands",
+      "rubbleCreekDeposits"
+    ]
+  },
+  {
+    "region": "fortuneRiver",
+    "name": "Fortune River",
+    "digSites": [
+      "fortuneRiver",
+      "fortuneRiverDelta",
+      "sunsetBeach",
+      "theVoid"
+    ]
+  },
+  {
+    "region": "crystalCavern",
+    "name": "Crystal Cavern",
+    "digSites": [
+      "crystalCavernRiver",
+      "azuraliteOasis"
+    ]
+  },
+  {
+    "region": "calderaPark",
+    "name": "Caldera Park",
+    "digSites": [
+      "volcanicSands",
+      "volcanicSprings",
+      "windsweptBeach",
+      "theMagmaFurnace"
+    ]
+  },
+  {
+    "region": "infernalHeart",
+    "name": "Infernal Heart",
+    "digSites": [
+      "infernalHeart"
+    ]
+  },
+  {
+    "region": "snowyMountain",
+    "name": "Snowy Mountain",
+    "digSites": [
+      "frostbiteRiver",
+      "frostbiteWaterfall",
+      "frozenPeak"
+    ]
+  },
+  {
+    "region": "overgrownCaves",
+    "name": "Overgrown Caves",
+    "digSites": [
+      "overgrownGrotto",
+      "deeprootSpring",
+      "enchantedRuins"
+    ]
+  },
+  {
+    "region": "abyssalDepths",
+    "name": "Abyssal Depths",
+    "digSites": [
+      "abyssalDepths"
+    ]
+  },
+  {
+    "region": "rotwoodSwamp",
+    "name": "Rotwood Swamp",
+    "digSites": [
+      "rotwoodSwamp",
+      "fungalMarsh"
+    ]
+  },
+  {
+    "region": "timelockedSanctuary",
+    "name": "Timelocked Sanctuary",
+    "digSites": [
+      "timelockedSanctuary"
+    ]
+  },
+  {
+    "region": "meteorValley",
+    "name": "Meteor Valley",
+    "digSites": [
+      "meteorFalls",
+      "starfallRiver",
+      "astralCaverns"
+    ]
+  }
+]

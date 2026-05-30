@@ -12,25 +12,21 @@ interface Props<T extends BaseItem> {
   onChange: (value: string | null) => void;
 }
 
-export default function EquipmentSelector<
-  T extends BaseItem
->({
+export default function EquipmentSelector<T extends BaseItem>({
   label,
   items,
   value,
   getName,
   getId,
-  onChange
+  onChange,
 }: Props<T>) {
   return (
     <div>
-      <label className="block text-sm mb-1 text-slate-300">
-        {label}
-      </label>
+      <label className="block text-sm mb-1 text-slate-300">{label}</label>
 
       <select
         className="w-full bg-slate-800 rounded-lg px-3 py-2"
-        value={value ?? ''}
+        value={value ?? ""}
         onChange={(e) => onChange(e.target.value || null)}
       >
         <option value="">Select {label}</option>

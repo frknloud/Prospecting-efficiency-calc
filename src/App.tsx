@@ -1,72 +1,182 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import museumSlotsData from './data/museum-slots.json';
-import rawPans from './data/pans.json';
-import rawShovels from './data/shovels.json';
-import rawRings from './data/rings.json';
-import rawNecklaces from './data/necklaces.json';
-import rawCharms from './data/charms.json';
-import mutations from './data/mutations.json';
-import buffs from './data/buffs.json';
-import enchants from './data/enchants.json';
+import museumSlotsData from "./data/museum-slots.json";
+import rawPans from "./data/pans.json";
+import rawShovels from "./data/shovels.json";
+import rawNecklaces from "./data/necklaces.json";
+import rawCharms from "./data/charms.json";
+import mutations from "./data/mutations.json";
+import enchants from "./data/enchants.json";
 
-import MuseumSlotSelector from './components/MuseumSlotSelector';
-import EquipmentPanel from './components/EquipmentPanel';
-import StatBadge from './components/StatBadge';
+import MuseumSlotSelector from "./components/MuseumSlotSelector";
+import EquipmentPanel from "./components/EquipmentPanel";
+import StatBadge from "./components/StatBadge";
 
-import CalculatorTab from './components/tabs/CalculatorTab';
-import UpgradesTab from './components/tabs/UpgradesTab';
+import CalculatorTab from "./pages/CalculatorTab";
+import BreakdownTab from "./pages/BreakdownTab";
+import UpgradesTab from "./pages/UpgradesTab";
+import OptimizerPage from "./pages/OptimizerPage";
+import OptimizerSettingsPage from "./pages/OptimizerSettingsPage";
 
-import { calculateMuseumStats } from './logic/calculateMuseumStats';
-import { calculateStats } from './logic/calculateStats';
-import { calculateEfficiency } from './logic/calculateEfficiency';
-import { applyMutation } from './logic/applyMutations';
-import { applyBuffs } from './logic/applyBuffs';
-import { applyMuseum } from './logic/applyMuseum';
-import { applyEnchant } from './logic/applyEnchants';
-import { recommendUpgrades } from './logic/recommendUpgrades';
-import { isBuildReadyForRecommendations } from './logic/isBuildReadyForRecommendations';
-import { efficiencyCore } from './logic/engine/efficiencyCore';
-import { FIXED_CYCLE_TIME } from './logic/engine/constants';
+import { isBuildOptimizable } from "./optimizer/isBuildOptimizable";
 
-import type { BuildState, MuseumSlotSelection, Rarity, StatKey, EquipmentItem } from './types/';
+import { recommendUpgrades } from "./engine/recommendUpgrades";
+import type { UpgradeRecommendation } from "./engine/recommendUpgrades";
+import { isBuildReadyForRecommendations } from "./helpers/isBuildReadyForRecommendations";
+import { FIXED_CYCLE_TIME } from "./engine/core/constants";
+import { createBuildState } from "./engine/createBuildState";
+import { normalizeBuildState } from "./engine/normalizeBuildState";
 
-const STORAGE_KEY = 'prospecting-build-v3';
+import { useEvaluatedBuild } from "./hooks/useEvaluatedBuild";
+import { useOptimizer } from "./hooks/useOptimizer";
+
+import type { BuildState, MuseumSlotSelection, Rarity, EquipmentItem, } from "./engine/types";
+import type { OptimizerSettings, DesiredStatConstraintRule } from "./optimizer/optimizerSettings";
+import type { LockedSlots, } from "./optimizer/types";
+import type { AccessSettings, } from "./access/accessTypes";
+
+import { loadOptimizerSettings, saveOptimizerSettings, } from "./optimizer/optimizerSettings";
+import { respectsLockedSlots, } from "./optimizer/respectsLockedSlots";
+import { scoreBuild, } from "./optimizer/scoreBuild";
+import { OPTIMIZER_MAX_REQUEST_TIMEOUT_MS, OPTIMIZER_MIN_REQUEST_TIMEOUT_MS, } from "./optimizer/optimizerConfig";
+
+import { DEFAULT_ACCESS_SETTINGS, isRegionUnlocked, } from "./access/accessRules";
+import {
+  createDefaultPermanentBuffs,
+  REGION_LOCKED_PERMANENT_BUFFS,
+  sanitizePermanentBuffsForAccess,
+} from "./components/PermanentBuffsPanel";
+import type { PermanentBuffsState } from "./components/PermanentBuffsPanel";
+import type { ConsumablesState } from "./components/ConsumablesPanel";
+
+const STORAGE_KEY = "prospecting-build-v5";
 const RING_SLOT_COUNT = 8;
+
+const createDefaultMuseumSlots = (): MuseumSlotSelection[] =>
+  museumSlotsData.map((slot) => ({
+    slotId: slot.slotId,
+    rarity: slot.rarity as Rarity,
+    mineralId: null,
+    modifierId: null,
+  }));
+
+const createDefaultLockedSlots = (): LockedSlots => ({
+  pan: false,
+  shovel: false,
+  necklace: false,
+  charm: false,
+  museum: false,
+  museumSlots: Array(museumSlotsData.length).fill(false),
+  rings: Array(RING_SLOT_COUNT).fill(false),
+});
+
+function normalizeLockedSlots(savedLockedSlots?: Partial<LockedSlots>): LockedSlots {
+  const defaults = createDefaultLockedSlots();
+
+  if (!savedLockedSlots) {
+    return defaults;
+  }
+
+  const savedMuseumSlots = Array.isArray(savedLockedSlots.museumSlots)
+    ? savedLockedSlots.museumSlots
+    : [];
+
+  return {
+    ...defaults,
+    ...savedLockedSlots,
+    museum: false,
+    museumSlots: savedLockedSlots.museum
+      ? Array(museumSlotsData.length).fill(true)
+      : Array.from(
+          { length: museumSlotsData.length },
+          (_, index) => savedMuseumSlots[index] ?? false,
+        ),
+    rings: Array.from(
+      { length: RING_SLOT_COUNT },
+      (_, index) => savedLockedSlots.rings?.[index] ?? false,
+    ),
+  };
+}
+
+function buildDesiredStatConstraints(
+  rules: DesiredStatConstraintRule[],
+): {
+  minStats?: Partial<Record<string, number>>;
+  maxStats?: Partial<Record<string, number>>;
+} {
+  const minStats: Partial<Record<string, number>> = {};
+
+  const maxStats: Partial<Record<string, number>> = {};
+
+  for (const rule of rules) {
+    const value = Number(rule.value);
+
+    if (!rule.stat || !Number.isFinite(value)) {
+      continue;
+    }
+
+    if (rule.type === "min") {
+      minStats[rule.stat] = Math.max(Number(minStats[rule.stat] ?? value), value);
+    } else {
+      maxStats[rule.stat] = Math.min(Number(maxStats[rule.stat] ?? value), value);
+    }
+  }
+
+  return {
+    minStats: Object.keys(minStats).length > 0 ? minStats : undefined,
+    maxStats: Object.keys(maxStats).length > 0 ? maxStats : undefined,
+  };
+}
+
+function calculateOptimizerTimeoutMs(
+  lockedSlots: LockedSlots,
+  ringSlotLimit: number,
+  museumSlotCount: number,
+): number {
+  const totalOptimizableSlots = 4 + ringSlotLimit + museumSlotCount;
+
+  if (totalOptimizableSlots <= 0) {
+    return OPTIMIZER_MIN_REQUEST_TIMEOUT_MS;
+  }
+
+  const lockedEquipmentSlots = [
+    lockedSlots.pan,
+    lockedSlots.shovel,
+    lockedSlots.necklace,
+    lockedSlots.charm,
+  ].filter(Boolean).length;
+
+  const lockedRingSlots = lockedSlots.rings
+    .slice(0, ringSlotLimit)
+    .filter(Boolean).length;
+
+  const lockedMuseumSlots = lockedSlots.museumSlots
+    .slice(0, museumSlotCount)
+    .filter(Boolean).length;
+
+  const lockedCount = Math.min(
+    totalOptimizableSlots,
+    lockedEquipmentSlots + lockedRingSlots + lockedMuseumSlots,
+  );
+
+  const unlockedRatio =
+    (totalOptimizableSlots - lockedCount) / totalOptimizableSlots;
+
+  return Math.round(
+    OPTIMIZER_MIN_REQUEST_TIMEOUT_MS +
+      (OPTIMIZER_MAX_REQUEST_TIMEOUT_MS - OPTIMIZER_MIN_REQUEST_TIMEOUT_MS) *
+        unlockedRatio,
+  );
+}
+
 
 const pans: EquipmentItem[] = rawPans;
 const shovels: EquipmentItem[] = rawShovels;
-const rings: EquipmentItem[] = rawRings;
 const necklaces: EquipmentItem[] = rawNecklaces;
 const charms: EquipmentItem[] = rawCharms;
 
-const museumLegend: StatKey[] = [
-  'luck',
-  'capacity',
-  'digStrength',
-  'digSpeed',
-  'shakeStrength',
-  'shakeSpeed',
-  'sizeBoost',
-  'modifierBoost',
-  'sellBoost'
-];
-
-const statDisplayNames: Record<StatKey, string> = {
-  luck: 'Luck',
-  capacity: 'Capacity',
-  digStrength: 'Dig Strength',
-  digSpeed: 'Dig Speed',
-  shakeStrength: 'Shake Strength',
-  shakeSpeed: 'Shake Speed',
-  sizeBoost: 'Size Boost',
-  modifierBoost: 'Modifier Boost',
-  sellBoost: 'Sell Boost',
-  walkSpeed: 'Walk Speed'
-};
-
 function loadSavedBuild() {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
 
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -79,67 +189,97 @@ function loadSavedBuild() {
 export default function App() {
   const savedBuild = useMemo(() => loadSavedBuild(), []);
 
+  const initialAccessSettings: AccessSettings = {
+    ...DEFAULT_ACCESS_SETTINGS,
+    ...(savedBuild?.accessSettings ?? {}),
+    specialAccess: {
+      ...DEFAULT_ACCESS_SETTINGS.specialAccess,
+      ...(savedBuild?.accessSettings?.specialAccess ?? {}),
+    },
+  };
+
   const [ringSlotLimit, setRingSlotLimit] = useState<6 | 8>(
-    savedBuild?.ringSlotLimit ?? 8
+    savedBuild?.ringSlotLimit ?? 8,
   );
 
   const [selectedPan, setSelectedPan] = useState<string | null>(
-    savedBuild?.selectedPan ?? null
+    savedBuild?.selectedPan ?? null,
   );
 
   const [selectedPanEnchant, setSelectedPanEnchant] = useState<string | null>(
-    savedBuild?.selectedPanEnchant ?? null
+    savedBuild?.selectedPanEnchant ?? null,
   );
 
   const [selectedShovel, setSelectedShovel] = useState<string | null>(
-    savedBuild?.selectedShovel ?? null
+    savedBuild?.selectedShovel ?? null,
   );
 
   const [selectedNecklace, setSelectedNecklace] = useState<string | null>(
-    savedBuild?.selectedNecklace ?? null
+    savedBuild?.selectedNecklace ?? null,
   );
 
-  const [selectedNecklaceMutation, setSelectedNecklaceMutation] = useState<string | null>(
-    savedBuild?.selectedNecklaceMutation ?? null
-  );
+  const [selectedNecklaceMutation, setSelectedNecklaceMutation] = useState<
+    string | null
+  >(savedBuild?.selectedNecklaceMutation ?? null);
 
   const [selectedCharm, setSelectedCharm] = useState<string | null>(
-    savedBuild?.selectedCharm ?? null
+    savedBuild?.selectedCharm ?? null,
   );
 
-  const [selectedCharmMutation, setSelectedCharmMutation] = useState<string | null>(
-    savedBuild?.selectedCharmMutation ?? null
+  const [selectedCharmMutation, setSelectedCharmMutation] = useState<
+    string | null
+  >(savedBuild?.selectedCharmMutation ?? null);
+
+  const [permanentBuffs, setPermanentBuffs] = useState<PermanentBuffsState>(
+    sanitizePermanentBuffsForAccess(
+      {
+        ...createDefaultPermanentBuffs(initialAccessSettings),
+        ...(savedBuild?.permanentBuffs ?? {}),
+      },
+      initialAccessSettings,
+    ),
   );
 
-  const [enabledBuffs, setEnabledBuffs] = useState<string[]>(
-    savedBuild?.enabledBuffs ?? []
-  );
+  const [selectedConsumables, setSelectedConsumables] =
+    useState<ConsumablesState>(
+      savedBuild?.selectedConsumables ?? {
+        boostRelics: [],
+        potions: [],
+      },
+    );
 
   const [selectedRings, setSelectedRings] = useState<Array<string | null>>(
-    savedBuild?.selectedRings ?? Array(RING_SLOT_COUNT).fill(null)
+    savedBuild?.selectedRings ?? Array(RING_SLOT_COUNT).fill(null),
   );
 
-  const [selectedRingMutations, setSelectedRingMutations] = useState<Array<string | null>>(
-    savedBuild?.selectedRingMutations ?? Array(RING_SLOT_COUNT).fill(null)
-  );
+  const [selectedRingMutations, setSelectedRingMutations] = useState<
+    Array<string | null>
+  >(savedBuild?.selectedRingMutations ?? Array(RING_SLOT_COUNT).fill(null));
 
-  const [enabledRingIds, setEnabledRingIds] = useState<string[]>(
-    savedBuild?.enabledRingIds ?? rings.map((ring) => ring.id)
-  );
 
   const [museumSlots, setMuseumSlots] = useState<MuseumSlotSelection[]>(
-    savedBuild?.museumSlots ??
-      museumSlotsData.map((slot) => ({
-        slotId: slot.slotId,
-        rarity: slot.rarity as Rarity,
-        mineralId: null,
-        modifierId: null
-      }))
+    savedBuild?.museumSlots ?? createDefaultMuseumSlots(),
   );
-  
+
   const [activeTab, setActiveTab] = useState<
-    'calculator' | 'breakdown' | 'upgrades'
-  >('calculator');  
+    "calculator" | "breakdown" | "upgrades" | "optimizer" | "settings"
+  >("calculator");
+
+  const [
+    lockedSlots,
+    setLockedSlots,
+  ] = useState<LockedSlots>(() =>
+    normalizeLockedSlots(savedBuild?.lockedSlots),
+  );
+
+  const [optimizerSettings, setOptimizerSettings] = useState<OptimizerSettings>(
+    loadOptimizerSettings(),
+  );
+
+  const [accessSettings, setAccessSettings] =
+    useState<AccessSettings>(initialAccessSettings);
+
+  const previousAccessRegionRef = useRef(accessSettings.region);
 
   useEffect(() => {
     localStorage.setItem(
@@ -153,12 +293,14 @@ export default function App() {
         selectedNecklaceMutation,
         selectedCharm,
         selectedCharmMutation,
-        enabledBuffs,
-        enabledRingIds,
+        permanentBuffs,
+        selectedConsumables,
         selectedRings,
         selectedRingMutations,
-        museumSlots
-      })
+        museumSlots,
+        lockedSlots,
+        accessSettings,
+      }),
     );
   }, [
     ringSlotLimit,
@@ -169,178 +311,444 @@ export default function App() {
     selectedNecklaceMutation,
     selectedCharm,
     selectedCharmMutation,
-    enabledBuffs,
-    enabledRingIds,
+    permanentBuffs,
+    selectedConsumables,
     selectedRings,
     selectedRingMutations,
-    museumSlots
+    museumSlots,
+    lockedSlots,
+    accessSettings,
   ]);
+
+  useEffect(() => {
+    saveOptimizerSettings(optimizerSettings);
+  }, [optimizerSettings]);
+
+  useEffect(() => {
+    setPermanentBuffs((previous) => {
+      const next = sanitizePermanentBuffsForAccess(
+        previous,
+        accessSettings,
+      );
+
+      for (const buff of REGION_LOCKED_PERMANENT_BUFFS) {
+        const wasAccessible = isRegionUnlocked(
+          buff.requiredRegion,
+          previousAccessRegionRef.current,
+        );
+
+        const isAccessible = isRegionUnlocked(
+          buff.requiredRegion,
+          accessSettings.region,
+        );
+
+        if (!wasAccessible && isAccessible) {
+          next[buff.id] = true;
+        }
+      }
+
+      return next;
+    });
+
+    previousAccessRegionRef.current = accessSettings.region;
+  }, [accessSettings]);
 
   const museumColumnOne = museumSlots.filter((slot) => slot.slotId <= 9);
   const museumColumnTwo = museumSlots.filter((slot) => slot.slotId >= 10);
 
-  const museumMultipliers = useMemo(
-    () => calculateMuseumStats(museumSlots),
-    [museumSlots]
+
+  const buildState = useMemo(
+    () =>
+      createBuildState({
+        selectedPan,
+        selectedPanEnchant,
+
+        selectedShovel,
+
+        selectedNecklace,
+        selectedNecklaceMutation,
+
+        selectedCharm,
+        selectedCharmMutation,
+
+        selectedRings,
+        selectedRingMutations,
+
+        permanentBuffs,
+        selectedConsumables,
+
+        museumSlots,
+      }),
+    [
+      selectedPan,
+      selectedPanEnchant,
+      selectedShovel,
+      selectedNecklace,
+      selectedNecklaceMutation,
+      selectedCharm,
+      selectedCharmMutation,
+      selectedRings,
+      selectedRingMutations,
+      permanentBuffs,
+      selectedConsumables,
+      museumSlots,
+    ],
   );
 
-  const activeRings = selectedRings.slice(0, ringSlotLimit);
-  const activeRingMutations = selectedRingMutations.slice(0, ringSlotLimit);
-
-/*  const availableRings = useMemo(
-    () => rings.filter((ring) => enabledRingIds.includes(ring.)),
-    [enabledRingIds]
+  const normalizedBuildState = useMemo(
+    () => normalizeBuildState(buildState, ringSlotLimit),
+    [buildState, ringSlotLimit],
   );
-*/
-  const selectedEquipment = useMemo(() => {
-    const pan = pans.find((item) => item.id === selectedPan);
-    const panEnchant = enchants.find((item) => item.id === selectedPanEnchant);
-    const shovel = shovels.find((item) => item.id === selectedShovel);
-    const necklace = necklaces.find((item) => item.id === selectedNecklace);
-    const necklaceMutation = mutations.find((item) => item.id === selectedNecklaceMutation);
-    const charm = charms.find((item) => item.id === selectedCharm);
-    const charmMutation = mutations.find((item) => item.id === selectedCharmMutation);
 
-    const ringItems = activeRings.map((ringId, index) => {
-      const ring = rings.find((item) => item.id === ringId);
-      const mutation = mutations.find((item) => item.id === activeRingMutations[index]);
+  const evaluatedBuild = useEvaluatedBuild(normalizedBuildState);
 
-      if (!ring) return undefined;
+  const {
+    runOptimizer,
+    clearResults: clearOptimizerResults,
+    results: optimizerResults,
+    loading: optimizerLoading,
+  } = useOptimizer();
 
-      return {
-        ...ring,
-        stats: applyMutation(ring.stats, mutation)
-      };
-    });
+  const optimizable = isBuildOptimizable(normalizedBuildState);
 
-    return [
-      pan
-        ? {
-            ...pan,
-            stats: applyEnchant(pan.stats, panEnchant)
-          }
-        : undefined,
-      shovel,
-      necklace
-        ? {
-            ...necklace,
-            stats: applyMutation(necklace.stats, necklaceMutation)
-          }
-        : undefined,
-      charm
-        ? {
-            ...charm,
-            stats: applyMutation(charm.stats, charmMutation)
-          }
-        : undefined,
-      ...ringItems
-    ];
+  const buildHash = useMemo(
+    () => JSON.stringify(normalizedBuildState),
+    [normalizedBuildState],
+  );
+
+  const desiredStatConstraints = useMemo(
+    () => buildDesiredStatConstraints(optimizerSettings.desiredStatRules),
+    [optimizerSettings.desiredStatRules],
+  );
+
+  const optimizerRequestTimeoutMs = useMemo(
+    () =>
+      calculateOptimizerTimeoutMs(
+        lockedSlots,
+        ringSlotLimit,
+        normalizedBuildState.museumSlots.length,
+      ),
+    [lockedSlots, ringSlotLimit, normalizedBuildState.museumSlots.length],
+  );
+
+  const optimizerCacheKey = useMemo(
+    () =>
+      JSON.stringify({
+        build: normalizedBuildState,
+
+        lockedSlots,
+
+        accessSettings,
+
+        objective: optimizerSettings.objective,
+
+        secondaryObjective: optimizerSettings.secondaryObjective,
+
+        mode: optimizerSettings.mode,
+
+        strategy: optimizerSettings.strategy,
+
+        topResults: optimizerSettings.topResults,
+
+        desiredStatRules: optimizerSettings.desiredStatRules,
+      }),
+    [
+      normalizedBuildState,
+      lockedSlots,
+      accessSettings,
+      optimizerSettings.objective,
+      optimizerSettings.secondaryObjective,
+      optimizerSettings.mode,
+      optimizerSettings.strategy,
+      optimizerSettings.topResults,
+      optimizerSettings.desiredStatRules,
+    ],
+  );
+
+  const [selectedOptimizerBuildHash, setSelectedOptimizerBuildHash] = useState<
+    string | null
+  >(null);
+  
+  const [undoOptimizerBuild, setUndoOptimizerBuild] =
+    useState<BuildState | null>(null);
+
+  const [optimizerLocked, setOptimizerLocked] = useState(false);
+
+  const [optimizerBaselineEfficiency, setOptimizerBaselineEfficiency] =
+    useState(0);
+
+  const optimizerTimeoutRef = useRef<number | null>(null);
+
+  async function runCurrentOptimizer() {
+    if (!optimizable) {
+      return;
+    }
+
+    setOptimizerBaselineEfficiency(evaluatedBuild.efficiency);
+
+    try {
+      await runOptimizer(
+        optimizerCacheKey,
+        normalizedBuildState,
+        ringSlotLimit,
+        {
+          objective: optimizerSettings.objective,
+
+          secondaryObjective: optimizerSettings.secondaryObjective,
+
+          baselineEfficiency: evaluatedBuild.efficiency,
+
+          baselineScore: scoreBuild(
+            evaluatedBuild,
+            {
+              objective: optimizerSettings.objective,
+
+              secondaryObjective: optimizerSettings.secondaryObjective,
+            },
+          ),
+
+          mode: optimizerSettings.mode,
+
+          strategy: optimizerSettings.strategy,
+
+          topResults: optimizerSettings.topResults,
+
+          minStats: desiredStatConstraints.minStats,
+
+          maxStats: desiredStatConstraints.maxStats,
+
+          lockedSlots,
+
+          accessSettings,
+        },
+        (result) =>
+          respectsLockedSlots(
+            normalizedBuildState,
+            result.build,
+            lockedSlots,
+          ),
+        optimizerRequestTimeoutMs,
+      );
+    } catch (error) {
+      console.error("Optimizer failed", error);
+    }
+  }
+
+  useEffect(() => {
+    if (!optimizerSettings.autoRun || !optimizable || optimizerLocked) {
+      return;
+    }
+
+    if (optimizerTimeoutRef.current) {
+      clearTimeout(optimizerTimeoutRef.current);
+    }
+
+    optimizerTimeoutRef.current = window.setTimeout(() => {
+      void runCurrentOptimizer();
+    }, optimizerSettings.debounceMs);
+
+    return () => {
+      if (optimizerTimeoutRef.current) {
+        clearTimeout(optimizerTimeoutRef.current);
+      }
+    };
   }, [
-    selectedPan,
-    selectedPanEnchant,
-    selectedShovel,
-    selectedNecklace,
-    selectedNecklaceMutation,
-    selectedCharm,
-    selectedCharmMutation,
-    activeRings,
-    activeRingMutations
+    optimizerCacheKey,
+    ringSlotLimit,
+    optimizable,
+    optimizerLocked,
+    evaluatedBuild.efficiency,
+    optimizerSettings.autoRun,
+    optimizerSettings.objective,
+    optimizerSettings.secondaryObjective,
+    optimizerSettings.mode,
+    optimizerSettings.strategy,
+    optimizerSettings.topResults,
+    optimizerSettings.desiredStatRules,
+    optimizerSettings.debounceMs,
+    optimizerRequestTimeoutMs,
+    normalizedBuildState,
+    lockedSlots,
+    accessSettings,
   ]);
 
-  const baseStats = useMemo(
-    () => calculateStats(selectedEquipment),
-    [selectedEquipment]
-  );
+  const canRunUpgradeAdvisor = isBuildReadyForRecommendations(normalizedBuildState);
 
-  const activeBuffs = useMemo(
-    () => buffs.filter((buff) => enabledBuffs.includes(buff.id)),
-    [enabledBuffs]
-  );
+  const [upgradeRecommendations, setUpgradeRecommendations] = useState<
+    UpgradeRecommendation[]
+  >([]);
 
-  const buffedStats = useMemo(
-    () => applyBuffs(baseStats, activeBuffs),
-    [baseStats, activeBuffs]
-  );
+  const [upgradeAdvisorLoading, setUpgradeAdvisorLoading] = useState(false);
 
-  const totalStats = useMemo(
-    () => applyMuseum(buffedStats, museumMultipliers),
-    [buffedStats, museumMultipliers]
-  );
+  function runUpgradeAdvisor() {
+    if (!canRunUpgradeAdvisor || upgradeAdvisorLoading) {
+      return;
+    }
 
-  const efficiencyResult = useMemo(
-    () => calculateEfficiency(totalStats),
-    [totalStats]
-  );
+    setUpgradeRecommendations([]);
+    setUpgradeAdvisorLoading(true);
 
-  const efficiencyBreakdown = useMemo(
-    () => efficiencyCore(totalStats),
-    [totalStats]
-  );
+    window.setTimeout(() => {
+      try {
+        setUpgradeRecommendations(
+          recommendUpgrades(
+            normalizedBuildState,
+            ringSlotLimit,
+            accessSettings,
+          ),
+        );
+      } catch (error) {
+        console.error("Upgrade Advisor failed", error);
+        setUpgradeRecommendations([]);
+      } finally {
+        setUpgradeAdvisorLoading(false);
+      }
+    }, 0);
+  }
 
-  const buildState: BuildState = {
-    panId: selectedPan,
-    panEnchantId: selectedPanEnchant,
-    shovelId: selectedShovel,
-    necklaceId: selectedNecklace,
-    necklaceMutationId: selectedNecklaceMutation,
-    charmId: selectedCharm,
-    charmMutationId: selectedCharmMutation,
-    rings: activeRings.map((ringId, index) => ({
-      ringId,
-      mutationId: activeRingMutations[index]
-    })),
-    museumSlots,
-    enabledRingIds
-  };
+  function applyBuildState(build: BuildState, buildHash?: string) {
+    setUndoOptimizerBuild(normalizedBuildState);
 
-  const showRecommendations = isBuildReadyForRecommendations(buildState);
+    setSelectedPan(build.panId);
 
-  const upgradeRecommendations = useMemo(
-    () =>
-      showRecommendations
-        ? recommendUpgrades(buildState, ringSlotLimit)
-        : [],
-    [buildState, ringSlotLimit, showRecommendations]
-  );
+    setSelectedPanEnchant(build.panEnchantId);
+
+    setSelectedShovel(build.shovelId);
+
+    setSelectedNecklace(build.necklaceId);
+
+    setSelectedNecklaceMutation(build.necklaceMutationId);
+
+    setSelectedCharm(build.charmId);
+
+    setSelectedCharmMutation(build.charmMutationId);
+
+    setSelectedRings((previousRings) =>
+      Array.from(
+        { length: RING_SLOT_COUNT },
+        (_, index) =>
+          index < ringSlotLimit
+            ? build.rings[index]?.ringId ?? null
+            : previousRings[index] ?? null,
+      ),
+    );
+
+    setSelectedRingMutations((previousMutations) =>
+      Array.from(
+        { length: RING_SLOT_COUNT },
+        (_, index) =>
+          index < ringSlotLimit
+            ? build.rings[index]?.mutationId ?? null
+            : previousMutations[index] ?? null,
+      ),
+    );
+
+    setMuseumSlots(build.museumSlots);
+
+    if (buildHash) {
+      setSelectedOptimizerBuildHash(buildHash);
+    }
+
+    setOptimizerLocked(true);
+    window.setTimeout(() => {
+      setOptimizerLocked(false);
+    }, 1500);
+  }
+
+  function undoOptimizerLoadBuild() {
+    if (!undoOptimizerBuild) {
+      return;
+    }
+
+    const buildToRestore = undoOptimizerBuild;
+
+    setUndoOptimizerBuild(null);
+
+    setSelectedPan(buildToRestore.panId);
+
+    setSelectedPanEnchant(buildToRestore.panEnchantId);
+
+    setSelectedShovel(buildToRestore.shovelId);
+
+    setSelectedNecklace(buildToRestore.necklaceId);
+
+    setSelectedNecklaceMutation(buildToRestore.necklaceMutationId);
+
+    setSelectedCharm(buildToRestore.charmId);
+
+    setSelectedCharmMutation(buildToRestore.charmMutationId);
+
+    setSelectedRings((previousRings) =>
+      Array.from(
+        { length: RING_SLOT_COUNT },
+        (_, index) =>
+          index < ringSlotLimit
+            ? buildToRestore.rings[index]?.ringId ?? null
+            : previousRings[index] ?? null,
+      ),
+    );
+
+    setSelectedRingMutations((previousMutations) =>
+      Array.from(
+        { length: RING_SLOT_COUNT },
+        (_, index) =>
+          index < ringSlotLimit
+            ? buildToRestore.rings[index]?.mutationId ?? null
+            : previousMutations[index] ?? null,
+      ),
+    );
+
+    setMuseumSlots(buildToRestore.museumSlots);
+
+    setSelectedOptimizerBuildHash(null);
+
+    setOptimizerLocked(true);
+
+    window.setTimeout(() => {
+      setOptimizerLocked(false);
+    }, 1500);
+  }
 
   function updateMuseumSlot(updated: MuseumSlotSelection) {
     setMuseumSlots((prev) =>
-      prev.map((slot) =>
-        slot.slotId === updated.slotId ? updated : slot
-      )
+      prev.map((slot) => (slot.slotId === updated.slotId ? updated : slot)),
     );
   }
 
   function updateRing(index: number, value: string | null) {
     setSelectedRings((prev) =>
-      prev.map((ring, ringIndex) =>
-        ringIndex === index ? value : ring
-      )
+      prev.map((ring, ringIndex) => (ringIndex === index ? value : ring)),
     );
   }
 
   function updateRingMutation(index: number, value: string | null) {
     setSelectedRingMutations((prev) =>
       prev.map((mutation, mutationIndex) =>
-        mutationIndex === index ? value : mutation
-      )
+        mutationIndex === index ? value : mutation,
+      ),
     );
   }
 
-  function toggleBuff(buffId: string) {
-    setEnabledBuffs((prev) =>
-      prev.includes(buffId)
-        ? prev.filter((id) => id !== buffId)
-        : [...prev, buffId]
-    );
+  function toggleConsumable(
+    category: keyof ConsumablesState,
+    consumableId: string,
+  ) {
+    setSelectedConsumables((previous) => {
+      const currentCategory = previous[category];
+
+      return {
+        ...previous,
+        [category]: currentCategory.includes(consumableId)
+          ? currentCategory.filter((id) => id !== consumableId)
+          : [...currentCategory, consumableId],
+      };
+    });
   }
 
-  function toggleRingEnabled(ringId: string) {
-    setEnabledRingIds((prev) =>
-      prev.includes(ringId)
-        ? prev.filter((id) => id !== ringId)
-        : [...prev, ringId]
-    );
+
+  function refreshOptimizerResults() {
+    clearOptimizerResults();
+    void runCurrentOptimizer();
   }
 
   return (
@@ -352,388 +760,139 @@ export default function App() {
 
         <div className="flex gap-2 mb-4">
           <button
-            onClick={() => setActiveTab('calculator')}
+            onClick={() => setActiveTab("calculator")}
             className={`px-4 py-2 rounded-xl font-semibold ${
-              activeTab === 'calculator'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-700 text-slate-300'
+              activeTab === "calculator"
+                ? "bg-indigo-600 text-white"
+                : "bg-slate-700 text-slate-300"
             }`}
           >
             Calculator
           </button>
 
           <button
-            onClick={() => setActiveTab('breakdown')}
+            onClick={() => setActiveTab("breakdown")}
             className={`px-4 py-2 rounded-xl font-semibold ${
-              activeTab === 'breakdown'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-700 text-slate-300'
+              activeTab === "breakdown"
+                ? "bg-indigo-600 text-white"
+                : "bg-slate-700 text-slate-300"
             }`}
           >
             Efficiency Breakdown
           </button>
 
           <button
-            onClick={() => setActiveTab('upgrades')}
+            onClick={() => setActiveTab("upgrades")}
             className={`px-4 py-2 rounded-xl font-semibold ${
-              activeTab === 'upgrades'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-700 text-slate-300'
+              activeTab === "upgrades"
+                ? "bg-indigo-600 text-white"
+                : "bg-slate-700 text-slate-300"
             }`}
           >
             Upgrade Advisor
           </button>
+
+          <button
+            onClick={() => setActiveTab("optimizer")}
+            className={`px-4 py-2 rounded-xl font-semibold ${
+              activeTab === "optimizer"
+                ? "bg-indigo-600 text-white"
+                : "bg-slate-700 text-slate-300"
+            }`}
+          >
+            Optimizer
+          </button>
+
+          <button
+            onClick={() => setActiveTab("settings")}
+            className={`px-4 py-2 rounded-xl font-semibold ${
+              activeTab === "settings"
+                ? "bg-indigo-600 text-white"
+                : "bg-slate-700 text-slate-300"
+            }`}
+          >
+            Optimizer Settings
+          </button>
         </div>
-        
-      {activeTab === 'calculator' && (
+
+        {activeTab === "calculator" && (
           <CalculatorTab
-              ringSlotLimit={ringSlotLimit}
-             setRingSlotLimit={setRingSlotLimit}
-
-              selectedPan={selectedPan}
-              selectedPanEnchant={selectedPanEnchant}
-              selectedShovel={selectedShovel}
-          
-              selectedNecklace={selectedNecklace}
-              selectedNecklaceMutation={selectedNecklaceMutation}
-
-              selectedCharm={selectedCharm}
-              selectedCharmMutation={selectedCharmMutation}
-
-              selectedRings={selectedRings}
-              selectedRingMutations={selectedRingMutations}
-
-              enabledBuffs={enabledBuffs}
-              enabledRingIds={enabledRingIds}
-
-              setSelectedPan={setSelectedPan}
-              setSelectedPanEnchant={setSelectedPanEnchant}
-              setSelectedShovel={setSelectedShovel}
-          
-              setSelectedNecklace={setSelectedNecklace}
-              setSelectedNecklaceMutation={setSelectedNecklaceMutation}
-          
-              setSelectedCharm={setSelectedCharm}
-              setSelectedCharmMutation={setSelectedCharmMutation}
-          
-              updateRing={updateRing}
-              updateRingMutation={updateRingMutation}
-
-              toggleBuff={toggleBuff}
-              toggleRingEnabled={toggleRingEnabled}
-
-              museumMultipliers={museumMultipliers}
-              museumLegend={museumLegend}
-              statDisplayNames={statDisplayNames}
-          
-              museumColumnOne={museumColumnOne}
-              museumColumnTwo={museumColumnTwo}
-          
-              museumSlots={museumSlots}
-          
-              updateMuseumSlot={updateMuseumSlot}
-          
-              totalStats={totalStats}
-          
-              efficiencyResult={efficiencyResult}
-            />
-      )}
-      
-      {activeTab === 'breakdown' && (
-        <section className="space-y-4 max-w-5xl">
-
-          <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
-            <h2 className="text-2xl font-bold mb-4">
-              Efficiency Formula
-            </h2>
-
-            <div className="text-slate-300 text-lg leading-relaxed font-mono">
-              Efficiency =
-              (Luck × √Capacity)
-              ÷
-              (Shake Time + Dig Time + Base Delay)
-            </div>
-          </div>
-
-          <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold mb-5">
-              Live Formula
-            </h2>
-
-            <div className="space-y-3 font-mono text-sm">
-
-              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="text-slate-400">
-                  Numerator
-                </div>
-
-                <div className="text-indigo-300">
-                  (
-                  {totalStats.luck.toFixed(2)}
-                  {' × '}
-                  {Math.sqrt(totalStats.capacity ?? 0).toFixed(2)}
-                  )
-                </div>
-              </div>
-
-              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="text-slate-400">
-                  Denominator
-                </div>
-
-                <div className="text-indigo-300">
-                  (
-                  Shake: {efficiencyBreakdown.shakeTime.toFixed(2)}
-                  {' + '}
-                  Dig: {efficiencyBreakdown.totalDigTime.toFixed(2)}
-                  {' + '}
-                  Base: {FIXED_CYCLE_TIME.toFixed(2)}
-                  )
-                </div>
-              </div>
-
-              <div className="border-t border-indigo-500 pt-3 mt-3 grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="font-bold text-indigo-300">
-                  Final Efficiency
-                </div>
-
-                <div className="font-bold text-indigo-300 text-xl">
-                  {efficiencyBreakdown.efficiency.toFixed(2)}
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold mb-5">
-              Numerator Breakdown
-            </h2>
-
-            <div className="space-y-3 font-mono text-sm">
-
-              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="text-slate-400">
-                  Luck
-                </div>
-
-                <div className="text-indigo-300">
-                  {totalStats.luck.toFixed(2)}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="text-slate-400">
-                  Capacity
-                </div>
-
-                <div className="text-indigo-300">
-                  {totalStats.capacity.toFixed(2)}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="text-slate-400">
-                  √Capacity
-                </div>
-
-                <div className="text-indigo-300">
-                  √
-                  {totalStats.capacity.toFixed(2)}
-                  {' = '}
-                  {Math.sqrt(totalStats.capacity ?? 0).toFixed(2)}
-                </div>
-              </div>
-
-              <div className="border-t border-slate-600 pt-3 mt-3 grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="font-semibold text-slate-200">
-                  Formula
-                </div>
-
-                <div className="text-slate-300">
-                  {totalStats.luck.toFixed(2)}
-                  {' × '}
-                  {Math.sqrt(totalStats.capacity ?? 0).toFixed(2)}
-                </div>
-              </div>
-
-              <div className="border-t border-indigo-500 pt-3 mt-3 grid grid-cols-[220px_auto] gap-x-4 items-center">
-                <div className="font-bold text-indigo-300">
-                  Numerator Total
-                </div>
-
-                <div className="font-bold text-indigo-300 text-lg">
-                  {(
-                    (totalStats.luck ?? 0) *
-                    Math.sqrt(totalStats.capacity ?? 0)
-                  ).toFixed(2)}
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
-              <h2 className="text-xl font-bold mb-5">
-                Shake Phase
-              </h2>
-
-              <div className="space-y-3 font-mono text-sm">
-
-                <div className="grid grid-cols-[240px_auto] gap-x-4 items-center">
-                  <div className="text-slate-400">
-                    Capacity
-                  </div>
-
-                  <div className="text-indigo-300">
-                    {totalStats.capacity.toFixed(2)}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-[240px_auto] gap-x-4 items-center">
-                  <div className="text-slate-400">
-                    Shake Strength
-                  </div>
-
-                  <div className="text-indigo-300">
-                    {totalStats.shakeStrength.toFixed(2)}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-[240px_auto] gap-x-4 items-center">
-                  <div className="text-slate-400">
-                    Shake Speed Stat
-                  </div>
-
-                  <div className="text-indigo-300">
-                    {totalStats.shakeSpeed.toFixed(2)}
-                  </div>
-                </div>
-
-                <div className="border-t border-slate-600 pt-3 mt-3 grid grid-cols-[240px_auto] gap-x-4 items-center">
-                  <div className="font-semibold text-slate-200">
-                    Real Shakes/sec (r)
-                  </div>
-
-                  <div className="text-amber-300">
-                    {efficiencyBreakdown.r.toFixed(2)}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-[240px_auto] gap-x-4 items-center">
-                  <div className="text-slate-400">
-                    Total Shakes
-                  </div>
-
-                  <div className="text-indigo-300">
-                    {efficiencyBreakdown.totalShakes.toFixed(2)}
-                  </div>
-                </div>
-
-                <div className="border-t border-indigo-500 pt-3 mt-3 grid grid-cols-[240px_auto] gap-x-4 items-center">
-                  <div className="font-bold text-indigo-300">
-                    Shake Duration
-                  </div>
-
-                  <div className="font-bold text-indigo-300">
-                    {efficiencyBreakdown.totalShakes.toFixed(2)}
-                    {' ÷ '}
-                    {efficiencyBreakdown.r.toFixed(2)}
-                    {' = '}
-                    {efficiencyBreakdown.shakeTime.toFixed(2)}s
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-          <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
-              <h2 className="text-xl font-bold mb-5">
-                Dig Phase
-              </h2>
-
-              <div className="space-y-3 font-mono text-sm">
-
-                <div className="grid grid-cols-[240px_auto] gap-x-4 items-center">
-                  <div className="text-slate-400">
-                    Dig Strength
-                  </div>
-
-                  <div className="text-indigo-300">
-                    {totalStats.digStrength.toFixed(2)}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-[240px_auto] gap-x-4 items-center">
-                  <div className="text-slate-400">
-                    Dig Speed
-                  </div>
-
-                  <div className="text-indigo-300">
-                    {totalStats.digSpeed.toFixed(2)}
-                  </div>
-                </div>
-
-                <div className="border-t border-slate-600 pt-3 mt-3 grid grid-cols-[240px_auto] gap-x-4 items-center">
-                  <div className="font-semibold text-slate-200">
-                    Digs Required
-                  </div>
-
-                  <div className="text-amber-300">
-                    {efficiencyBreakdown.digsRequired}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-[240px_auto] gap-x-4 items-center">
-                  <div className="text-slate-400">
-                    Time Per Dig
-                  </div>
-
-                  <div className="text-indigo-300">
-                    {efficiencyBreakdown.timePerDig.toFixed(2)}s
-                  </div>
-                </div>
-
-                <div className="border-t border-indigo-500 pt-3 mt-3 grid grid-cols-[240px_auto] gap-x-4 items-center">
-                  <div className="font-bold text-indigo-300">
-                    Total Dig Time
-                  </div>
-
-                  <div className="font-bold text-indigo-300">
-                    {efficiencyBreakdown.digsRequired}
-                    {' × '}
-                    {efficiencyBreakdown.timePerDig.toFixed(2)}
-                    {' = '}
-                    {efficiencyBreakdown.totalDigTime.toFixed(2)}s
-                  </div>
-                </div>
-
-              </div>
-            </div>
-            <div className="bg-indigo-700 rounded-2xl p-6 shadow-lg">
-              <h2 className="text-xl font-bold mb-4">
-                Final Cycle Time
-              </h2>
-
-              <div className="text-5xl font-bold">
-                {efficiencyBreakdown.cycleTime.toFixed(2)}s
-              </div>
-
-              <div className="mt-3 text-sm text-indigo-200">
-                Full mining cycle duration including:
-                shaking, digging, and fixed delays.
-              </div>
-            </div>
-        </section>
-      )}   
-
-      {activeTab === 'upgrades' && (
-          <UpgradesTab
-              showRecommendations={showRecommendations}
-              upgradeRecommendations={upgradeRecommendations}
+            accessSettings={accessSettings}
+            setAccessSettings={setAccessSettings}
+            ringSlotLimit={ringSlotLimit}
+            setRingSlotLimit={setRingSlotLimit}
+            selectedPan={selectedPan}
+            selectedPanEnchant={selectedPanEnchant}
+            selectedShovel={selectedShovel}
+            selectedNecklace={selectedNecklace}
+            selectedNecklaceMutation={selectedNecklaceMutation}
+            selectedCharm={selectedCharm}
+            selectedCharmMutation={selectedCharmMutation}
+            selectedRings={selectedRings}
+            selectedRingMutations={selectedRingMutations}
+            permanentBuffs={permanentBuffs}
+            setPermanentBuffs={setPermanentBuffs}
+            selectedConsumables={selectedConsumables}
+            setSelectedPan={setSelectedPan}
+            setSelectedPanEnchant={setSelectedPanEnchant}
+            setSelectedShovel={setSelectedShovel}
+            setSelectedNecklace={setSelectedNecklace}
+            setSelectedNecklaceMutation={setSelectedNecklaceMutation}
+            setSelectedCharm={setSelectedCharm}
+            setSelectedCharmMutation={setSelectedCharmMutation}
+            updateRing={updateRing}
+            updateRingMutation={updateRingMutation}
+            toggleConsumable={toggleConsumable}
+            museumColumnOne={museumColumnOne}
+            museumColumnTwo={museumColumnTwo}
+            museumSlots={museumSlots}
+            updateMuseumSlot={updateMuseumSlot}
+            evaluatedBuild={evaluatedBuild}
+            lockedSlots={lockedSlots}
+            setLockedSlots={setLockedSlots}
           />
-      )}
-        
+        )}
+
+        {activeTab === "breakdown" && (
+          <BreakdownTab evaluatedBuild={evaluatedBuild} />
+        )}
+
+        {activeTab === "upgrades" && (
+          <UpgradesTab
+            canRunAdvisor={canRunUpgradeAdvisor}
+            loading={upgradeAdvisorLoading}
+            upgradeRecommendations={upgradeRecommendations}
+            onRunAdvisor={runUpgradeAdvisor}
+          />
+        )}
+
+        {activeTab === "optimizer" && (
+          <OptimizerPage
+            buildState={normalizedBuildState}
+            loading={optimizerLoading}
+            optimizable={optimizable}
+            results={optimizerResults}
+            applyBuildState={applyBuildState}
+            canUndoOptimizerLoad={undoOptimizerBuild !== null}
+            undoOptimizerLoadBuild={undoOptimizerLoadBuild}
+            selectedOptimizerBuildHash={selectedOptimizerBuildHash}
+            setSelectedOptimizerBuildHash={setSelectedOptimizerBuildHash}
+            optimizerLocked={optimizerLocked}
+            optimizerBaselineEfficiency={optimizerBaselineEfficiency}
+            evaluatedBuild={evaluatedBuild}
+            settings={optimizerSettings}
+            setSettings={setOptimizerSettings}
+            onRefresh={refreshOptimizerResults}
+            lockedSlots={lockedSlots}
+          />
+        )}
+
+        {activeTab === "settings" && (
+          <OptimizerSettingsPage
+            settings={optimizerSettings}
+            setSettings={setOptimizerSettings}
+          />
+        )}
       </div>
     </main>
   );

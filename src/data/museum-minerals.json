@@ -6,7 +6,14 @@
     "minWeight": 20,
     "stats": {
       "digSpeed": 0.05
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "rubbleCreekSands",
+      "azuraliteOasis",
+      "crystalCavernRiver",
+      "theVoid"
+    ]
   },
   {
     "id": "blue_ice",
@@ -15,16 +22,15 @@
     "minWeight": 40,
     "stats": {
       "digSpeed": 0.05
-    }
-  },
-  {
-    "id": "platinum",
-    "name": "Platinum",
-    "rarity": "common",
-    "minWeight": 40,
-    "stats": {
-      "digSpeed": 0.05
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "frozenPeak",
+      "frostbiteRiver",
+      "frostbiteWaterfall",
+      "northPole",
+      "theVoid"
+    ]
   },
   {
     "id": "copper",
@@ -33,16 +39,23 @@
     "minWeight": 60,
     "stats": {
       "sizeBoost": 0.04
-    }
-  },
-  {
-    "id": "obsidian",
-    "name": "Obsidian",
-    "rarity": "common",
-    "minWeight": 30,
-    "stats": {
-      "sizeBoost": 0.04
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "azuraliteOasis",
+      "crystalCavernRiver",
+      "rotwoodSwamp",
+      "fungalMarsh",
+      "abyssalDepths",
+      "overgrownGrotto",
+      "deeprootSpring",
+      "infernalHeart",
+      "hauntedCreek",
+      "volcanicSprings",
+      "volcanicSands",
+      "theMagmaFurnace",
+      "theVoid"
+    ]
   },
   {
     "id": "gold",
@@ -51,7 +64,50 @@
     "minWeight": 40,
     "stats": {
       "sellBoost": 0.05
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "rubbleCreekSands",
+      "enchantedRuins",
+      "fortuneRiver",
+      "fortuneRiverDelta",
+      "meteorFalls",
+      "starfallRiver",
+      "timelockedSanctuary",
+      "rotwoodSwamp",
+      "fungalMarsh",
+      "astralCaverns",
+      "rubbleCreekDeposits",
+      "abyssalDepths",
+      "overgrownGrotto",
+      "deeprootSpring",
+      "hauntedCreek",
+      "crystalCavernRiver",
+      "volcanicSprings",
+      "azuraliteOasis",
+      "volcanicSands",
+      "theMagmaFurnace",
+      "northPole",
+      "theVoid"
+    ]
+  },
+  {
+    "id": "obsidian",
+    "name": "Obsidian",
+    "rarity": "common",
+    "minWeight": 30,
+    "stats": {
+      "sizeBoost": 0.04
+    },
+    "region": "start",
+    "digSites": [
+      "infernalHeart",
+      "theMagmaFurnace",
+      "volcanicSands",
+      "volcanicSprings",
+      "windsweptBeach",
+      "theVoid"
+    ]
   },
   {
     "id": "pearl",
@@ -60,16 +116,30 @@
     "minWeight": 20,
     "stats": {
       "shakeSpeed": 0.05
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "windsweptBeach",
+      "sunsetBeach",
+      "fortuneRiverDelta",
+      "theVoid"
+    ]
   },
   {
-    "id": "silver",
-    "name": "Silver",
+    "id": "platinum",
+    "name": "Platinum",
     "rarity": "common",
     "minWeight": 40,
     "stats": {
-      "shakeSpeed": 0.05
-    }
+      "digSpeed": 0.05
+    },
+    "region": "start",
+    "digSites": [
+      "fortuneRiver",
+      "rubbleCreekDeposits",
+      "rubbleCreekSands",
+      "theVoid"
+    ]
   },
   {
     "id": "pyrite",
@@ -78,7 +148,14 @@
     "minWeight": 60,
     "stats": {
       "capacity": 0.05
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "starfallRiver",
+      "meteorFalls",
+      "rubbleCreekDeposits",
+      "theVoid"
+    ]
   },
   {
     "id": "seashell",
@@ -87,7 +164,41 @@
     "minWeight": 20,
     "stats": {
       "capacity": 0.05
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "sunsetBeach",
+      "windsweptBeach",
+      "theVoid"
+    ]
+  },
+  {
+    "id": "silver",
+    "name": "Silver",
+    "rarity": "common",
+    "minWeight": 40,
+    "stats": {
+      "shakeSpeed": 0.05
+    },
+    "region": "start",
+    "digSites": [
+      "frozenPeak",
+      "frostbiteRiver",
+      "frostbiteWaterfall",
+      "enchantedRuins",
+      "northPole",
+      "fortuneRiverDelta",
+      "timelockedSanctuary",
+      "astralCaverns",
+      "abyssalDepths",
+      "overgrownGrotto",
+      "deeprootSpring",
+      "hauntedCreek",
+      "crystalCavernRiver",
+      "azuraliteOasis",
+      "sunsetBeach",
+      "theVoid"
+    ]
   },
   {
     "id": "coral",
@@ -96,7 +207,14 @@
     "minWeight": 10,
     "stats": {
       "capacity": 0.08
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "windsweptBeach",
+      "sunsetBeach",
+      "fortuneRiverDelta",
+      "theVoid"
+    ]
   },
   {
     "id": "electrum",
@@ -105,7 +223,17 @@
     "minWeight": 40,
     "stats": {
       "sellBoost": 0.08
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "starfallRiver",
+      "meteorFalls",
+      "timelockedSanctuary",
+      "fungalMarsh",
+      "rotwoodSwamp",
+      "astralCaverns",
+      "theVoid"
+    ]
   },
   {
     "id": "glowberry",
@@ -114,7 +242,14 @@
     "minWeight": 40,
     "stats": {
       "sellBoost": 0.08
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "enchantedRuins",
+      "overgrownGrotto",
+      "deeprootSpring",
+      "theVoid"
+    ]
   },
   {
     "id": "malachite",
@@ -123,7 +258,22 @@
     "minWeight": 20,
     "stats": {
       "modifierBoost": 0.08
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "windsweptBeach",
+      "rotwoodSwamp",
+      "fungalMarsh",
+      "timelockedSanctuary",
+      "enchantedRuins",
+      "abyssalDepths",
+      "overgrownGrotto",
+      "azuraliteOasis",
+      "deeprootSpring",
+      "hauntedCreek",
+      "crystalCavernRiver",
+      "theVoid"
+    ]
   },
   {
     "id": "neodymium",
@@ -132,7 +282,19 @@
     "minWeight": 40,
     "stats": {
       "shakeStrength": 0.08
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "sunsetBeach",
+      "enchantedRuins",
+      "fortuneRiverDelta",
+      "abyssalDepths",
+      "overgrownGrotto",
+      "azuraliteOasis",
+      "deeprootSpring",
+      "crystalCavernRiver",
+      "theVoid"
+    ]
   },
   {
     "id": "nickel",
@@ -141,7 +303,13 @@
     "minWeight": 40,
     "stats": {
       "capacity": 0.08
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "starfallRiver",
+      "meteorFalls",
+      "astralCaverns"
+    ]
   },
   {
     "id": "rock_candy",
@@ -150,7 +318,12 @@
     "minWeight": 60,
     "stats": {
       "sizeBoost": 0.05
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "hauntedCreek",
+      "theVoid"
+    ]
   },
   {
     "id": "sapphire",
@@ -159,7 +332,20 @@
     "minWeight": 20,
     "stats": {
       "digSpeed": 0.08
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "starfallRiver",
+      "meteorFalls",
+      "astralCaverns",
+      "northPole",
+      "frozenPeak",
+      "frostbiteRiver",
+      "frostbiteWaterfall",
+      "rubbleCreekDeposits",
+      "fortuneRiver",
+      "theVoid"
+    ]
   },
   {
     "id": "smoky_quartz",
@@ -168,7 +354,23 @@
     "minWeight": 20,
     "stats": {
       "shakeStrength": 0.08
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "timelockedSanctuary",
+      "rotwoodSwamp",
+      "fungalMarsh",
+      "hauntedCreek",
+      "enchantedRuins",
+      "sunsetBeach",
+      "fortuneRiverDelta",
+      "abyssalDepths",
+      "azuraliteOasis",
+      "overgrownGrotto",
+      "deeprootSpring",
+      "crystalCavernRiver",
+      "theVoid"
+    ]
   },
   {
     "id": "titanium",
@@ -177,7 +379,21 @@
     "minWeight": 40,
     "stats": {
       "digSpeed": 0.08
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "frozenPeak",
+      "frostbiteRiver",
+      "frostbiteWaterfall",
+      "fortuneRiver",
+      "northPole",
+      "fungalMarsh",
+      "rotwoodSwamp",
+      "hauntedCreek",
+      "rubbleCreekDeposits",
+      "rubbleCreekSands",
+      "theVoid"
+    ]
   },
   {
     "id": "topaz",
@@ -186,7 +402,21 @@
     "minWeight": 20,
     "stats": {
       "capacity": 0.08
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "timelockedSanctuary",
+      "infernalHeart",
+      "volcanicSprings",
+      "windsweptBeach",
+      "theMagmaFurnace",
+      "volcanicSands",
+      "fortuneRiver",
+      "rubbleCreekSands",
+      "rubbleCreekDeposits",
+      "fortuneRiverDelta",
+      "theVoid"
+    ]
   },
   {
     "id": "zircon",
@@ -195,7 +425,15 @@
     "minWeight": 20,
     "stats": {
       "sizeBoost": 0.05
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "infernalHeart",
+      "volcanicSprings",
+      "theMagmaFurnace",
+      "volcanicSands",
+      "theVoid"
+    ]
   },
   {
     "id": "amber",
@@ -204,7 +442,14 @@
     "minWeight": 20,
     "stats": {
       "sellBoost": 0.13
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "enchantedRuins",
+      "abyssalDepths",
+      "deeprootSpring",
+      "theVoid"
+    ]
   },
   {
     "id": "azuralite",
@@ -213,7 +458,17 @@
     "minWeight": 30,
     "stats": {
       "digSpeed": 0.13
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "enchantedRuins",
+      "abyssalDepths",
+      "overgrownGrotto",
+      "azuraliteOasis",
+      "deeprootSpring",
+      "crystalCavernRiver",
+      "theVoid"
+    ]
   },
   {
     "id": "candy_cane",
@@ -222,7 +477,12 @@
     "minWeight": 40,
     "stats": {
       "sizeBoost": 0.09
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "theVoid",
+      "northPole"
+    ]
   },
   {
     "id": "diopside",
@@ -231,7 +491,14 @@
     "minWeight": 20,
     "stats": {
       "modifierBoost": 0.13
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "timelockedSanctuary",
+      "rotwoodSwamp",
+      "fungalMarsh",
+      "theVoid"
+    ]
   },
   {
     "id": "glacial_quartz",
@@ -240,7 +507,15 @@
     "minWeight": 40,
     "stats": {
       "digSpeed": 0.13
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "northPole",
+      "frozenPeak",
+      "frostbiteRiver",
+      "frostbiteWaterfall",
+      "theVoid"
+    ]
   },
   {
     "id": "gloomberry",
@@ -249,7 +524,12 @@
     "minWeight": 40,
     "stats": {
       "digSpeed": 0.13
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "abyssalDepths",
+      "theVoid"
+    ]
   },
   {
     "id": "jade",
@@ -258,7 +538,20 @@
     "minWeight": 40,
     "stats": {
       "modifierBoost": 0.13
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "northPole",
+      "frozenPeak",
+      "frostbiteRiver",
+      "frostbiteWaterfall",
+      "fortuneRiver",
+      "fortuneRiverDelta",
+      "meteorFalls",
+      "starfallRiver",
+      "astralCaverns",
+      "theVoid"
+    ]
   },
   {
     "id": "lapis_lazuli",
@@ -267,7 +560,21 @@
     "minWeight": 30,
     "stats": {
       "digSpeed": 0.13
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "starfallRiver",
+      "meteorFalls",
+      "astralCaverns",
+      "rubbleCreekDeposits",
+      "fortuneRiver",
+      "rubbleCreekSands",
+      "frozenPeak",
+      "frostbiteRiver",
+      "frostbiteWaterfall",
+      "hauntedCreek",
+      "theVoid"
+    ]
   },
   {
     "id": "meteoric_iron",
@@ -276,7 +583,18 @@
     "minWeight": 40,
     "stats": {
       "shakeStrength": 0.13
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "astralCaverns",
+      "volcanicSands",
+      "volcanicSprings",
+      "windsweptBeach",
+      "rubbleCreekDeposits",
+      "fortuneRiver",
+      "rubbleCreekSands",
+      "theVoid"
+    ]
   },
   {
     "id": "onyx",
@@ -285,7 +603,23 @@
     "minWeight": 30,
     "stats": {
       "modifierBoost": 0.13
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "infernalHeart",
+      "volcanicSprings",
+      "windsweptBeach",
+      "theMagmaFurnace",
+      "volcanicSands",
+      "timelockedSanctuary",
+      "rotwoodSwamp",
+      "fungalMarsh",
+      "sunsetBeach",
+      "fortuneRiverDelta",
+      "azuraliteOasis",
+      "crystalCavernRiver",
+      "theVoid"
+    ]
   },
   {
     "id": "peridot",
@@ -294,7 +628,16 @@
     "minWeight": 20,
     "stats": {
       "luck": 0.13
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "infernalHeart",
+      "windsweptBeach",
+      "theMagmaFurnace",
+      "volcanicSands",
+      "volcanicSprings",
+      "theVoid"
+    ]
   },
   {
     "id": "pyrelith",
@@ -303,7 +646,13 @@
     "minWeight": 30,
     "stats": {
       "sellBoost": 0.13
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "infernalHeart",
+      "theMagmaFurnace",
+      "theVoid"
+    ]
   },
   {
     "id": "ruby",
@@ -312,7 +661,14 @@
     "minWeight": 20,
     "stats": {
       "shakeStrength": 0.13
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "rubbleCreekSands",
+      "fortuneRiver",
+      "rubbleCreekDeposits",
+      "theVoid"
+    ]
   },
   {
     "id": "silver_clamshell",
@@ -321,7 +677,14 @@
     "minWeight": 20,
     "stats": {
       "shakeSpeed": 0.13
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "windsweptBeach",
+      "sunsetBeach",
+      "fortuneRiverDelta",
+      "theVoid"
+    ]
   },
   {
     "id": "ammonite_fossil",
@@ -330,7 +693,12 @@
     "minWeight": 50,
     "stats": {
       "capacity": 0.2
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "windsweptBeach",
+      "theVoid"
+    ]
   },
   {
     "id": "ashvein",
@@ -339,7 +707,14 @@
     "minWeight": 20,
     "stats": {
       "sizeBoost": 0.14
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "sunsetBeach",
+      "azuraliteOasis",
+      "crystalCavernRiver",
+      "theVoid"
+    ]
   },
   {
     "id": "aurorite",
@@ -348,16 +723,25 @@
     "minWeight": 30,
     "stats": {
       "digSpeed": 0.2
-    }
-  },
-  {
-    "id": "emerald",
-    "name": "Emerald",
-    "rarity": "epic",
-    "minWeight": 20,
-    "stats": {
-      "luck": 0.2
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "fortuneRiver",
+      "rubbleCreekDeposits",
+      "rubbleCreekSands",
+      "fortuneRiverDelta",
+      "frozenPeak",
+      "overgrownGrotto",
+      "starfallRiver",
+      "hauntedCreek",
+      "astralCaverns",
+      "frostbiteWaterfall",
+      "enchantedRuins",
+      "northPole",
+      "abyssalDepths",
+      "deeprootSpring",
+      "theVoid"
+    ]
   },
   {
     "id": "bone",
@@ -366,7 +750,14 @@
     "minWeight": 50,
     "stats": {
       "sizeBoost": 0.14
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "rotwoodSwamp",
+      "fungalMarsh",
+      "hauntedCreek",
+      "theVoid"
+    ]
   },
   {
     "id": "borealite",
@@ -374,8 +765,18 @@
     "rarity": "epic",
     "minWeight": 20,
     "stats": {
-      "dipSpeed": 0.2
-    }
+      "digSpeed": 0.2
+    },
+    "region": "start",
+    "digSites": [
+      "frostbiteRiver",
+      "frostbiteWaterfall",
+      "frozenPeak",
+      "azuraliteOasis",
+      "northPole",
+      "crystalCavernRiver",
+      "theVoid"
+    ]
   },
   {
     "id": "cobalt",
@@ -383,8 +784,52 @@
     "rarity": "epic",
     "minWeight": 40,
     "stats": {
-      "dipSpeed": 0.2
-    }
+      "digSpeed": 0.2
+    },
+    "region": "start",
+    "digSites": [
+      "overgrownGrotto",
+      "deeprootSpring",
+      "frostbiteRiver",
+      "frozenPeak",
+      "frostbiteWaterfall",
+      "enchantedRuins",
+      "meteorFalls",
+      "rotwoodSwamp",
+      "fungalMarsh",
+      "timelockedSanctuary",
+      "northPole",
+      "abyssalDepths",
+      "hauntedCreek",
+      "theVoid"
+    ]
+  },
+  {
+    "id": "emerald",
+    "name": "Emerald",
+    "rarity": "epic",
+    "minWeight": 20,
+    "stats": {
+      "luck": 0.2
+    },
+    "region": "start",
+    "digSites": [
+      "fortuneRiver",
+      "timelockedSanctuary",
+      "rotwoodSwamp",
+      "fungalMarsh",
+      "rubbleCreekDeposits",
+      "enchantedRuins",
+      "hauntedCreek",
+      "abyssalDepths",
+      "overgrownGrotto",
+      "azuraliteOasis",
+      "deeprootSpring",
+      "crystalCavernRiver",
+      "rubbleCreekSands",
+      "frostbiteRiver",
+      "theVoid"
+    ]
   },
   {
     "id": "glowmoss",
@@ -393,7 +838,15 @@
     "minWeight": 60,
     "stats": {
       "modifierBoost": 0.2
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "enchantedRuins",
+      "timelockedSanctuary",
+      "overgrownGrotto",
+      "deeprootSpring",
+      "theVoid"
+    ]
   },
   {
     "id": "golden_pearl",
@@ -402,7 +855,13 @@
     "minWeight": 20,
     "stats": {
       "capacity": 0.2
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "sunsetBeach",
+      "fortuneRiverDelta",
+      "theVoid"
+    ]
   },
   {
     "id": "iridium",
@@ -411,7 +870,22 @@
     "minWeight": 40,
     "stats": {
       "digSpeed": 0.2
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "rubbleCreekDeposits",
+      "rubbleCreekSands",
+      "northPole",
+      "frostbiteRiver",
+      "frostbiteWaterfall",
+      "frozenPeak",
+      "fortuneRiver",
+      "fortuneRiverDelta",
+      "meteorFalls",
+      "starfallRiver",
+      "astralCaverns",
+      "theVoid"
+    ]
   },
   {
     "id": "lightshard",
@@ -420,7 +894,17 @@
     "minWeight": 20,
     "stats": {
       "digSpeed": 0.2
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "theVoid",
+      "hauntedCreek",
+      "enchantedRuins",
+      "timelockedSanctuary",
+      "abyssalDepths",
+      "overgrownGrotto",
+      "deeprootSpring"
+    ]
   },
   {
     "id": "mercury",
@@ -429,7 +913,15 @@
     "minWeight": 80,
     "stats": {
       "shakeStrength": 0.2
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "meteorFalls",
+      "timelockedSanctuary",
+      "rotwoodSwamp",
+      "fungalMarsh",
+      "theVoid"
+    ]
   },
   {
     "id": "meteoric_gold",
@@ -438,7 +930,13 @@
     "minWeight": 40,
     "stats": {
       "sellBoost": 0.2
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "starfallRiver",
+      "astralCaverns",
+      "theVoid"
+    ]
   },
   {
     "id": "moonstone",
@@ -447,7 +945,16 @@
     "minWeight": 50,
     "stats": {
       "shakeSpeed": 0.2
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "sunsetBeach",
+      "fortuneRiverDelta",
+      "meteorFalls",
+      "starfallRiver",
+      "astralCaverns",
+      "theVoid"
+    ]
   },
   {
     "id": "opal",
@@ -456,7 +963,23 @@
     "minWeight": 20,
     "stats": {
       "shakeSpeed": 0.2
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "starfallRiver",
+      "meteorFalls",
+      "astralCaverns",
+      "fortuneRiver",
+      "sunsetBeach",
+      "infernalHeart",
+      "windsweptBeach",
+      "theMagmaFurnace",
+      "volcanicSands",
+      "volcanicSprings",
+      "rubbleCreekDeposits",
+      "rubbleCreekSands",
+      "theVoid"
+    ]
   },
   {
     "id": "osmium",
@@ -465,7 +988,23 @@
     "minWeight": 80,
     "stats": {
       "sizeBoost": 0.2
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "rotwoodSwamp",
+      "fungalMarsh",
+      "timelockedSanctuary",
+      "infernalHeart",
+      "windsweptBeach",
+      "theMagmaFurnace",
+      "volcanicSands",
+      "volcanicSprings",
+      "fortuneRiver",
+      "azuraliteOasis",
+      "crystalCavernRiver",
+      "rubbleCreekDeposits",
+      "theVoid"
+    ]
   },
   {
     "id": "pyronium",
@@ -474,7 +1013,15 @@
     "minWeight": 50,
     "stats": {
       "sellBoost": 0.2
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "infernalHeart",
+      "volcanicSprings",
+      "theMagmaFurnace",
+      "volcanicSands",
+      "theVoid"
+    ]
   },
   {
     "id": "aetherite",
@@ -483,7 +1030,27 @@
     "minWeight": 20,
     "stats": {
       "digSpeed": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "enchantedRuins",
+      "timelockedSanctuary",
+      "frostbiteWaterfall",
+      "frozenPeak",
+      "abyssalDepths",
+      "overgrownGrotto",
+      "deeprootSpring",
+      "northPole",
+      "fortuneRiverDelta",
+      "hauntedCreek",
+      "crystalCavernRiver",
+      "azuraliteOasis",
+      "sunsetBeach",
+      "rubbleCreekSands",
+      "rubbleCreekDeposits",
+      "fortuneRiver",
+      "theVoid"
+    ]
   },
   {
     "id": "aquamarine",
@@ -492,7 +1059,17 @@
     "minWeight": 20,
     "stats": {
       "digSpeed": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "starfallRiver",
+      "astralCaverns",
+      "northPole",
+      "theVoid",
+      "frostbiteWaterfall",
+      "frostbiteRiver",
+      "frozenPeak"
+    ]
   },
   {
     "id": "bismuth",
@@ -501,7 +1078,14 @@
     "minWeight": 80,
     "stats": {
       "digSpeed": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "timelockedSanctuary",
+      "rotwoodSwamp",
+      "fungalMarsh",
+      "theVoid"
+    ]
   },
   {
     "id": "catseye",
@@ -510,7 +1094,17 @@
     "minWeight": 20,
     "stats": {
       "capacity": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "windsweptBeach",
+      "theMagmaFurnace",
+      "volcanicSands",
+      "volcanicSprings",
+      "fortuneRiver",
+      "rubbleCreekDeposits",
+      "theVoid"
+    ]
   },
   {
     "id": "cinnabar",
@@ -519,7 +1113,15 @@
     "minWeight": 20,
     "stats": {
       "sizeBoost": 0.21
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "infernalHeart",
+      "theMagmaFurnace",
+      "volcanicSands",
+      "volcanicSprings",
+      "theVoid"
+    ]
   },
   {
     "id": "depleted_shard",
@@ -528,7 +1130,13 @@
     "minWeight": 40,
     "stats": {
       "sizeBoost": 0.21
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "astralCaverns",
+      "meteorFalls",
+      "starfallRiver"
+    ]
   },
   {
     "id": "diamond",
@@ -537,7 +1145,25 @@
     "minWeight": 20,
     "stats": {
       "luck": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "sunsetBeach",
+      "fortuneRiverDelta",
+      "timelockedSanctuary",
+      "rotwoodSwamp",
+      "fungalMarsh",
+      "frostbiteWaterfall",
+      "frozenPeak",
+      "frostbiteRiver",
+      "northPole",
+      "hauntedCreek",
+      "meteorFalls",
+      "fortuneRiver",
+      "rubbleCreekDeposits",
+      "theVoid",
+      "rubbleCreekSands"
+    ]
   },
   {
     "id": "dragon_bone",
@@ -546,7 +1172,14 @@
     "minWeight": 50,
     "stats": {
       "sizeBoost": 0.21
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "infernalHeart",
+      "windsweptBeach",
+      "theMagmaFurnace",
+      "theVoid"
+    ]
   },
   {
     "id": "fire_opal",
@@ -555,7 +1188,15 @@
     "minWeight": 20,
     "stats": {
       "sizeBoost": 0.21
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "volcanicSprings",
+      "infernalHeart",
+      "theMagmaFurnace",
+      "volcanicSands",
+      "theVoid"
+    ]
   },
   {
     "id": "firefly_stone",
@@ -564,7 +1205,15 @@
     "minWeight": 60,
     "stats": {
       "capacity": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "overgrownGrotto",
+      "deeprootSpring",
+      "enchantedRuins",
+      "timelockedSanctuary",
+      "theVoid"
+    ]
   },
   {
     "id": "gloomcap",
@@ -573,7 +1222,12 @@
     "minWeight": 20,
     "stats": {
       "digSpeed": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "fungalMarsh",
+      "theVoid"
+    ]
   },
   {
     "id": "lost_soul",
@@ -582,7 +1236,12 @@
     "minWeight": 20,
     "stats": {
       "digSpeed": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "hauntedCreek",
+      "theVoid"
+    ]
   },
   {
     "id": "luminum",
@@ -591,7 +1250,16 @@
     "minWeight": 40,
     "stats": {
       "capacity": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "sunsetBeach",
+      "enchantedRuins",
+      "overgrownGrotto",
+      "azuraliteOasis",
+      "deeprootSpring",
+      "crystalCavernRiver"
+    ]
   },
   {
     "id": "palladium",
@@ -600,7 +1268,18 @@
     "minWeight": 40,
     "stats": {
       "sellBoost": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "frostbiteRiver",
+      "azuraliteOasis",
+      "crystalCavernRiver",
+      "fortuneRiverDelta",
+      "starfallRiver",
+      "astralCaverns",
+      "fortuneRiver",
+      "theVoid"
+    ]
   },
   {
     "id": "peppermint_prism",
@@ -609,7 +1288,27 @@
     "minWeight": 20,
     "stats": {
       "modifierBoost": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "theVoid",
+      "northPole"
+    ]
+  },
+  {
+    "id": "radium",
+    "name": "Radium",
+    "rarity": "legendary",
+    "minWeight": 60,
+    "stats": {
+      "modifierBoost": 0.3
+    },
+    "region": "start",
+    "digSites": [
+      "volcanicSprings",
+      "meteorFalls",
+      "theVoid"
+    ]
   },
   {
     "id": "rose_gold",
@@ -618,7 +1317,20 @@
     "minWeight": 40,
     "stats": {
       "shakeStrength": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "windsweptBeach",
+      "enchantedRuins",
+      "theMagmaFurnace",
+      "volcanicSands",
+      "fortuneRiver",
+      "rubbleCreekDeposits",
+      "volcanicSprings",
+      "rubbleCreekSands",
+      "infernalHeart",
+      "theVoid"
+    ]
   },
   {
     "id": "specterite",
@@ -627,7 +1339,17 @@
     "minWeight": 10,
     "stats": {
       "shakeSpeed": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "rotwoodSwamp",
+      "hauntedCreek",
+      "enchantedRuins",
+      "abyssalDepths",
+      "overgrownGrotto",
+      "deeprootSpring",
+      "theVoid"
+    ]
   },
   {
     "id": "starshine",
@@ -637,7 +1359,18 @@
     "stats": {
       "digSpeed": 0.15,
       "shakeSpeed": 0.15
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "azuraliteOasis",
+      "crystalCavernRiver",
+      "enchantedRuins",
+      "timelockedSanctuary",
+      "abyssalDepths",
+      "overgrownGrotto",
+      "deeprootSpring",
+      "theVoid"
+    ]
   },
   {
     "id": "tourmaline",
@@ -646,7 +1379,14 @@
     "minWeight": 24,
     "stats": {
       "sellBoost": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "frostbiteWaterfall",
+      "frostbiteRiver",
+      "frozenPeak",
+      "theVoid"
+    ]
   },
   {
     "id": "uranium",
@@ -655,7 +1395,15 @@
     "minWeight": 60,
     "stats": {
       "modifierBoost": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "infernalHeart",
+      "fortuneRiverDelta",
+      "azuraliteOasis",
+      "fortuneRiver",
+      "theVoid"
+    ]
   },
   {
     "id": "volcanic_key",
@@ -664,16 +1412,13 @@
     "minWeight": 20,
     "stats": {
       "sizeBoost": 0.21
-    }
-  },
-  {
-    "id": "radium",
-    "name": "Radium",
-    "rarity": "legendary",
-    "minWeight": 60,
-    "stats": {
-      "modifierBoost": 0.3
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "infernalHeart",
+      "theMagmaFurnace",
+      "theVoid"
+    ]
   },
   {
     "id": "chrysoberyl",
@@ -682,7 +1427,14 @@
     "minWeight": 20,
     "stats": {
       "luck": 0.5
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "rotwoodSwamp",
+      "deeprootSpring",
+      "overgrownGrotto",
+      "theVoid"
+    ]
   },
   {
     "id": "flarebloom",
@@ -692,7 +1444,15 @@
     "stats": {
       "luck": 0.75,
       "sizeBoost": -0.5
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "infernalHeart",
+      "theMagmaFurnace",
+      "volcanicSands",
+      "volcanicSprings",
+      "theVoid"
+    ]
   },
   {
     "id": "frostshard",
@@ -701,7 +1461,14 @@
     "minWeight": 20,
     "stats": {
       "digStrength": 0.5
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "northPole",
+      "frozenPeak",
+      "frostbiteWaterfall",
+      "theVoid"
+    ]
   },
   {
     "id": "inferlume",
@@ -710,7 +1477,18 @@
     "minWeight": 20,
     "stats": {
       "luck": 0.5
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "infernalHeart",
+      "windsweptBeach",
+      "sunsetBeach",
+      "volcanicSands",
+      "volcanicSprings",
+      "azuraliteOasis",
+      "crystalCavernRiver",
+      "theVoid"
+    ]
   },
   {
     "id": "mythril",
@@ -719,7 +1497,17 @@
     "minWeight": 60,
     "stats": {
       "shakeStrength": 0.5
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "fungalMarsh",
+      "rotwoodSwamp",
+      "frozenPeak",
+      "enchantedRuins",
+      "frostbiteRiver",
+      "frostbiteWaterfall",
+      "theVoid"
+    ]
   },
   {
     "id": "painite",
@@ -728,7 +1516,18 @@
     "minWeight": 20,
     "stats": {
       "sizeBoost": 0.35
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "sunsetBeach",
+      "infernalHeart",
+      "fortuneRiverDelta",
+      "fortuneRiver",
+      "volcanicSprings",
+      "hauntedCreek",
+      "abyssalDepths",
+      "theVoid"
+    ]
   },
   {
     "id": "pink_diamond",
@@ -737,7 +1536,17 @@
     "minWeight": 20,
     "stats": {
       "luck": 0.5
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "fortuneRiverDelta",
+      "fortuneRiver",
+      "volcanicSands",
+      "rubbleCreekDeposits",
+      "rubbleCreekSands",
+      "northPole",
+      "theVoid"
+    ]
   },
   {
     "id": "prismara",
@@ -749,7 +1558,14 @@
       "capacity": 0.25,
       "digStrength": 0.25,
       "shakeStrength": 0.25
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "overgrownGrotto",
+      "azuraliteOasis",
+      "enchantedRuins",
+      "theVoid"
+    ]
   },
   {
     "id": "radiant_gold",
@@ -758,7 +1574,16 @@
     "minWeight": 60,
     "stats": {
       "sellBoost": 0.5
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "abyssalDepths",
+      "hauntedCreek",
+      "enchantedRuins",
+      "timelockedSanctuary",
+      "deeprootSpring",
+      "theVoid"
+    ]
   },
   {
     "id": "red_beryl",
@@ -767,7 +1592,14 @@
     "minWeight": 20,
     "stats": {
       "sizeBoost": 0.35
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "astralCaverns",
+      "timelockedSanctuary",
+      "fungalMarsh",
+      "theVoid"
+    ]
   },
   {
     "id": "star_garnet",
@@ -776,7 +1608,16 @@
     "minWeight": 20,
     "stats": {
       "sizeBoost": 0.35
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "timelockedSanctuary",
+      "fungalMarsh",
+      "meteorFalls",
+      "starfallRiver",
+      "rotwoodSwamp",
+      "theVoid"
+    ]
   },
   {
     "id": "sunstone",
@@ -785,7 +1626,13 @@
     "minWeight": 20,
     "stats": {
       "sellBoost": 0.5
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "meteorFalls",
+      "starfallRiver",
+      "astralCaverns"
+    ]
   },
   {
     "id": "volcanic_core",
@@ -795,7 +1642,13 @@
     "stats": {
       "digStrength": 0.25,
       "sizeBoost": 0.2
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "infernalHeart",
+      "theMagmaFurnace",
+      "theVoid"
+    ]
   },
   {
     "id": "vortessence",
@@ -804,7 +1657,21 @@
     "minWeight": 20,
     "stats": {
       "capacity": 0.5
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "windsweptBeach",
+      "frostbiteRiver",
+      "frostbiteWaterfall",
+      "fortuneRiverDelta",
+      "azuraliteOasis",
+      "crystalCavernRiver",
+      "hauntedCreek",
+      "meteorFalls",
+      "starfallRiver",
+      "astralCaverns",
+      "theVoid"
+    ]
   },
   {
     "id": "adamantine",
@@ -813,16 +1680,25 @@
     "minWeight": 40,
     "stats": {
       "modifierBoost": 0.8
-    }
+    },
+    "region": "overgrownCaves",
+    "digSites": [
+      "enchantedRuins"
+    ]
   },
   {
-    "id": "astral spore",
+    "id": "astral_spore",
     "name": "Astral Spore",
     "rarity": "exotic",
     "minWeight": 20,
     "stats": {
       "digSpeed": 0.8
-    }
+    },
+    "region": "rotwoodSwamp",
+    "digSites": [
+      "fungalMarsh",
+      "timelockedSanctuary"
+    ]
   },
   {
     "id": "bloodstone",
@@ -831,7 +1707,12 @@
     "minWeight": 40,
     "stats": {
       "sizeBoost": 0.56
-    }
+    },
+    "region": "rotwoodSwamp",
+    "digSites": [
+      "rotwoodSwamp",
+      "timelockedSanctuary"
+    ]
   },
   {
     "id": "celestium",
@@ -841,10 +1722,14 @@
     "stats": {
       "luck": 0.48,
       "shakeSpeed": 0.48
-    }
+    },
+    "region": "meteorValley",
+    "digSites": [
+      "astralCaverns"
+    ]
   },
   {
-    "id": "cryonic artifact",
+    "id": "cryonic_artifact",
     "name": "Cryonic Artifact",
     "rarity": "exotic",
     "minWeight": 20,
@@ -853,17 +1738,25 @@
       "shakeStrength": 1.2,
       "digSpeed": -0.8,
       "shakeSpeed": -0.8
-    }
+    },
+    "region": "snowyMountain",
+    "digSites": [
+      "frozenPeak"
+    ]
   },
   {
-    "id": "dinosaur skull",
+    "id": "dinosaur_skull",
     "name": "Dinosaur Skull",
     "rarity": "exotic",
     "minWeight": 100,
     "stats": {
       "sellBoost": 0.4,
       "sizeBoost": 0.32
-    }
+    },
+    "region": "infernalHeart",
+    "digSites": [
+      "infernalHeart"
+    ]
   },
   {
     "id": "eternium",
@@ -874,7 +1767,11 @@
       "luck": 0.32,
       "digSpeed": 0.32,
       "shakeSpeed": 0.32
-    }
+    },
+    "region": "timelockedSanctuary",
+    "digSites": [
+      "timelockedSanctuary"
+    ]
   },
   {
     "id": "north_star",
@@ -886,16 +1783,26 @@
       "capacity": 0.2,
       "digSpeed": 0.2,
       "shakeSpeed": 0.2
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "northPole"
+    ],
+    "limitedTime": true
   },
   {
-    "id": "pumpkin soul",
+    "id": "pumpkin_soul",
     "name": "Pumpkin Soul",
     "rarity": "exotic",
     "minWeight": 40,
     "stats": {
       "sizeBoost": 0.56
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "hauntedCreek"
+    ],
+    "limitedTime": true
   },
   {
     "id": "singularium",
@@ -905,7 +1812,11 @@
     "stats": {
       "capacity": 0.48,
       "sizeBoost": 0.48
-    }
+    },
+    "region": "meteorValley",
+    "digSites": [
+      "starfallRiver"
+    ]
   },
   {
     "id": "starpiercer",
@@ -915,7 +1826,11 @@
     "stats": {
       "digStrength": 0.48,
       "shakeStrength": 0.48
-    }
+    },
+    "region": "meteorValley",
+    "digSites": [
+      "meteorFalls"
+    ]
   },
   {
     "id": "umbrite",
@@ -925,7 +1840,11 @@
     "stats": {
       "digSpeed": 0.4,
       "shakeSpeed": 0.4
-    }
+    },
+    "region": "abyssalDepths",
+    "digSites": [
+      "abyssalDepths"
+    ]
   },
   {
     "id": "vineheart",
@@ -934,7 +1853,11 @@
     "minWeight": 40,
     "stats": {
       "luck": 0.8
-    }
+    },
+    "region": "overgrownCaves",
+    "digSites": [
+      "deeprootSpring"
+    ]
   },
   {
     "id": "voidstone",
@@ -944,6 +1867,10 @@
     "stats": {
       "luck": 0.4,
       "capacity": 0.4
-    }
+    },
+    "region": "start",
+    "digSites": [
+      "theVoid"
+    ]
   }
 ]

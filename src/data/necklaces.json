@@ -1,86 +1,183 @@
 [
   {
-      "name": "Pheonix Heart",
-      "id": "pheonix-heart",
-      "slot": "necklace",
-      "stats": {
-        "luck": 325,
-        "capacity": 0,
-        "digStrength": 0,
-        "digSpeed": 0,
-        "shakeStrength": 0,
-        "shakeSpeed": 0,
-        "modifierBoost": 0,
-        "sizeBoost": -70,
-        "inventorySize": 450
-      },
-      "rarity": "Mythic"
+    "name": "Amethyst Pendant",
+    "id": "amethyst-pendant",
+    "slot": "necklace",
+    "region": "start",
+    "stats": {
+      "luck": 2.2,
+      "sellBoost": 18
     },
-    {
-      "name": "Amulet of Life",
-      "id": "amulet-of-life",
-      "slot": "necklace",
-      "stats": {
-        "luck": 425,
-        "capacity": 0,
-        "digStrength": 0,
-        "digSpeed": 0,
-        "shakeStrength": 0,
-        "shakeSpeed": 0,
-        "modifierBoost": 160,
-        "sizeBoost": 0
-      },
-      "rarity": "Mythic"
+    "rarity": "common"
+  },
+  {
+    "name": "Pearl Necklace",
+    "id": "pearl-necklace",
+    "slot": "necklace",
+    "region": "start",
+    "stats": {
+      "luck": 5.5,
+      "digStrength": 4.5
     },
-    {
-      "name": "Frosthorn Pendant",
-      "id": "frosthorn-pendant",
-      "slot": "necklace",
-      "stats": {
-        "luck": 400,
-        "capacity": 200,
-        "digStrength": 200,
-        "digSpeed": -50,
-        "shakeStrength": 0,
-        "shakeSpeed": 0,
-        "modifierBoost": 0,
-        "sizeBoost": 110
-      },
-      "rarity": "Exotic"
+    "rarity": "uncommon"
+  },
+  {
+    "name": "Topaz Necklace",
+    "id": "topaz-necklace",
+    "slot": "necklace",
+    "region": "start",
+    "stats": {
+      "luck": 5.5,
+      "digStrength": 4.5,
+      "shakeStrength": 1.1
     },
-    {
-      "name": "Venomshank",
-      "id": "venomshank",
-      "slot": "necklace",
-      "stats": {
-        "luck": 1300,
-        "capacity": 0,
-        "digStrength": -100,
-        "digSpeed": -60,
-        "shakeStrength": 0,
-        "shakeSpeed": 0,
-        "modifierBoost": 0,
-        "sizeBoost": 55,
-        "inventorySize": 325,
-        "sellBoost": 55
-      },
-      "rarity": "Exotic"
+    "rarity": "uncommon"
+  },
+  {
+    "name": "Opal Amulet",
+    "id": "opal-amulet",
+    "slot": "necklace",
+    "region": "start",
+    "stats": {
+      "luck": 18,
+      "modifierBoost": 100,
+      "inventorySize": 90
     },
-    {
-      "name": "Meteor Core",
-      "id": "meteor-core",
-      "slot": "necklace",
-      "stats": {
-        "luck": 900,
-        "capacity": 650,
-        "digStrength": 0,
-        "digSpeed": 0,
-        "shakeStrength": 0,
-        "shakeSpeed": 0,
-        "modifierBoost": 0,
-        "sizeBoost": 115,
-        "statusTimerSpeed": -30
-      },
-      "rarity": "Exotic"
-    }
+    "rarity": "epic"
+  },
+  {
+    "name": "Spider Bowtie",
+    "id": "spider-bowtie",
+    "slot": "necklace",
+    "region": "start",
+    "stats": {
+      "luck": 85,
+      "capacity": 110,
+      "sellBoost": 55,
+      "modifierBoost": 55
+    },
+    "rarity": "legendary",
+    "limitedTime": true
+  },
+  {
+    "name": "Mass Accumulator",
+    "id": "mass-accumulator",
+    "slot": "necklace",
+    "region": "start",
+    "stats": {
+      "capacity": 65,
+      "sizeBoost": 90,
+      "inventorySize": 450
+    },
+    "rarity": "legendary"
+  },
+  {
+    "name": "Amulet of Spirits",
+    "id": "amulet-spirits",
+    "slot": "necklace",
+    "region": "start",
+    "stats": {
+      "luck": 150,
+      "digSpeed": 42,
+      "shakeSpeed": 42,
+      "sizeBoost": 32
+    },
+    "rarity": "mythic",
+    "limitedTime": true
+  },
+  {
+    "name": "Pheonix Heart",
+    "id": "pheonix-heart",
+    "slot": "necklace",
+    "region": "start",
+    "stats": {
+      "luck": 325,
+      "sizeBoost": -70,
+      "inventorySize": 450
+    },
+    "rarity": "Mythic"
+  },
+  {
+    "name": "Celestial Rings",
+    "id": "celestial-rings",
+    "slot": "necklace",
+    "region": "start",
+    "stats": {
+      "luck": 100,
+      "capacity": 275,
+      "sizeBoost": 50,
+      "modifierBoost": 150
+    },
+    "rarity": "Mythic"
+  },
+  {
+    "name": "Amulet of Life",
+    "id": "amulet-of-life",
+    "slot": "necklace",
+    "region": "overgrownCaves",
+    "stats": {
+      "luck": 425,
+      "modifierBoost": 160
+    },
+    "rarity": "Mythic"
+  },
+  {
+    "name": "Santa's Bag",
+    "id": "santas-bag",
+    "slot": "necklace",
+    "region": "start",
+    "stats": {
+      "luck": 675,
+      "capacity": 550,
+      "sizeBoost": 90,
+      "inventorySize": 550,
+      "statusTimerSpeed": -50
+    },
+    "rarity": "exotic",
+    "limitedTime": true
+  },
+  {
+    "name": "Frostthorn Pendant",
+    "id": "frostthorn-pendant",
+    "slot": "necklace",
+    "region": "snowyMountain",
+    "stats": {
+      "luck": 450,
+      "capacity": 225,
+      "digStrength": 215,
+      "digSpeed": -50,
+      "sizeBoost": 110
+    },
+    "rarity": "Exotic"
+  },
+  {
+    "name": "Venomshank",
+    "id": "venomshank",
+    "slot": "necklace",
+    "region": "rotwoodSwamp",
+    "stats": {
+      "luck": 1300,
+      "digStrength": -100,
+      "digSpeed": -60,
+      "sizeBoost": 55,
+      "inventorySize": 325,
+      "sellBoost": 55
+    },
+    "rarity": "Exotic"
+  },
+  {
+    "name": "Meteor Core",
+    "id": "meteor-core",
+    "slot": "necklace",
+    "region": "meteorValley",
+    "stats": {
+      "luck": 900,
+      "capacity": 650,
+      "sizeBoost": 115,
+      "inventorySize": 450,
+      "statusTimerSpeed": -30,
+      "modifierBoost": 45
+    },
+    "rarity": "Exotic"
+  }
 ]

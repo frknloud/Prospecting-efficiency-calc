@@ -1,47 +1,249 @@
 [
   {
-      "name": "Abyssal Shovel",
-      "id": "abyssal-shovel",
-      "slot": "shovel",
-      "stats": {
-        "luck": 0,
-        "capacity": 0,
-        "digStrength": 125,
-        "digSpeed": 80,
-        "shakeStrength": 0,
-        "shakeSpeed": 0,
-        "modifierBoost": 0,
-        "sizeBoost": 0
-      }
+    "name": "Rusty Shovel",
+    "id": "rusty-shovel",
+    "slot": "shovel",
+    "region": "start",
+    "stats": {
+      "digStrength": 1,
+      "digSpeed": 80
+    }
+  },
+  {
+    "name": "Iron Shovel",
+    "id": "iron-shovel",
+    "slot": "shovel",
+    "region": "rubbleCreek",
+    "stats": {
+      "digStrength": 2,
+      "digSpeed": 80
+    }
+  },
+  {
+    "name": "Steel Shovel",
+    "id": "steel-shovel",
+    "slot": "shovel",
+    "region": "rubbleCreek",
+    "stats": {
+      "digStrength": 3,
+      "digSpeed": 80
+    }
+  },
+  {
+    "name": "Silver Shovel",
+    "id": "silver-shovel",
+    "slot": "shovel",
+    "region": "rubbleCreek",
+    "stats": {
+      "digStrength": 4,
+      "digSpeed": 110
+    }
+  },
+  {
+    "name": "Reinforced Shovel",
+    "id": "reinforced-shovel",
+    "slot": "shovel",
+    "region": "rubbleCreek",
+    "stats": {
+      "digStrength": 5,
+      "digSpeed": 90
+    }
+  },
+  {
+    "name": "The Excavator",
+    "id": "excavator",
+    "slot": "shovel",
+    "region": "fortuneRiver",
+    "stats": {
+      "digStrength": 7,
+      "digSpeed": 70
+    }
+  },
+  {
+    "name": "Golden Shovel",
+    "id": "golden-shovel",
+    "slot": "shovel",
+    "region": "fortuneRiver",
+    "stats": {
+      "digStrength": 8,
+      "digSpeed": 100
+    }
+  },
+  {
+    "name": "Meteoric Shovel",
+    "id": "meteoric-shovel",
+    "slot": "shovel",
+    "region": "fortuneRiver",
+    "stats": {
+      "digStrength": 7,
+      "digSpeed": 150
+    }
+  },
+  {
+    "name": "Diamond Shovel",
+    "id": "diamond-shovel",
+    "slot": "shovel",
+    "region": "fortuneRiver",
+    "stats": {
+      "digStrength": 12,
+      "digSpeed": 100
+    }
+  },
+  {
+    "name": "Divine Shovel",
+    "id": "divine-shovel",
+    "slot": "shovel",
+    "region": "crystalCavern",
+    "stats": {
+      "digStrength": 16,
+      "digSpeed": 110
+    }
+  },
+  {
+    "name": "Earthbreaker",
+    "id": "earthbreaker",
+    "slot": "shovel",
+    "region": "crystalCavern",
+    "stats": {
+      "digStrength": 25,
+      "digSpeed": 100
+    }
+  },
+  {
+    "name": "Galactic Shovel",
+    "id": "galactic-shovel",
+    "slot": "shovel",
+    "region": "start",
+    "stats": {
+      "digStrength": 60,
+      "digSpeed": 80
     },
-    {
-      "name": "Venomspade Shovel",
-      "id": "venomspade-shovel",
-      "slot": "shovel",
-      "stats": {
-        "luck": 0,
-        "capacity": 0,
-        "digStrength": 200,
-        "digSpeed": 80,
-        "shakeStrength": 0,
-        "shakeSpeed": 0,
-        "modifierBoost": 0,
-        "sizeBoost": 0
-      }
+    "limitedTime": true
+  },
+  {
+    "name": "Dragonflame Shovel",
+    "id": "dragonflame-shovel",
+    "slot": "shovel",
+    "region": "calderaPark",
+    "stats": {
+      "digStrength": 50,
+      "digSpeed": 60
+    }
+  },
+  {
+    "name": "Fossilized Shovel",
+    "id": "fossilized-shovel",
+    "slot": "shovel",
+    "region": "calderaPark",
+    "stats": {
+      "digStrength": 40,
+      "digSpeed": 100
+    }
+  },
+  {
+    "name": "Icebreaker",
+    "id": "icebreaker",
+    "slot": "shovel",
+    "region": "snowyMountain",
+    "stats": {
+      "digStrength": 60,
+      "digSpeed": 110
+    }
+  },
+  {
+    "name": "Cupid's Arrow",
+    "id": "cupids-arrow",
+    "slot": "shovel",
+    "region": "start",
+    "stats": {
+      "digStrength": 150,
+      "digSpeed": 100
     },
-    {
-      "name": "Starcrusher",
-      "id": "starcrusher",
-      "slot": "shovel",
-      "stats": {
-        "luck": 0,
-        "capacity": 0,
-        "digStrength": 300,
-        "digSpeed": 100,
-        "shakeStrength": 0,
-        "shakeSpeed": 0,
-        "modifierBoost": 0,
-        "sizeBoost": 0
+    "limitedTime": true
+  },
+  {
+    "name": "Pumpkin Shovel",
+    "id": "pumpkin-shovel",
+    "slot": "shovel",
+    "region": "start",
+    "stats": {
+      "digStrength": 100,
+      "digSpeed": 125
+    },
+    "limitedTime": true
+  },
+  {
+    "name": "Candy Cane Shovel",
+    "id": "candy-cane",
+    "slot": "shovel",
+    "region": "start",
+    "stats": {
+      "digStrength": 140,
+      "digSpeed": 100
+    },
+    "limitedTime": true
+  },
+  {
+    "name": "Lifetouched Shovel",
+    "id": "lifetouched-shovel",
+    "slot": "shovel",
+    "region": "overgrownCaves",
+    "stats": {
+      "digStrength": 100,
+      "digSpeed": 100
+    }
+  },
+  {
+    "name": "Abyssal Shovel",
+    "id": "abyssal-shovel",
+    "slot": "shovel",
+    "region": "abyssalDepths",
+    "stats": {
+      "digStrength": 125,
+      "digSpeed": 110
+    }
+  },
+  {
+    "name": "Venomspade Shovel",
+    "id": "venomspade-shovel",
+    "slot": "shovel",
+    "region": "rotwoodSwamp",
+    "stats": {
+      "digStrength": 200,
+      "digSpeed": 80
+    }
+  },
+  {
+    "name": "Starcrusher",
+    "id": "starcrusher",
+    "slot": "shovel",
+    "region": "meteorValley",
+    "stats": {
+      "digStrength": 300,
+      "digSpeed": 100
+    },
+    "multipliers": {
+      "luck": 0.1
+    },
+    "consumableBonusAmplifiers": {
+      "luckTotem": {
+        "multipliers": {
+          "luck": 0.25
+        }
+      },
+      "strengthTotem": {
+        "multipliers": {
+          "digStrength": 0.25,
+          "shakeStrength": 0.25
+        }
+      },
+      "luminantTotem": {
+        "multipliers": {
+          "capacity": 0.2,
+          "digSpeed": 0.2,
+          "shakeSpeed": 0.2
+        }
       }
     }
+  }
 ]

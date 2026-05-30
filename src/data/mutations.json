@@ -20,7 +20,7 @@
   {
     "id": "granite",
     "name": "Granite",
-    "multiplier": 1.35,
+    "multiplier": 1.36,
     "flat": {
       "digStrength": 24,
       "shakeStrength": 6
@@ -29,7 +29,7 @@
   {
     "id": "overclocked",
     "name": "Overclocked",
-    "multiplier": 1.35,
+    "multiplier": 1.36,
     "flat": {
       "digSpeed": 10,
       "shakeSpeed": 10
@@ -42,7 +42,8 @@
     "flat": {
       "luck": 50,
       "sizeBoost": 10
-    }
+    },
+    "limitedTime": true
   },
   {
     "id": "prismatic",

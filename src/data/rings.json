@@ -1,173 +1,351 @@
 [
   {
-      "name": "Mythril Ring",
-      "id": "mythril-ring",
-      "slot": "ring",
-      "unique": false,
-      "stats": {
-        "luck": 90,
-        "capacity": 0,
-        "digStrength": 0,
-        "digSpeed": 42,
-        "shakeStrength": 0,
-        "shakeSpeed": 42,
-        "modifierBoost": 0,
-        "sizeBoost": 0,
-        "sellBoost": 26
-      },
-      "rarity": "Mythic"
+    "name": "Gold Ring",
+    "id": "gold-ring",
+    "slot": "ring",
+    "region": "start",
+    "unique": false,
+    "stats": {
+      "luck": 0.9
     },
-    {
-      "name": "Ring of Thorns",
-      "id": "ring-of-thorns",
-      "slot": "ring",
-      "unique": false,
-      "stats": {
-        "luck": 110,
-        "capacity": 0,
-        "digStrength": 45,
-        "digSpeed": 0,
-        "shakeStrength": 0,
-        "shakeSpeed": 0,
-        "modifierBoost": 65,
-        "sizeBoost": 32,
-        "inventorySize": 170
-      },
-      "rarity": "Mythic"
+    "rarity": "common"
+  },
+  {
+    "name": "Titanium Ring",
+    "id": "titanium-ring",
+    "slot": "ring",
+    "region": "start",
+    "unique": false,
+    "stats": {
+      "capacity": 15
     },
-    {
-      "name": "Purifying Ring",
-      "id": "purifying-ring",
-      "slot": "ring",
-      "unique": false,
-      "stats": {
-        "luck": 90,
-        "capacity": 110,
-        "digStrength": 90,
-        "digSpeed": 0,
-        "shakeStrength": 30,
-        "shakeSpeed": 0,
-        "inventorySize": 90
-      },
-      "rarity": "Mythic"
+    "rarity": "common"
+  },
+  {
+    "name": "Ring of Harvest",
+    "id": "ring-harvest",
+    "slot": "ring",
+    "region": "start",
+    "unique": false,
+    "stats": {
+      "luck": 20,
+      "capacity": 32,
+      "inventorySize": 45,
+      "walkSpeed": 1
     },
-    {
-      "name": "Vortex Ring",
-      "id": "vortex-ring",
-      "slot": "ring",
-      "unique": false,
-      "stats": {
-        "luck": 155,
-        "capacity": 325,
-        "digStrength": 90,
-        "digSpeed": 0,
-        "shakeStrength": 11,
-        "shakeSpeed": 0
-      },
-      "rarity": "Exotic"
+    "rarity": "common",
+    "limitedTime": true
+  },
+  {
+    "name": "5 Gold Rings",
+    "id": "five-gold-rings",
+    "slot": "ring",
+    "region": "start",
+    "unique": false,
+    "stats": {
+      "luck": 22,
+      "capacity": 45,
+      "shakeSpeed": 22,
+      "sellBoost": 22
     },
-    {
-      "name": "Umbrite Ring",
-      "id": "umbrite-ring",
-      "slot": "ring",
-      "unique": false,
-      "stats": {
-        "luck": 245,
-        "capacity": 220,
-        "digStrength": 50,
-        "digSpeed": 0,
-        "shakeStrength": 22,
-        "shakeSpeed": 0,
-        "sizeBoost": 16
-      },
-      "rarity": "Exotic"
+    "rarity": "common",
+    "limitedTime": true
+  },
+  {
+    "name": "Smoke Ring",
+    "id": "smoke-ring",
+    "slot": "ring",
+    "region": "start",
+    "unique": false,
+    "stats": {
+      "modifierBoost": 16,
+      "inventorySize": 45
     },
-    {
-      "name": "Otherworldly Ring",
-      "id": "otherworldly-ring",
-      "slot": "ring",
-      "unique": false,
-      "stats": {
-        "luck": 375,
-        "capacity": 0,
-        "digStrength": 0,
-        "digSpeed": 22,
-        "shakeStrength": 0,
-        "shakeSpeed": 22,
-        "sizeBoost": 26,
-        "sellBoost": 32
-      },
-      "rarity": "Exotic"
+    "rarity": "uncommon"
+  },
+  {
+    "name": "Ruby Ring",
+    "id": "ruby-ring",
+    "slot": "ring",
+    "region": "start",
+    "unique": false,
+    "stats": {
+      "luck": 6.4,
+      "sizeBoost": 20
     },
-    {
-      "name": "Dredge Master's Ring",
-      "id": "dredge-masters-ring",
-      "slot": "ring",
-      "unique": true,
-      "stats": {
-        "luck": 0,
-        "capacity": 550,
-        "digStrength": 135,
-        "digSpeed": 0,
-        "shakeStrength": 30,
-        "shakeSpeed": 0,
-        "sizeBoost": 55
-      },
-      "rarity": "Exotic"
+    "rarity": "rare"
+  },
+  {
+    "name": "Meteor Ring",
+    "id": "meteor-ring",
+    "slot": "ring",
+    "region": "start",
+    "unique": false,
+    "stats": {
+      "digStrength": 3.2,
+      "shakeStrength": 1.1,
+      "inventorySize": 55
     },
-    {
-      "name": "Accretion Disk",
-      "id": "accretion-disk",
-      "slot": "ring",
-      "unique": false,
-      "stats": {
-        "luck": 400,
-        "capacity": 0,
-        "digStrength": 0,
-        "digSpeed": 50,
-        "shakeStrength": 0,
-        "shakeSpeed": 50,
-        "sizeBoost": 16,
-        "modifierBoost": 16,
-        "inventorySize": 100
-      },
-      "rarity": "Exotic"
+    "rarity": "rare"
+  },
+  {
+    "name": "Moon Ring",
+    "id": "moon-ring",
+    "slot": "ring",
+    "region": "start",
+    "unique": false,
+    "stats": {
+      "luck": 8,
+      "digSpeed": 45,
+      "shakeSpeed": 45
     },
-    {
-      "name": "Ring of Champions",
-      "id": "ring-of-champions",
-      "slot": "ring",
-      "unique": true,
-      "stats": {
-        "luck": 550,
-        "capacity": 450,
-        "digStrength": 180,
-        "digSpeed": 100,
-        "shakeStrength": 55,
-        "shakeSpeed": 100,
-        "sizeBoost": 160,
-        "modifierBoost": 160,
-        "sellBoost": 160
-      },
-      "rarity": "Ascended"
+    "rarity": "epic"
+  },
+  {
+    "name": "Heart of the Ocean",
+    "id": "heart-ocean",
+    "slot": "ring",
+    "region": "start",
+    "unique": false,
+    "stats": {
+      "luck": 11,
+      "sellBoost": 22,
+      "shakeSpeed": 22
     },
-    {
-      "name": "Ring of the Stars",
-      "id": "ring-of-the-stars",
-      "slot": "ring",
-      "unique": true,
-      "stats": {
-        "luck": 650,
-        "capacity": 0,
-        "digStrength": 0,
-        "digSpeed": 30,
-        "shakeStrength": 0,
-        "shakeSpeed": 30,
-        "sizeBoost": 55,
-        "modifierBoost": 110,
-        "walkSpeed": 4,
-        "jumpPower": 5.5
-      },
-      "rarity": "Ascended"
-    }
+    "rarity": "epic"
+  },
+  {
+    "name": "Lightkeeper's Ring",
+    "id": "lightkeepers-ring",
+    "slot": "ring",
+    "region": "start",
+    "unique": false,
+    "stats": {
+      "digSpeed": 27,
+      "sellBoost": 27,
+      "modifierBoost": 27,
+      "inventorySize": 110
+    },
+    "rarity": "legendary"
+  },
+  {
+    "name": "Eye of Fire",
+    "id": "eye-fire",
+    "slot": "ring",
+    "region": "start",
+    "unique": false,
+    "stats": {
+      "luck": 28,
+      "digSpeed": 22,
+      "sizeBoost": 22
+    },
+    "rarity": "legendary"
+  },
+  {
+    "name": "Apocalypse Bringer",
+    "id": "apocalypse-bringer",
+    "slot": "ring",
+    "region": "start",
+    "unique": false,
+    "stats": {
+      "luck": 45,
+      "digStrength": 22,
+      "shakeStrength": 5.5,
+      "sellBoost": 45
+    },
+    "rarity": "Mythic"
+  },
+  {
+    "name": "Mythril Ring",
+    "id": "mythril-ring",
+    "slot": "ring",
+    "region": "snowyMountain",
+    "unique": false,
+    "stats": {
+      "luck": 90,
+      "digSpeed": 42,
+      "shakeSpeed": 42,
+      "sellBoost": 26
+    },
+    "rarity": "Mythic"
+  },
+  {
+    "name": "Prismatic Star",
+    "id": "prismatic-star",
+    "slot": "ring",
+    "region": "start",
+    "unique": false,
+    "stats": {
+      "luck": 22,
+      "digStrength": 11,
+      "capacity": 45,
+      "digSpeed": 22,
+      "shakeStrength": 3.2,
+      "shakeSpeed": 22,
+      "sellBoost": 22,
+      "sizeBoost": 22,
+      "modifierBoost": 22,
+      "inventorySize": 55
+    },
+    "rarity": "Mythic"
+  },
+  {
+    "name": "Ring of Thorns",
+    "id": "ring-of-thorns",
+    "slot": "ring",
+    "region": "overgrownCaves",
+    "unique": false,
+    "stats": {
+      "luck": 110,
+      "digStrength": 45,
+      "modifierBoost": 65,
+      "sizeBoost": 32,
+      "inventorySize": 170
+    },
+    "rarity": "Mythic"
+  },
+  {
+    "name": "Purifying Ring",
+    "id": "purifying-ring",
+    "slot": "ring",
+    "region": "rotwoodSwamp",
+    "unique": false,
+    "stats": {
+      "luck": 90,
+      "capacity": 110,
+      "digStrength": 90,
+      "shakeStrength": 30,
+      "inventorySize": 90
+    },
+    "rarity": "Mythic"
+  },
+  {
+    "name": "Solar Ring",
+    "id": "solar-ring",
+    "slot": "ring",
+    "region": "start",
+    "unique": false,
+    "stats": {
+      "luck": 110,
+      "digSpeed": -30,
+      "digStrength": 9,
+      "shakeStrength": 2.2,
+      "shakeSpeed": -30,
+      "modifierBoost": 22
+    },
+    "rarity": "Mythic"
+  },
+  {
+    "name": "Vortex Ring",
+    "id": "vortex-ring",
+    "slot": "ring",
+    "region": "start",
+    "unique": false,
+    "stats": {
+      "luck": 155,
+      "capacity": 325,
+      "digStrength": 90,
+      "shakeStrength": 11
+    },
+    "rarity": "Exotic"
+  },
+  {
+    "name": "Umbrite Ring",
+    "id": "umbrite-ring",
+    "slot": "ring",
+    "region": "overgrownCaves",
+    "unique": false,
+    "stats": {
+      "luck": 245,
+      "capacity": 220,
+      "digStrength": 50,
+      "shakeStrength": 22,
+      "sizeBoost": 16
+    },
+    "rarity": "Exotic"
+  },
+  {
+    "name": "Otherworldly Ring",
+    "id": "otherworldly-ring",
+    "slot": "ring",
+    "region": "rotwoodSwamp",
+    "unique": false,
+    "stats": {
+      "luck": 375,
+      "digSpeed": 22,
+      "shakeSpeed": 22,
+      "sizeBoost": 26,
+      "sellBoost": 32
+    },
+    "rarity": "Exotic"
+  },
+  {
+    "name": "Dredge Master's Ring",
+    "id": "dredge-masters-ring",
+    "slot": "ring",
+    "region": "start",
+    "unique": true,
+    "stats": {
+      "capacity": 550,
+      "digStrength": 135,
+      "shakeStrength": 30,
+      "sizeBoost": 55
+    },
+    "rarity": "Exotic",
+    "specialAccess": "dredgeMastersRing"
+  },
+  {
+    "name": "Accretion Disk",
+    "id": "accretion-disk",
+    "slot": "ring",
+    "region": "meteorValley",
+    "unique": false,
+    "stats": {
+      "luck": 400,
+      "digSpeed": 50,
+      "shakeSpeed": 50,
+      "sizeBoost": 16,
+      "modifierBoost": 16,
+      "inventorySize": 100
+    },
+    "rarity": "Exotic"
+  },
+  {
+    "name": "Ring of Champions",
+    "id": "ring-of-champions",
+    "slot": "ring",
+    "region": "timelockedSanctuary",
+    "unique": true,
+    "stats": {
+      "luck": 550,
+      "capacity": 450,
+      "digStrength": 180,
+      "digSpeed": 100,
+      "shakeStrength": 55,
+      "shakeSpeed": 100,
+      "sizeBoost": 160,
+      "modifierBoost": 160,
+      "sellBoost": 160
+    },
+    "rarity": "Ascended",
+    "specialAccess": "ringOfChampions"
+  },
+  {
+    "name": "Ring of the Stars",
+    "id": "ring-of-the-stars",
+    "slot": "ring",
+    "region": "meteorValley",
+    "unique": true,
+    "stats": {
+      "luck": 650,
+      "digSpeed": 30,
+      "shakeSpeed": 30,
+      "sizeBoost": 55,
+      "modifierBoost": 110,
+      "walkSpeed": 4,
+      "jumpPower": 5.5
+    },
+    "rarity": "Ascended",
+    "specialAccess": "ringOfTheStars"
+  }
 ]

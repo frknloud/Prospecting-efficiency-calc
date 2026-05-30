@@ -2,23 +2,23 @@ interface Props {
   label: string;
   enabled: boolean;
   onToggle: () => void;
+  disabled?: boolean;
 }
 
-export default function ToggleCard({
-  label,
-  enabled,
-  onToggle
-}: Props) {
+export default function ToggleCard({ label, enabled, onToggle, disabled = false }: Props) {
   return (
     <button
       type="button"
       onClick={onToggle}
+      disabled={disabled}
       className={`
         w-full rounded-xl p-4 text-left transition-all border
         ${
-          enabled
-            ? 'bg-indigo-600 border-indigo-400'
-            : 'bg-slate-700 border-slate-600 hover:bg-slate-600'
+          disabled
+            ? "bg-slate-800 border-slate-700 opacity-50 cursor-not-allowed"
+            : enabled
+              ? "bg-indigo-600 border-indigo-400"
+              : "bg-slate-700 border-slate-600 hover:bg-slate-600"
         }
       `}
     >
@@ -28,7 +28,7 @@ export default function ToggleCard({
         <div
           className={`
             w-4 h-4 rounded-full
-            ${enabled ? 'bg-white' : 'bg-slate-400'}
+            ${enabled ? "bg-white" : "bg-slate-400"}
           `}
         />
       </div>

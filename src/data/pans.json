@@ -1,16 +1,245 @@
 [
   {
+    "id": "rusty-pan",
+    "name": "Rusty Pan",
+    "slot": "pan",
+    "region": "start",
+    "stats": {
+      "luck": 1,
+      "capacity": 5,
+      "shakeStrength": 0.2,
+      "shakeSpeed": 80
+    }
+  },
+  {
+    "id": "plastic-pan",
+    "name": "Plastic Pan",
+    "slot": "pan",
+    "region": "rubbleCreek",
+    "stats": {
+      "luck": 1.25,
+      "capacity": 10,
+      "shakeStrength": 0.6,
+      "shakeSpeed": 100
+    }
+  },
+  {
+    "id": "metal-pan",
+    "name": "Metal Pan",
+    "slot": "pan",
+    "region": "rubbleCreek",
+    "stats": {
+      "luck": 2,
+      "capacity": 20,
+      "shakeStrength": 0.8,
+      "shakeSpeed": 80
+    }
+  },
+  {
+    "id": "silver-pan",
+    "name": "Silver Pan",
+    "slot": "pan",
+    "region": "rubbleCreek",
+    "stats": {
+      "luck": 4,
+      "capacity": 30,
+      "shakeStrength": 0.8,
+      "shakeSpeed": 100
+    }
+  },
+  {
+    "id": "golden-pan",
+    "name": "Golden Pan",
+    "slot": "pan",
+    "region": "fortuneRiver",
+    "stats": {
+      "luck": 10,
+      "capacity": 35,
+      "shakeStrength": 1,
+      "shakeSpeed": 80
+    }
+  },
+  {
+    "id": "magnetic-pan",
+    "name": "Magnetic Pan",
+    "slot": "pan",
+    "region": "fortuneRiver",
+    "stats": {
+      "luck": 15,
+      "capacity": 50,
+      "shakeStrength": 1,
+      "shakeSpeed": 75,
+      "sizeBoost": 25
+    }
+  },
+  {
+    "id": "meteoric-pan",
+    "name": "Meteoric Pan",
+    "slot": "pan",
+    "region": "fortuneRiver",
+    "stats": {
+      "luck": 22,
+      "capacity": 70,
+      "shakeStrength": 2,
+      "shakeSpeed": 100,
+      "modifierBoost": 25
+    }
+  },
+  {
+    "id": "diamond-pan",
+    "name": "Diamond Pan",
+    "slot": "pan",
+    "region": "fortuneRiver",
+    "stats": {
+      "luck": 35,
+      "capacity": 100,
+      "shakeStrength": 3,
+      "shakeSpeed": 100,
+      "modifierBoost": 10,
+      "sizeBoost": 10
+    }
+  },
+  {
+    "id": "aurora-pan",
+    "name": "Aurora Pan",
+    "slot": "pan",
+    "region": "crystalCavern",
+    "stats": {
+      "luck": 50,
+      "capacity": 130,
+      "shakeStrength": 3,
+      "shakeSpeed": 125,
+      "modifierBoost": 25
+    }
+  },
+  {
+    "id": "worldshaker",
+    "name": "Worldshaker",
+    "slot": "pan",
+    "region": "crystalCavern",
+    "stats": {
+      "luck": 70,
+      "capacity": 150,
+      "shakeStrength": 5,
+      "shakeSpeed": 100,
+      "sizeBoost": 25
+    }
+  },
+  {
+    "id": "galactic-pan",
+    "name": "Galactic Pan",
+    "slot": "pan",
+    "region": "start",
+    "stats": {
+      "luck": 100,
+      "capacity": 500,
+      "shakeStrength": 25,
+      "shakeSpeed": 100,
+      "sizeBoost": 25
+    },
+    "limitedTime": true
+  },
+  {
+    "id": "dragonflame-pan",
+    "name": "Dragonflame Pan",
+    "slot": "pan",
+    "region": "calderaPark",
+    "stats": {
+      "luck": 150,
+      "capacity": 180,
+      "shakeStrength": 10,
+      "shakeSpeed": 110,
+      "sizeBoost": -10
+    }
+  },
+  {
+    "id": "fossilized-pan",
+    "name": "Fossilized Pan",
+    "slot": "pan",
+    "region": "calderaPark",
+    "stats": {
+      "luck": 200,
+      "capacity": 225,
+      "shakeStrength": 8,
+      "shakeSpeed": 100,
+      "modifierBoost": 50
+    }
+  },
+  {
+    "id": "frostbite-pan",
+    "name": "Frostbite Pan",
+    "slot": "pan",
+    "region": "snowyMountain",
+    "stats": {
+      "luck": 300,
+      "capacity": 250,
+      "shakeStrength": 15,
+      "shakeSpeed": 80,
+      "sizeBoost": 25
+    }
+  },
+  {
+    "id": "rose-pan",
+    "name": "Rose Pan",
+    "slot": "pan",
+    "region": "start",
+    "stats": {
+      "luck": 300,
+      "capacity": 350,
+      "shakeStrength": 20,
+      "shakeSpeed": 120
+    },
+    "limitedTime": true
+  },
+  {
+    "id": "pumpkin-pan",
+    "name": "Pumpkin Pan",
+    "slot": "pan",
+    "region": "start",
+    "stats": {
+      "luck": 350,
+      "capacity": 350,
+      "shakeStrength": 20,
+      "shakeSpeed": 100
+    },
+    "limitedTime": true
+  },
+  {
+    "id": "gingerbread-pan",
+    "name": "Gingerbread Pan",
+    "slot": "pan",
+    "region": "start",
+    "stats": {
+      "luck": 400,
+      "capacity": 400,
+      "shakeStrength": 25,
+      "shakeSpeed": 120
+    },
+    "limitedTime": true
+  },
+  {
+    "id": "lifetouched-pan",
+    "name": "Lifetouched Pan",
+    "slot": "pan",
+    "region": "overgrownCaves",
+    "stats": {
+      "luck": 400,
+      "capacity": 300,
+      "shakeStrength": 8,
+      "shakeSpeed": 110,
+      "modifierBoost": 50
+    }
+  },
+  {
     "id": "abyssal-pan",
     "name": "Abyssal Pan",
     "slot": "pan",
+    "region": "abyssalDepths",
     "stats": {
       "luck": 700,
       "capacity": 250,
-      "digStrength": 0,
-      "digSpeed": 0,
       "shakeStrength": 8,
       "shakeSpeed": 110,
-      "modifierBoost": 0,
       "sizeBoost": 20
     }
   },
@@ -18,14 +247,12 @@
     "id": "blightflow-pan",
     "name": "Blightflow Pan",
     "slot": "pan",
+    "region": "rotwoodSwamp",
     "stats": {
       "luck": 500,
       "capacity": 400,
-      "digStrength": 0,
-      "digSpeed": 0,
       "shakeStrength": 30,
       "shakeSpeed": 200,
-      "modifierBoost": 0,
       "sizeBoost": 25
     }
   },
@@ -33,15 +260,37 @@
     "id": "nebula-pan",
     "name": "Nebula Pan",
     "slot": "pan",
+    "region": "meteorValley",
     "stats": {
       "luck": 800,
       "capacity": 500,
-      "digStrength": 0,
-      "digSpeed": 0,
       "shakeStrength": 80,
       "shakeSpeed": 125,
       "modifierBoost": 25,
       "sizeBoost": 33
+    },
+    "multipliers": {
+      "luck": 0.1
+    },
+    "consumableBonusAmplifiers": {
+      "luckTotem": {
+        "multipliers": {
+          "luck": 0.25
+        }
+      },
+      "strengthTotem": {
+        "multipliers": {
+          "digStrength": 0.25,
+          "shakeStrength": 0.25
+        }
+      },
+      "luminantTotem": {
+        "multipliers": {
+          "capacity": 0.2,
+          "digSpeed": 0.2,
+          "shakeSpeed": 0.2
+        }
+      }
     }
   }
 ]

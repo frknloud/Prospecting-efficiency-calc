@@ -1,138 +1,316 @@
 [
   {
-      "name": "Helm of the Round",
-      "id": "helm-of-the-round",
-      "slot": "charm",
-      "stats": {
-        "luck": 100,
-        "capacity": 100,
-        "digStrength": 0,
-        "digSpeed": 0,
-        "shakeStrength": 0,
-        "shakeSpeed": 0,
-        "modifierBoost": 0,
-        "sizeBoost": 160,
-        "walkSpeed": -4
-      },
-      "rarity": "Mythic"
+    "name": "Garden Glove",
+    "id": "garden-glove",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "digStrength": 1.1,
+      "capacity": 5.5,
+      "inventorySize": 55
     },
-    {
-      "name": "Cryogenic Preserver",
-      "id": "cryogenic-preserver",
-      "slot": "charm",
-      "stats": {
-        "luck": 275,
-        "capacity": 0,
-        "digStrength": 0,
-        "digSpeed": 0,
-        "shakeStrength": 45,
-        "shakeSpeed": -40,
-        "modifierBoost": 0,
-        "sizeBoost": 0,
-        "sellBoost": 55
-      },
-      "rarity": "Mythic"
+    "rarity": "common"
+  },
+  {
+    "name": "Jade Armband",
+    "id": "jade-armband",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "luck": 10,
+      "capacity": 11,
+      "inventorySize": 80
     },
-    {
-      "name": "Fossilized Crown",
-      "id": "fossilized-crown",
-      "slot": "charm",
-      "stats": {
-        "luck": 250,
-        "capacity": 225,
-        "digStrength": 0,
-        "digSpeed": 0,
-        "shakeStrength": 0,
-        "shakeSpeed": 32,
-        "modifierBoost": 0,
-        "sizeBoost": 55,
-        "sellBoost": 110
-      },
-      "rarity": "Exotic"
+    "rarity": "uncommon"
+  },
+  {
+    "name": "Lapis Armband",
+    "id": "lapis-armband",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "luck": 11,
+      "digSpeed": 45,
+      "shakeSpeed": 45,
+      "inventorySize": 80
     },
-    {
-      "name": "Antlers of Life",
-      "id": "antlers-of-life",
-      "slot": "charm",
-      "stats": {
-        "luck": 640,
-        "capacity": 0,
-        "digStrength": 0,
-        "digSpeed": 44,
-        "shakeStrength": 0,
-        "shakeSpeed": 0,
-        "modifierBoost": 220,
-        "sizeBoost": 65
-      },
-      "rarity": "Exotic"
+    "rarity": "rare"
+  },
+  {
+    "name": "Speed Coil",
+    "id": "speed-coil",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "digSpeed": 80,
+      "shakeSpeed": 80
     },
-    {
-      "name": "Excalibur",
-      "id": "excalibur",
-      "slot": "charm",
-      "stats": {
-        "luck": 550,
-        "capacity": 0,
-        "digStrength": 325,
-        "digSpeed": 0,
-        "shakeStrength": 0,
-        "shakeSpeed": 0,
-        "modifierBoost": 160,
-        "sizeBoost": 0,
-        "treasureMapChance": 175,
-        "walkSpeed": 5.5
-      },
-      "rarity": "Exotic"
+    "rarity": "rare"
+  },
+  {
+    "name": "Gravity Coil",
+    "id": "gravity-coil",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "capacity": 160,
+      "inventorySize": 275
     },
-    {
-      "name": "Timelocked Soul",
-      "id": "timelocked-soul",
-      "slot": "charm",
-      "stats": {
-        "luck": 999,
-        "capacity": 0,
-        "digStrength": 0,
-        "digSpeed": 110,
-        "shakeStrength": 0,
-        "shakeSpeed": 110,
-        "modifierBoost": 0,
-        "sizeBoost": 55,
-        "inventorySize": 500
-      },
-      "rarity": "Exotic"
+    "rarity": "epic"
+  },
+  {
+    "name": "Lava Lantern",
+    "id": "lava-latern",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "luck": 25,
+      "capacity": 45
     },
-    {
-      "name": "Starlight Wings",
-      "id": "starlight-wings",
-      "slot": "charm",
-      "stats": {
-        "luck": 1000,
-        "capacity": 0,
-        "digStrength": 550,
-        "digSpeed": 0,
-        "shakeStrength": 200,
-        "shakeSpeed": 0,
-        "modifierBoost": 0,
-        "sizeBoost": 45,
-        "walkSpeed": 2
-      },
-      "rarity": "Exotic"
+    "rarity": "epic"
+  },
+  {
+    "name": "Guiding Light",
+    "id": "guiding-light",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "luck": 22,
+      "capacity": 45,
+      "inventorySize": 225,
+      "modifierBoost": 50
     },
-    {
-      "name": "Clockwork",
-      "id": "clockwork",
-      "slot": "charm",
-      "stats": {
-        "luck": 0,
-        "capacity": 225,
-        "digStrength": 0,
-        "digSpeed": 0,
-        "shakeStrength": 0,
-        "shakeSpeed": 90,
-        "modifierBoost": 0,
-        "sizeBoost": 210,
-        "sellBoost": 110
-      },
-      "rarity": "Ascended"
-    }
+    "rarity": "legendary"
+  },
+  {
+    "name": "Crown",
+    "id": "crown",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "luck": 35,
+      "sizeBoost": 50,
+      "sellBoost": 100
+    },
+    "rarity": "legendary"
+  },
+  {
+    "name": "Dragon Claw",
+    "id": "dragon-claw",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "digStrength": 32,
+      "shakeStrength": 9,
+      "inventorySize": 450
+    },
+    "rarity": "legendary"
+  },
+  {
+    "name": "Candy Sack",
+    "id": "candy-sack",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "luck": 110,
+      "capacity": 325,
+      "sizeBoost": 75,
+      "inventorySize": 1100
+    },
+    "rarity": "mythic",
+    "limitedTime": true
+  },
+  {
+    "name": "Santa Hat",
+    "id": "santa-hat",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "luck": 150,
+      "capacity": 225,
+      "shakeStrength": 9,
+      "walkSpeed": 2.2
+    },
+    "rarity": "mythic",
+    "limitedTime": true
+  },
+  {
+    "name": "Bunny Ears",
+    "id": "bunny-ears",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "luck": 200,
+      "modifierBoost": 55,
+      "walkSpeed": 6.5,
+      "inventorySize": 200,
+      "jumpPower": 11
+    },
+    "rarity": "mythic",
+    "limitedTime": true
+  },
+  {
+    "name": "Helm of the Round",
+    "id": "helm-of-the-round",
+    "slot": "charm",
+    "region": "overgrownCaves",
+    "stats": {
+      "luck": 100,
+      "capacity": 100,
+      "sizeBoost": 160,
+      "walkSpeed": -4
+    },
+    "rarity": "Mythic"
+  },
+  {
+    "name": "Royal Federation Crown",
+    "id": "royal-federation-crown",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "luck": 100,
+      "sizeBoost": 100,
+      "sellBoost": 200
+    },
+    "rarity": "Mythic"
+  },
+  {
+    "name": "Phoenix Wings",
+    "id": "phoenix-wings",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "luck": 325,
+      "capacity": -80,
+      "sizeBoost": 450
+    },
+    "rarity": "Mythic"
+  },
+  {
+    "name": "Cryogenic Preserver",
+    "id": "cryogenic-preserver",
+    "slot": "charm",
+    "region": "snowyMountain",
+    "stats": {
+      "luck": 275,
+      "shakeStrength": 45,
+      "shakeSpeed": -40,
+      "sellBoost": 55
+    },
+    "rarity": "Mythic"
+  },
+  {
+    "name": "Pumpkin Lord",
+    "id": "pumpkin-lord",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "digStrength": 220,
+      "shakeStrength": 54,
+      "walkSpeed": 4.5,
+      "inventorySize": 550,
+      "sizeBoost": 200
+    },
+    "rarity": "exotic",
+    "limitedTime": true
+  },
+  {
+    "name": "Witch Hat",
+    "id": "witch-hat",
+    "slot": "charm",
+    "region": "start",
+    "stats": {
+      "luck": 1100,
+      "modifierBoost": 110,
+      "walkSpeed": 5.5,
+      "inventorySize": 450
+    },
+    "rarity": "exotic",
+    "limitedTime": true
+  },
+  {
+    "name": "Fossilized Crown",
+    "id": "fossilized-crown",
+    "slot": "charm",
+    "region": "infernalHeart",
+    "stats": {
+      "luck": 260,
+      "capacity": 225,
+      "shakeSpeed": 32,
+      "sizeBoost": 55,
+      "sellBoost": 110
+    },
+    "rarity": "Exotic"
+  },
+  {
+    "name": "Antlers of Life",
+    "id": "antlers-of-life",
+    "slot": "charm",
+    "region": "overgrownCaves",
+    "stats": {
+      "luck": 640,
+      "digSpeed": 44,
+      "modifierBoost": 220,
+      "sizeBoost": 65
+    },
+    "rarity": "Exotic"
+  },
+  {
+    "name": "Excalibur",
+    "id": "excalibur",
+    "slot": "charm",
+    "region": "overgrownCaves",
+    "stats": {
+      "luck": 550,
+      "digStrength": 325,
+      "modifierBoost": 160,
+      "treasureMapChance": 175,
+      "walkSpeed": 5.5
+    },
+    "rarity": "Exotic"
+  },
+  {
+    "name": "Timelocked Soul",
+    "id": "timelocked-soul",
+    "slot": "charm",
+    "region": "timelockedSanctuary",
+    "stats": {
+      "luck": 999,
+      "digSpeed": 110,
+      "shakeSpeed": 110,
+      "sizeBoost": 55,
+      "inventorySize": 500
+    },
+    "rarity": "Exotic"
+  },
+  {
+    "name": "Starlight Wings",
+    "id": "starlight-wings",
+    "slot": "charm",
+    "region": "meteorValley",
+    "stats": {
+      "luck": 1000,
+      "digStrength": 550,
+      "shakeStrength": 200,
+      "sizeBoost": 45,
+      "walkSpeed": 2
+    },
+    "rarity": "Exotic"
+  },
+  {
+    "name": "Clockwork",
+    "id": "clockwork",
+    "slot": "charm",
+    "region": "meteorValley",
+    "stats": {
+      "luck": 225,
+      "capacity": 275,
+      "shakeSpeed": 100,
+      "sizeBoost": 210,
+      "sellBoost": 110,
+      "inventorySize": 325
+    },
+    "rarity": "Ascended",
+    "specialAccess": "clockwork"
+  }
 ]

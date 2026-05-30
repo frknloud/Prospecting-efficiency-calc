@@ -1,41 +1,44 @@
-const statConfig: Record<string, { label: string; color: string; border?: boolean }> = {
+const statConfig: Record<
+  string,
+  { label: string; color: string; border?: boolean }
+> = {
   luck: {
-    label: 'L',
-    color: '#C4FFB4'
+    label: "L",
+    color: "#C4FFB4",
   },
   capacity: {
-    label: 'C',
-    color: '#F7E0AE'
+    label: "C",
+    color: "#F7E0AE",
   },
   digStrength: {
-    label: 'Dst',
-    color: '#FFC1AE'
+    label: "Dst",
+    color: "#FFC1AE",
   },
   shakeStrength: {
-    label: 'Sst',
-    color: '#FFC1AE'
+    label: "Sst",
+    color: "#FFC1AE",
   },
   digSpeed: {
-    label: 'Dsp',
-    color: '#ACDBFF'
+    label: "Dsp",
+    color: "#ACDBFF",
   },
   shakeSpeed: {
-    label: 'Ssp',
-    color: '#FFFFFF',
-    border: true
+    label: "Ssp",
+    color: "#FFFFFF",
+    border: true,
   },
   sizeBoost: {
-    label: 'W',
-    color: '#FF4646'
+    label: "W",
+    color: "#FF4646",
   },
   modifierBoost: {
-    label: 'M',
-    color: '#2BFF4B'
+    label: "M",
+    color: "#2BFF4B",
   },
   sellBoost: {
-    label: '$',
-    color: '#F6D419'
-  }
+    label: "$",
+    color: "#F6D419",
+  },
 };
 
 interface Props {
@@ -51,24 +54,20 @@ export default function StatBadge({ statKey, value }: Props) {
   }
 
   const displayPercent =
-    value !== undefined
-      ? Math.round((value - 1) * 100)
-      : undefined;
+    value !== undefined ? Math.round((value - 1) * 100) : undefined;
 
   return (
     <div
-      className={`rounded-md px-2 py-1 text-xs font-bold ${config.border ? 'border border-slate-400' : ''}`}
+      className={`rounded-md px-2 py-1 text-xs font-bold ${config.border ? "border border-slate-400" : ""}`}
       style={{
         backgroundColor: config.color,
-        color: '#111827'
+        color: "#111827",
       }}
     >
       {config.label}
 
       {displayPercent !== undefined && (
-        <span className="ml-1 text-[10px]">
-          +{displayPercent}%
-        </span>
+        <span className="ml-1 text-[10px]">+{displayPercent}%</span>
       )}
     </div>
   );
