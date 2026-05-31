@@ -128,43 +128,75 @@ function hasMinStats(request: OptimizerRequest): boolean {
   return Boolean(request.minStats && Object.keys(request.minStats).length > 0);
 }
 
-function scoreConstraintTargetBuild(build: BuildState, request: OptimizerRequest): number {
-  const evaluated = evaluateBuild(build);
-
-  if (!request.minStats) {
-    return scoreBuild(evaluated, request);
+function getMinConstraintStatus(
+  evaluated: ReturnType<typeof evaluateBuild>,
+  request: OptimizerRequest,
+): { hasConstraints: boolean; passes: boolean; deficitRatio: number; progressRatio: number } {
+  if (!request.minStats || Object.keys(request.minStats).length === 0) {
+    return {
+      hasConstraints: false,
+      passes: true,
+      deficitRatio: 0,
+      progressRatio: 1,
+    };
   }
 
-  let cappedProgress = 0;
-  let uncappedProgress = 0;
-  let remainingDeficit = 0;
+  let checkedStats = 0;
+  let totalDeficitRatio = 0;
+  let totalProgressRatio = 0;
 
   for (const [stat, min] of Object.entries(request.minStats)) {
     const target = Number(min ?? 0);
 
     if (target <= 0) {
-      cappedProgress += 1;
-      uncappedProgress += 1;
       continue;
     }
 
-    const value = Number(evaluated.stats[stat as keyof typeof evaluated.stats] ?? 0);
-    const progress = Math.max(value / target, 0);
+    checkedStats += 1;
 
-    cappedProgress += Math.min(progress, 1);
-    uncappedProgress += progress;
-    remainingDeficit += Math.max(target - value, 0) / target;
+    const value = Number(evaluated.stats[stat as keyof typeof evaluated.stats] ?? 0);
+    const safeValue = Math.max(value, 0);
+
+    totalDeficitRatio += Math.max(target - safeValue, 0) / target;
+    totalProgressRatio += Math.min(safeValue / target, 1);
   }
 
-  // Hard min constraints need their own survival score. The regular objective may
-  // prefer high-efficiency builds so strongly that a low-efficiency, constraint-
-  // satisfying path gets pruned before the final stage. This score makes lower
-  // remaining deficit the dominant search signal, then keeps objective score as
-  // a small tie-breaker.
-  return cappedProgress * 1_000_000_000_000
-    + uncappedProgress * 1_000_000
-    - remainingDeficit * 100_000
-    + scoreBuild(evaluated, request);
+  if (checkedStats === 0) {
+    return {
+      hasConstraints: false,
+      passes: true,
+      deficitRatio: 0,
+      progressRatio: 1,
+    };
+  }
+
+  return {
+    hasConstraints: true,
+    passes: totalDeficitRatio <= 0,
+    deficitRatio: totalDeficitRatio / checkedStats,
+    progressRatio: totalProgressRatio / checkedStats,
+  };
+}
+
+function scoreConstraintTargetBuild(build: BuildState, request: OptimizerRequest): number {
+  const evaluated = evaluateBuild(build);
+  const objectiveScore = scoreBuild(evaluated, request);
+  const constraintStatus = getMinConstraintStatus(evaluated, request);
+
+  if (!constraintStatus.hasConstraints) {
+    return objectiveScore;
+  }
+
+  // Min constraints are hard requirements, not target zones. While a candidate is
+  // below the desired minimum, search survival is dominated by reducing its
+  // remaining deficit. Once a candidate satisfies every minimum, it switches back
+  // to normal objective scoring so extra stats above the minimum can still win
+  // when the primary/secondary objectives prefer them.
+  if (constraintStatus.passes) {
+    return 1_000_000_000_000_000 + objectiveScore;
+  }
+
+  return (1 - constraintStatus.deficitRatio) * 1_000_000_000_000 + objectiveScore;
 }
 
 function cloneRings(build: BuildState, ringSlotLimit: number): RingSelection[] {
@@ -278,45 +310,25 @@ function scoreCandidateBuild(build: BuildState, request: OptimizerRequest): numb
   return scoreBuild(evaluateBuild(build), request);
 }
 
-function getMinConstraintProgressScore(
-  evaluated: ReturnType<typeof evaluateBuild>,
-  request: OptimizerRequest,
-): number {
-  if (!request.minStats) {
-    return 0;
-  }
-
-  let progress = 0;
-
-  for (const [stat, min] of Object.entries(request.minStats)) {
-    const target = Number(min ?? 0);
-
-    if (target <= 0) {
-      progress += 1;
-      continue;
-    }
-
-    const value = Number(evaluated.stats[stat as keyof typeof evaluated.stats] ?? 0);
-
-    progress += Math.min(Math.max(value / target, 0), 1);
-  }
-
-  return progress;
-}
-
 function scoreSearchBuild(build: BuildState, request: OptimizerRequest): number {
   const evaluated = evaluateBuild(build);
   const objectiveScore = scoreBuild(evaluated, request);
+  const constraintStatus = getMinConstraintStatus(evaluated, request);
 
-  if (!request.minStats) {
+  if (!constraintStatus.hasConstraints) {
     return objectiveScore;
   }
 
-  // During full-build beam search, min constraints need to influence pruning before
-  // the final build is complete. Without this, an efficiency-first search can prune
-  // sizeBoost-heavy or other constraint-heavy paths before they ever satisfy the
-  // user's desired minimum. Final results are still ranked by the selected objectives.
-  return getMinConstraintProgressScore(evaluated, request) * 1_000_000_000_000 + objectiveScore;
+  // Constraint-first, objective-second behavior:
+  // - Invalid builds are ranked by how much deficit remains.
+  // - Valid builds are ranked by the normal objective score.
+  // This prevents the search from hovering around the minimum and lets any build
+  // above the minimum compete normally by efficiency/secondary objectives.
+  if (constraintStatus.passes) {
+    return 1_000_000_000_000_000 + objectiveScore;
+  }
+
+  return (1 - constraintStatus.deficitRatio) * 1_000_000_000_000 + objectiveScore;
 }
 
 function makeFullBuildResult(build: BuildState, request: OptimizerRequest): OptimizerResult {
