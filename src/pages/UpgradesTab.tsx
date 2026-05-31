@@ -6,6 +6,8 @@ interface UpgradeRecommendationView {
   enchantName?: string | null;
   mutationName?: string | null;
   modifierName?: string | null;
+  currentName: string;
+  recommendedName: string;
   efficiencyGain: number;
   percentGain: number;
   luckGain: number;
@@ -38,16 +40,7 @@ function formatSignedNumber(value: number): string {
   return `${sign}${value.toFixed(2)}`;
 }
 
-function formatUpgradeName(upgrade: UpgradeRecommendationView): string {
-  return [
-    upgrade.itemName,
-    upgrade.enchantName,
-    upgrade.mutationName,
-    upgrade.modifierName,
-  ]
-    .filter(Boolean)
-    .join(" + ");
-}
+
 
 function LoadingProgressBar() {
   return (
@@ -107,42 +100,51 @@ export default function UpgradesTab({
           No recommendations yet. Run Upgrade Advisor to generate the list.
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-3">
           {upgradeRecommendations.map((upgrade, index) => (
             <div
-              key={`${upgrade.slot}-${upgrade.itemName}-${index}`}
-              className="bg-slate-800 rounded-xl p-3"
+              key={`${upgrade.slot}-${upgrade.recommendedName}-${index}`}
+              className="bg-slate-800 rounded-xl p-3 space-y-3"
             >
-              <div className="flex justify-between items-start gap-3">
-                <div>
-                  <div className="font-semibold text-slate-100">
-                    {upgrade.slot}
-                  </div>
-
-                  <div className="text-sm text-slate-300">
-                    {formatUpgradeName(upgrade)}
-                  </div>
+              <div>
+                <div className="font-semibold text-slate-100">
+                  {upgrade.slot}
                 </div>
 
-                <div className="text-right">
-                  <div className="text-green-400 font-bold">
-                    Score {formatSignedPercent(upgrade.balanceScore)}
-                  </div>
-
-                  <div className="text-xs text-slate-400">
-                    Eff {formatSignedPercent(upgrade.percentGain)} · Luck{" "}
-                    {formatSignedPercent(upgrade.luckPercentGain)}
-                  </div>
-
-                  <div className="text-xs text-slate-500">
-                    {formatSignedNumber(upgrade.efficiencyGain)} efficiency ·{" "}
-                    {formatSignedNumber(upgrade.luckGain)} luck
-                  </div>
+                <div className="mt-1 text-sm text-slate-300 leading-relaxed">
+                  <span className="font-semibold text-slate-400">Replace:</span>{" "}
+                  <span className="text-slate-200">{upgrade.currentName}</span>{" "}
+                  <span className="text-slate-500">with</span>{" "}
+                  <span className="font-semibold text-emerald-300">
+                    {upgrade.recommendedName}
+                  </span>
                 </div>
               </div>
 
+              <div className="flex flex-wrap gap-2 text-xs">
+                <span className="rounded-full bg-emerald-500/10 px-2 py-1 font-semibold text-emerald-300">
+                  Score {formatSignedPercent(upgrade.balanceScore)}
+                </span>
+
+                <span className="rounded-full bg-slate-700 px-2 py-1 text-slate-300">
+                  Eff {formatSignedPercent(upgrade.percentGain)}
+                </span>
+
+                <span className="rounded-full bg-slate-700 px-2 py-1 text-slate-300">
+                  Luck {formatSignedPercent(upgrade.luckPercentGain)}
+                </span>
+
+                <span className="rounded-full bg-slate-900 px-2 py-1 text-slate-400">
+                  {formatSignedNumber(upgrade.efficiencyGain)} efficiency
+                </span>
+
+                <span className="rounded-full bg-slate-900 px-2 py-1 text-slate-400">
+                  {formatSignedNumber(upgrade.luckGain)} luck
+                </span>
+              </div>
+
               {upgrade.digsImproved && (
-                <div className="mt-2 text-xs text-amber-300 font-semibold">
+                <div className="text-xs text-amber-300 font-semibold">
                   Dig breakpoint improvement
                 </div>
               )}

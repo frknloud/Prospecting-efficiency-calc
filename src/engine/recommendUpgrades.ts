@@ -43,6 +43,10 @@ export interface UpgradeRecommendation {
 
   modifierName?: string | null;
 
+  currentName: string;
+
+  recommendedName: string;
+
   efficiencyGain: number;
 
   percentGain: number;
@@ -73,6 +77,29 @@ const typedEnchants = enchants as Enchant[];
 const typedMuseumMinerals = museumMinerals as MuseumMineral[];
 
 const typedMuseumModifiers = museumModifiers as MuseumModifier[];
+
+
+function getNameById<T extends { id: string; name: string }>(
+  id: string | null | undefined,
+  items: T[],
+): string | null {
+  if (!id) {
+    return null;
+  }
+
+  return items.find((item) => item.id === id)?.name ?? id;
+}
+
+function formatModifiedName(
+  itemName: string | null,
+  modifierName?: string | null,
+): string {
+  if (!itemName) {
+    return "None";
+  }
+
+  return [modifierName, itemName].filter(Boolean).join(" ");
+}
 
 function isSameItemAndModifier(
   currentItemId: string | null,
@@ -213,6 +240,8 @@ export function recommendUpgrades(
   function pushRecommendation(
     slot: string,
     itemName: string,
+    currentName: string,
+    recommendedName: string,
     updated: BuildState,
     enchantName?: string | null,
     mutationName?: string | null,
@@ -248,6 +277,10 @@ export function recommendUpgrades(
 
       modifierName,
 
+      currentName,
+
+      recommendedName,
+
       efficiencyGain,
 
       percentGain,
@@ -280,6 +313,11 @@ export function recommendUpgrades(
       pushRecommendation(
         "Pan",
         pan.name,
+        formatModifiedName(
+          getNameById(buildState.panId, typedPans),
+          getNameById(buildState.panEnchantId, typedEnchants),
+        ),
+        formatModifiedName(pan.name, enchant.name),
         buildFromCurrent(buildState, {
           selectedPan: pan.id,
           selectedPanEnchant: enchant.id,
@@ -297,6 +335,8 @@ export function recommendUpgrades(
     pushRecommendation(
       "Shovel",
       shovel.name,
+      formatModifiedName(getNameById(buildState.shovelId, typedShovels)),
+      formatModifiedName(shovel.name),
       buildFromCurrent(buildState, {
         selectedShovel: shovel.id,
       }),
@@ -323,6 +363,11 @@ export function recommendUpgrades(
       pushRecommendation(
         "Necklace",
         necklace.name,
+        formatModifiedName(
+          getNameById(buildState.necklaceId, typedNecklaces),
+          getNameById(buildState.necklaceMutationId, typedMutations),
+        ),
+        formatModifiedName(necklace.name, mutation?.name ?? null),
         buildFromCurrent(buildState, {
           selectedNecklace: necklace.id,
           selectedNecklaceMutation: mutationId,
@@ -353,6 +398,11 @@ export function recommendUpgrades(
       pushRecommendation(
         "Charm",
         charm.name,
+        formatModifiedName(
+          getNameById(buildState.charmId, typedCharms),
+          getNameById(buildState.charmMutationId, typedMutations),
+        ),
+        formatModifiedName(charm.name, mutation?.name ?? null),
         buildFromCurrent(buildState, {
           selectedCharm: charm.id,
           selectedCharmMutation: mutationId,
@@ -412,6 +462,11 @@ export function recommendUpgrades(
         pushRecommendation(
           `Ring ${index + 1}`,
           ring.name,
+          formatModifiedName(
+            getNameById(currentRing.ringId, typedRings),
+            getNameById(currentRing.mutationId, typedMutations),
+          ),
+          formatModifiedName(ring.name, mutation?.name ?? null),
           buildFromCurrent(buildState, {
             selectedRings: ringIds,
             selectedRingMutations: mutationIds,
@@ -465,6 +520,11 @@ export function recommendUpgrades(
         pushRecommendation(
           `Museum Slot ${slot.slotId}`,
           mineral.name,
+          formatModifiedName(
+            getNameById(slot.mineralId, typedMuseumMinerals),
+            getNameById(slot.modifierId, typedMuseumModifiers),
+          ),
+          formatModifiedName(mineral.name, modifier?.name ?? null),
           buildFromCurrent(buildState, {
             museumSlots: nextMuseumSlots,
           }),
