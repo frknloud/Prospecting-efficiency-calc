@@ -62,7 +62,7 @@ export default function UpgradesTab({
   needsRefresh,
 }: UpgradesTabProps) {
   return (
-    <div className="bg-slate-700 rounded-2xl p-4">
+    <div className="max-w-5xl bg-slate-700 rounded-2xl p-4">
       <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="text-lg font-semibold">Upgrade Advisor</h3>
