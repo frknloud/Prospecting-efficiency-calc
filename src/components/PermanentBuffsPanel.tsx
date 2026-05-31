@@ -120,6 +120,10 @@ function parseNumberOnlyInput(value: string): number {
   return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
 }
 
+function formatLuckBadge(value: number): string {
+  return Number.isFinite(value) ? value.toLocaleString() : "0";
+}
+
 export default function PermanentBuffsPanel({
   accessSettings,
   permanentBuffs,
@@ -154,18 +158,23 @@ export default function PermanentBuffsPanel({
         />
 
         <label className="block rounded-xl p-4 bg-slate-700 border border-slate-600">
-          <span className="block font-medium mb-2">Experience - Login Bonus</span>
-          <input
-            type="number"
-            min={0}
-            step={1}
-            inputMode="numeric"
-            value={numberInputValue(permanentBuffs.experience)}
+          <span className="block font-medium mb-2">Mastery</span>
+          <select
+            value={permanentBuffs.mastery}
             onChange={(event) =>
-              updateNumberBuff("experience", event.target.value)
+              setPermanentBuffs((previous) => ({
+                ...previous,
+                mastery: Number(event.target.value),
+              }))
             }
             className="w-full rounded-lg bg-slate-900 border border-slate-600 px-3 py-2 text-white"
-          />
+          >
+            {MASTERY_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </label>
 
         {REGION_LOCKED_PERMANENT_BUFFS.map((buff) => {
@@ -186,6 +195,24 @@ export default function PermanentBuffsPanel({
         })}
 
         <label className="block rounded-xl p-4 bg-slate-700 border border-slate-600">
+          <span className="block font-medium mb-2">Experience - Login Bonus</span>
+          <input
+            type="number"
+            min={0}
+            step={1}
+            inputMode="numeric"
+            value={numberInputValue(permanentBuffs.experience)}
+            onChange={(event) =>
+              updateNumberBuff("experience", event.target.value)
+            }
+            className="w-full rounded-lg bg-slate-900 border border-slate-600 px-3 py-2 text-white"
+          />
+          <span className="mt-2 inline-flex rounded-full bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 text-sm font-semibold text-emerald-200">
+            + {formatLuckBadge(permanentBuffs.experience * 5)} Luck
+          </span>
+        </label>
+
+        <label className="block rounded-xl p-4 bg-slate-700 border border-slate-600">
           <span className="block font-medium mb-2">Dredge Master Quests Completed</span>
           <input
             type="number"
@@ -198,26 +225,9 @@ export default function PermanentBuffsPanel({
             }
             className="w-full rounded-lg bg-slate-900 border border-slate-600 px-3 py-2 text-white"
           />
-        </label>
-
-        <label className="block rounded-xl p-4 bg-slate-700 border border-slate-600">
-          <span className="block font-medium mb-2">Mastery</span>
-          <select
-            value={permanentBuffs.mastery}
-            onChange={(event) =>
-              setPermanentBuffs((previous) => ({
-                ...previous,
-                mastery: Number(event.target.value),
-              }))
-            }
-            className="w-full rounded-lg bg-slate-900 border border-slate-600 px-3 py-2 text-white"
-          >
-            {MASTERY_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          <span className="mt-2 inline-flex rounded-full bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 text-sm font-semibold text-emerald-200">
+            + {formatLuckBadge(permanentBuffs.dredgeMaster * 3)} Luck
+          </span>
         </label>
       </div>
     </div>
