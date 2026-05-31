@@ -108,17 +108,63 @@ function buildAllowedStageKeys(
   request: OptimizerRequest,
   config: { beamWidth: number; perStageLimit: number },
 ): Set<string> {
-  const seedOptions = rankStageOptions(
-    stage.buildOptions(seedBuild, request),
-    request,
-    getStageSeedLimit(config),
-  );
+  const seedLimit = hasMinStats(request)
+    ? Math.max(getStageSeedLimit(config), config.perStageLimit * 8, 64)
+    : getStageSeedLimit(config);
+
+  const seedOptions = hasMinStats(request)
+    ? rankConstraintStageOptions(stage.buildOptions(seedBuild, request), request, seedLimit)
+    : rankStageOptions(stage.buildOptions(seedBuild, request), request, seedLimit);
 
   const keys = new Set(seedOptions.map((option) => stage.optionKey(option.build)));
 
   keys.add(stage.optionKey(seedBuild));
 
   return keys;
+}
+
+
+function hasMinStats(request: OptimizerRequest): boolean {
+  return Boolean(request.minStats && Object.keys(request.minStats).length > 0);
+}
+
+function scoreConstraintTargetBuild(build: BuildState, request: OptimizerRequest): number {
+  const evaluated = evaluateBuild(build);
+
+  if (!request.minStats) {
+    return scoreBuild(evaluated, request);
+  }
+
+  let cappedProgress = 0;
+  let uncappedProgress = 0;
+  let remainingDeficit = 0;
+
+  for (const [stat, min] of Object.entries(request.minStats)) {
+    const target = Number(min ?? 0);
+
+    if (target <= 0) {
+      cappedProgress += 1;
+      uncappedProgress += 1;
+      continue;
+    }
+
+    const value = Number(evaluated.stats[stat as keyof typeof evaluated.stats] ?? 0);
+    const progress = Math.max(value / target, 0);
+
+    cappedProgress += Math.min(progress, 1);
+    uncappedProgress += progress;
+    remainingDeficit += Math.max(target - value, 0) / target;
+  }
+
+  // Hard min constraints need their own survival score. The regular objective may
+  // prefer high-efficiency builds so strongly that a low-efficiency, constraint-
+  // satisfying path gets pruned before the final stage. This score makes lower
+  // remaining deficit the dominant search signal, then keeps objective score as
+  // a small tie-breaker.
+  return cappedProgress * 1_000_000_000_000
+    + uncappedProgress * 1_000_000
+    - remainingDeficit * 100_000
+    + scoreBuild(evaluated, request);
 }
 
 function cloneRings(build: BuildState, ringSlotLimit: number): RingSelection[] {
@@ -311,6 +357,139 @@ function rankStageOptions(
     .sort((a, b) => b.score - a.score);
 
   return scored.slice(0, limit).map(({ option }) => option);
+}
+
+function rankConstraintStageOptions(
+  options: StageOption[],
+  request: OptimizerRequest,
+  limit: number,
+): StageOption[] {
+  const scored = uniqueStageOptions(options)
+    .filter((option) => isCandidateBuildValid(option.build, request))
+    .map((option) => ({
+      option,
+      score: scoreConstraintTargetBuild(option.build, request),
+    }))
+    .sort((a, b) => b.score - a.score);
+
+  return scored.slice(0, limit).map(({ option }) => option);
+}
+
+function mergeFrontierCandidates(
+  candidates: ScoredBuild[],
+  limit: number,
+): ScoredBuild[] {
+  const unique = new Map<string, ScoredBuild>();
+
+  for (const candidate of candidates) {
+    const identity = getFullBuildIdentity(candidate.build);
+    const existing = unique.get(identity);
+
+    if (!existing || candidate.score > existing.score) {
+      unique.set(identity, candidate);
+    }
+  }
+
+  return Array.from(unique.values())
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
+}
+
+function runConstraintRescueSearch(
+  initialBuild: BuildState,
+  request: OptimizerRequest,
+  ringSlotLimit: number,
+  stages: FullBuildStage[],
+): ScoredBuild[] {
+  if (!hasMinStats(request)) {
+    return [];
+  }
+
+  // This fallback is intentionally more constraint-driven than the normal beam.
+  // It exists for cases like desired sizeBoost >= 1500 where the best valid build
+  // can be much worse for efficiency, so objective-first pruning may never keep it.
+  const rescueBeamWidth = 72;
+  const rescuePerStageLimit = 36;
+
+  let rescueFrontier: ScoredBuild[] = [
+    {
+      build: initialBuild,
+      score: scoreConstraintTargetBuild(initialBuild, request),
+      label: "Constraint rescue: current build",
+    },
+  ];
+
+  for (const stage of stages) {
+    const stageCandidates: ScoredBuild[] = [];
+
+    for (const frontierBuild of rescueFrontier) {
+      const rankedOptions = rankConstraintStageOptions(
+        stage.buildOptions(frontierBuild.build, request),
+        request,
+        rescuePerStageLimit,
+      );
+
+      for (const option of rankedOptions) {
+        stageCandidates.push({
+          build: option.build,
+          score: scoreConstraintTargetBuild(option.build, request),
+          label: `${stage.name}: ${option.label}`,
+        });
+      }
+    }
+
+    rescueFrontier = mergeFrontierCandidates(stageCandidates, rescueBeamWidth);
+
+    if (rescueFrontier.length === 0) {
+      return [];
+    }
+  }
+
+  return rescueFrontier;
+}
+
+function buildResultsOrConstraintRescue(
+  frontier: ScoredBuild[],
+  request: OptimizerRequest,
+  baselineScore: number,
+  originalBuildHash: string,
+  originalBuildIdentity: string,
+  topResults: number,
+  requireBaselineImprovement: boolean,
+  initialBuild: BuildState,
+  ringSlotLimit: number,
+  stages: FullBuildStage[],
+): OptimizerResult[] {
+  const primaryResults = buildFinalResultsFromFrontier(
+    frontier,
+    request,
+    baselineScore,
+    originalBuildHash,
+    originalBuildIdentity,
+    topResults,
+    requireBaselineImprovement,
+  );
+
+  if (primaryResults.length > 0 || !hasMinStats(request)) {
+    return primaryResults;
+  }
+
+  const rescueFrontier = runConstraintRescueSearch(
+    initialBuild,
+    request,
+    ringSlotLimit,
+    stages,
+  );
+
+  return buildFinalResultsFromFrontier(
+    rescueFrontier,
+    request,
+    baselineScore,
+    originalBuildHash,
+    originalBuildIdentity,
+    topResults,
+    false,
+  );
 }
 
 function getAvailableMutationIds(request: OptimizerRequest): Array<string | null> {
@@ -727,7 +906,7 @@ export async function runFullBuildOptimizer(
 
   for (const stage of stages) {
     if (Date.now() > deadline) {
-      return buildFinalResultsFromFrontier(
+      return buildResultsOrConstraintRescue(
         frontier,
         request,
         baselineScore,
@@ -735,6 +914,9 @@ export async function runFullBuildOptimizer(
         originalBuildIdentity,
         topResults,
         requireBaselineImprovement,
+        initialBuild,
+        ringSlotLimit,
+        stages,
       );
     }
 
@@ -746,7 +928,7 @@ export async function runFullBuildOptimizer(
       if (Date.now() > deadline) {
         const partialFrontier = Array.from(stageMap.values());
 
-        return buildFinalResultsFromFrontier(
+        return buildResultsOrConstraintRescue(
           partialFrontier.length > 0 ? partialFrontier : frontier,
           request,
           baselineScore,
@@ -754,6 +936,9 @@ export async function runFullBuildOptimizer(
           originalBuildIdentity,
           topResults,
           requireBaselineImprovement,
+          initialBuild,
+          ringSlotLimit,
+          stages,
         );
       }
 
@@ -767,11 +952,13 @@ export async function runFullBuildOptimizer(
           return optionKey === currentStageKey || allowedStageKeys.has(optionKey);
         });
 
-      const rankedOptions = rankStageOptions(
-        stageOptions,
-        request,
-        config.perStageLimit,
-      );
+      const stageLimit = hasMinStats(request)
+        ? Math.max(config.perStageLimit * 3, 24)
+        : config.perStageLimit;
+
+      const rankedOptions = hasMinStats(request)
+        ? rankConstraintStageOptions(stageOptions, request, stageLimit)
+        : rankStageOptions(stageOptions, request, stageLimit);
 
       for (const option of rankedOptions) {
         const identity = getFullBuildIdentity(option.build);
@@ -790,16 +977,31 @@ export async function runFullBuildOptimizer(
       }
     }
 
+    const frontierLimit = hasMinStats(request)
+      ? Math.max(config.beamWidth * 3, 72)
+      : config.beamWidth;
+
     frontier = Array.from(stageMap.values())
       .sort((a, b) => b.score - a.score)
-      .slice(0, config.beamWidth);
+      .slice(0, frontierLimit);
 
     if (frontier.length === 0) {
-      return [];
+      return buildResultsOrConstraintRescue(
+        frontier,
+        request,
+        baselineScore,
+        originalBuildHash,
+        originalBuildIdentity,
+        topResults,
+        requireBaselineImprovement,
+        initialBuild,
+        ringSlotLimit,
+        stages,
+      );
     }
   }
 
-  return buildFinalResultsFromFrontier(
+  return buildResultsOrConstraintRescue(
     frontier,
     request,
     baselineScore,
@@ -807,5 +1009,8 @@ export async function runFullBuildOptimizer(
     originalBuildIdentity,
     topResults,
     requireBaselineImprovement,
+    initialBuild,
+    ringSlotLimit,
+    stages,
   );
 }
