@@ -9,7 +9,9 @@ type VersionPayload = {
 
 async function fetchLatestVersion(): Promise<string | null> {
   try {
-    const response = await fetch(`/version.json?ts=${Date.now()}`, {
+    const baseUrl = import.meta.env.BASE_URL || "/";
+    const versionUrl = `${baseUrl}version.json?ts=${Date.now()}`;
+    const response = await fetch(versionUrl, {
       cache: "no-store",
     });
 
