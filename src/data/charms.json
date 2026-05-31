@@ -158,7 +158,7 @@
       "luck": 100,
       "capacity": 100,
       "sizeBoost": 160,
-      "walkSpeed": -4
+      "walkSpeed": -0.75
     },
     "rarity": "Mythic"
   },
@@ -181,7 +181,7 @@
     "region": "start",
     "stats": {
       "luck": 325,
-      "capacity": -80,
+      "capacity": -35,
       "sizeBoost": 450
     },
     "rarity": "Mythic"
@@ -194,7 +194,7 @@
     "stats": {
       "luck": 275,
       "shakeStrength": 45,
-      "shakeSpeed": -40,
+      "shakeSpeed": -18,
       "sellBoost": 55
     },
     "rarity": "Mythic"

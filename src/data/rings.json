@@ -227,10 +227,10 @@
     "unique": false,
     "stats": {
       "luck": 110,
-      "digSpeed": -30,
+      "digSpeed": -8,
       "digStrength": 9,
       "shakeStrength": 2.2,
-      "shakeSpeed": -30,
+      "shakeSpeed": -8,
       "modifierBoost": 22
     },
     "rarity": "Mythic"

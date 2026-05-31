@@ -92,7 +92,7 @@
     "region": "start",
     "stats": {
       "luck": 325,
-      "sizeBoost": -70,
+      "sizeBoost": -35,
       "inventorySize": 450
     },
     "rarity": "Mythic"
@@ -145,7 +145,7 @@
       "luck": 450,
       "capacity": 225,
       "digStrength": 215,
-      "digSpeed": -50,
+      "digSpeed": -28,
       "sizeBoost": 110
     },
     "rarity": "Exotic"
@@ -157,8 +157,8 @@
     "region": "rotwoodSwamp",
     "stats": {
       "luck": 1300,
-      "digStrength": -100,
-      "digSpeed": -60,
+      "digStrength": -45,
+      "digSpeed": -38,
       "sizeBoost": 55,
       "inventorySize": 325,
       "sellBoost": 55
