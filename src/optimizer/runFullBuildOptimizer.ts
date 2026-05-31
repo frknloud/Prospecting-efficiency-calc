@@ -232,6 +232,47 @@ function scoreCandidateBuild(build: BuildState, request: OptimizerRequest): numb
   return scoreBuild(evaluateBuild(build), request);
 }
 
+function getMinConstraintProgressScore(
+  evaluated: ReturnType<typeof evaluateBuild>,
+  request: OptimizerRequest,
+): number {
+  if (!request.minStats) {
+    return 0;
+  }
+
+  let progress = 0;
+
+  for (const [stat, min] of Object.entries(request.minStats)) {
+    const target = Number(min ?? 0);
+
+    if (target <= 0) {
+      progress += 1;
+      continue;
+    }
+
+    const value = Number(evaluated.stats[stat as keyof typeof evaluated.stats] ?? 0);
+
+    progress += Math.min(Math.max(value / target, 0), 1);
+  }
+
+  return progress;
+}
+
+function scoreSearchBuild(build: BuildState, request: OptimizerRequest): number {
+  const evaluated = evaluateBuild(build);
+  const objectiveScore = scoreBuild(evaluated, request);
+
+  if (!request.minStats) {
+    return objectiveScore;
+  }
+
+  // During full-build beam search, min constraints need to influence pruning before
+  // the final build is complete. Without this, an efficiency-first search can prune
+  // sizeBoost-heavy or other constraint-heavy paths before they ever satisfy the
+  // user's desired minimum. Final results are still ranked by the selected objectives.
+  return getMinConstraintProgressScore(evaluated, request) * 1_000_000_000_000 + objectiveScore;
+}
+
 function makeFullBuildResult(build: BuildState, request: OptimizerRequest): OptimizerResult {
   const evaluated = evaluateBuild(build);
 
@@ -265,7 +306,7 @@ function rankStageOptions(
     .filter((option) => isCandidateBuildValid(option.build, request))
     .map((option) => ({
       option,
-      score: scoreCandidateBuild(option.build, request),
+      score: scoreSearchBuild(option.build, request),
     }))
     .sort((a, b) => b.score - a.score);
 
@@ -599,6 +640,7 @@ function buildFinalResultsFromFrontier(
   originalBuildHash: string,
   originalBuildIdentity: string,
   topResults: number,
+  requireBaselineImprovement: boolean,
 ): OptimizerResult[] {
   const acceptedBuildHashes = new Set<string>();
 
@@ -607,7 +649,9 @@ function buildFinalResultsFromFrontier(
   const finalResults: OptimizerResult[] = [];
 
   for (const candidate of frontier.sort((a, b) => b.score - a.score)) {
-    if (candidate.score <= baselineScore) {
+    const finalObjectiveScore = scoreCandidateBuild(candidate.build, request);
+
+    if (requireBaselineImprovement && finalObjectiveScore <= baselineScore) {
       continue;
     }
 
@@ -667,6 +711,8 @@ export async function runFullBuildOptimizer(
     rings: cloneRings(build, ringSlotLimit),
   };
 
+  const requireBaselineImprovement = isFinalBuildValid(initialBuild, request);
+
   const stages = makeFullBuildStages(initialBuild, ringSlotLimit);
 
   const deadline = Date.now() + FULL_BUILD_TIME_BUDGET_MS;
@@ -674,7 +720,7 @@ export async function runFullBuildOptimizer(
   let frontier: ScoredBuild[] = [
     {
       build: initialBuild,
-      score: baselineScore,
+      score: scoreSearchBuild(initialBuild, request),
       label: "Current build",
     },
   ];
@@ -688,6 +734,7 @@ export async function runFullBuildOptimizer(
         originalBuildHash,
         originalBuildIdentity,
         topResults,
+        requireBaselineImprovement,
       );
     }
 
@@ -706,6 +753,7 @@ export async function runFullBuildOptimizer(
           originalBuildHash,
           originalBuildIdentity,
           topResults,
+          requireBaselineImprovement,
         );
       }
 
@@ -728,7 +776,7 @@ export async function runFullBuildOptimizer(
       for (const option of rankedOptions) {
         const identity = getFullBuildIdentity(option.build);
 
-        const score = scoreCandidateBuild(option.build, request);
+        const score = scoreSearchBuild(option.build, request);
 
         const existing = stageMap.get(identity);
 
@@ -758,5 +806,6 @@ export async function runFullBuildOptimizer(
     originalBuildHash,
     originalBuildIdentity,
     topResults,
+    requireBaselineImprovement,
   );
 }
