@@ -349,6 +349,8 @@ interface OptimizerPageProps {
 
   onRefresh: () => void;
 
+  needsRefresh: boolean;
+
   lockedSlots: LockedSlots;
 }
 
@@ -368,6 +370,7 @@ export default function OptimizerPage({
   settings,
   setSettings,
   onRefresh,
+  needsRefresh,
   lockedSlots,
 }: OptimizerPageProps) {
   const summary = useMemo(
@@ -790,9 +793,10 @@ export default function OptimizerPage({
       </div>
 
       <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <h2 className="text-xl font-semibold">Optimizer Results</h2>
-          <div className="flex items-center gap-2">
+
+          <div className="flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center lg:w-auto lg:justify-end">
             {canUndoOptimizerLoad && (
               <button
                 type="button"
@@ -800,54 +804,55 @@ export default function OptimizerPage({
                 disabled={loading}
                 className={
                   loading
-                    ? "bg-slate-800 text-slate-500 rounded-lg px-3 py-2 text-sm cursor-not-allowed"
-                    : "bg-amber-700 hover:bg-amber-600 rounded-lg px-3 py-2 text-sm font-semibold"
+                    ? "rounded-lg bg-slate-800 px-3 py-2 text-sm text-slate-500 cursor-not-allowed"
+                    : "rounded-lg bg-amber-700 px-3 py-2 text-sm font-semibold hover:bg-amber-600"
                 }
               >
                 Undo Load Build
               </button>
             )}
 
-            Sort by:
-            <select
-              className="bg-slate-700 rounded-lg px-3 py-2 text-sm"
-              value={resultSort}
-              onChange={event =>
-                setResultSort(
-                  event.target.value as
-                    | "score"
-                    | "efficiencyGain"
-                    | "objectiveGain"
-                    | "cycleTime"
-                )
-              }
-            >
-              <option value="score">Recommended</option>
+            <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-slate-300 sm:flex-none">
+              <span className="shrink-0">Sort by:</span>
+              <select
+                className="min-w-0 flex-1 rounded-lg bg-slate-700 px-3 py-2 text-sm sm:w-56 sm:flex-none"
+                value={resultSort}
+                onChange={event =>
+                  setResultSort(
+                    event.target.value as
+                      | "score"
+                      | "efficiencyGain"
+                      | "objectiveGain"
+                      | "cycleTime"
+                  )
+                }
+              >
+                <option value="score">Recommended</option>
 
-              <option value="efficiencyGain">Efficiency Gain (descending)</option>
+                <option value="efficiencyGain">Efficiency Gain</option>
 
-              <option value="objectiveGain">Objective Gain (descending)</option>
+                <option value="objectiveGain">Objective Gain</option>
 
-              <option value="cycleTime">Cycle Time Δ (ascending)</option>
-            </select>          
+                <option value="cycleTime">Cycle Time Δ</option>
+              </select>
+            </label>
 
             <button
               type="button"
               onClick={onRefresh}
               disabled={loading}
-              title={
-                loading ? "Optimizer is running" : "Refresh optimizer results"
-              }
-              aria-label={
-                loading ? "Optimizer is running" : "Refresh optimizer results"
-              }
+              title={loading ? "Optimizer is running" : "Run Optimizer"}
+              aria-label={loading ? "Optimizer is running" : "Run Optimizer"}
               className={
                 loading
-                  ? "bg-slate-800 text-slate-500 rounded-lg w-8 h-8 flex items-center justify-center cursor-not-allowed"
-                  : "bg-slate-700 hover:bg-slate-600 rounded-lg w-8 h-8 flex items-center justify-center"
+                  ? "inline-flex items-center justify-center gap-2 rounded-lg bg-slate-800 px-3 py-2 text-sm font-semibold text-slate-500 cursor-not-allowed"
+                  : `inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-3 py-2 text-sm font-semibold hover:bg-indigo-500 ${
+                      needsRefresh ? "attention-glow" : ""
+                    }`
               }
             >
               <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+              Run Optimizer
             </button>
           </div>
         </div>

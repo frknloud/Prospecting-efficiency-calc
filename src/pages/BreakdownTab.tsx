@@ -10,6 +10,30 @@ export default function BreakdownTab({ evaluatedBuild }: BreakdownTabProps) {
   return (
     <section className="space-y-4 max-w-5xl">
       <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
+        <h2 className="text-2xl font-bold mb-3">What is Efficiency?</h2>
+
+        <div className="space-y-3 text-sm leading-6 text-slate-300">
+          <p>
+            Efficiency is the app&apos;s single score for how good your build is at
+            finding valuable minerals quickly. A higher number usually means your
+            build gets more useful mineral-finding power per mining cycle.
+          </p>
+
+          <p>
+            Luck and capacity help you find more and better minerals. Shake speed,
+            dig speed, and related strength stats help finish each cycle faster.
+            The formula combines those ideas so you can compare builds without
+            having to judge every stat one by one.
+          </p>
+
+          <p className="text-slate-400">
+            In plain English: more finding power divided by less time equals
+            better efficiency.
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
         <h2 className="text-2xl font-bold mb-4">Efficiency Formula</h2>
 
         <div className="text-slate-300 text-lg leading-relaxed font-mono">

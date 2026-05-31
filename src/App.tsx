@@ -17,6 +17,7 @@ import BreakdownTab from "./pages/BreakdownTab";
 import UpgradesTab from "./pages/UpgradesTab";
 import OptimizerPage from "./pages/OptimizerPage";
 import OptimizerSettingsPage from "./pages/OptimizerSettingsPage";
+import InstructionsTab from "./pages/InstructionsTab";
 
 import { isBuildOptimizable } from "./optimizer/isBuildOptimizable";
 
@@ -50,7 +51,38 @@ import type { PermanentBuffsState } from "./components/PermanentBuffsPanel";
 import type { ConsumablesState } from "./components/ConsumablesPanel";
 
 const STORAGE_KEY = "prospecting-build-v5";
+const ACTIVE_TAB_STORAGE_KEY = "prospecting-active-tab-v1";
 const RING_SLOT_COUNT = 8;
+
+type AppTab =
+  | "instructions"
+  | "calculator"
+  | "breakdown"
+  | "upgrades"
+  | "optimizer"
+  | "settings";
+
+function loadSavedActiveTab(): AppTab {
+  if (typeof window === "undefined") {
+    return "instructions";
+  }
+
+  const savedTab = localStorage.getItem(ACTIVE_TAB_STORAGE_KEY) as AppTab | null;
+
+  if (
+    savedTab === "instructions" ||
+    savedTab === "calculator" ||
+    savedTab === "breakdown" ||
+    savedTab === "upgrades" ||
+    savedTab === "optimizer" ||
+    savedTab === "settings"
+  ) {
+    return savedTab;
+  }
+
+  return "instructions";
+}
+
 
 const createDefaultMuseumSlots = (): MuseumSlotSelection[] =>
   museumSlotsData.map((slot) => ({
@@ -261,9 +293,9 @@ export default function App() {
     savedBuild?.museumSlots ?? createDefaultMuseumSlots(),
   );
 
-  const [activeTab, setActiveTab] = useState<
-    "calculator" | "breakdown" | "upgrades" | "optimizer" | "settings"
-  >("calculator");
+  const [activeTab, setActiveTab] = useState<AppTab>(() =>
+    loadSavedActiveTab(),
+  );
 
   const [
     lockedSlots,
@@ -280,6 +312,10 @@ export default function App() {
     useState<AccessSettings>(initialAccessSettings);
 
   const previousAccessRegionRef = useRef(accessSettings.region);
+
+  useEffect(() => {
+    localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, activeTab);
+  }, [activeTab]);
 
   useEffect(() => {
     localStorage.setItem(
@@ -465,6 +501,30 @@ export default function App() {
     ],
   );
 
+  const upgradeAdvisorInputKey = useMemo(
+    () =>
+      JSON.stringify({
+        build: normalizedBuildState,
+        ringSlotLimit,
+        accessSettings,
+      }),
+    [normalizedBuildState, ringSlotLimit, accessSettings],
+  );
+
+  const [lastUpgradeAdvisorInputKey, setLastUpgradeAdvisorInputKey] =
+    useState<string | null>(null);
+
+  const [lastOptimizerRunKey, setLastOptimizerRunKey] = useState<string | null>(
+    null,
+  );
+
+  const upgradeAdvisorNeedsRefresh =
+    lastUpgradeAdvisorInputKey !== null &&
+    lastUpgradeAdvisorInputKey !== upgradeAdvisorInputKey;
+
+  const optimizerNeedsRefresh =
+    lastOptimizerRunKey !== null && lastOptimizerRunKey !== optimizerCacheKey;
+
   const [selectedOptimizerBuildHash, setSelectedOptimizerBuildHash] = useState<
     string | null
   >(null);
@@ -597,6 +657,8 @@ export default function App() {
             accessSettings,
           ),
         );
+
+        setLastUpgradeAdvisorInputKey(upgradeAdvisorInputKey);
       } catch (error) {
         console.error("Upgrade Advisor failed", error);
         setUpgradeRecommendations([]);
@@ -748,6 +810,7 @@ export default function App() {
 
   function refreshOptimizerResults() {
     clearOptimizerResults();
+    setLastOptimizerRunKey(optimizerCacheKey);
     void runCurrentOptimizer();
   }
 
@@ -758,7 +821,18 @@ export default function App() {
           Prospecting Efficiency Calculator
         </h1>
 
-        <div className="flex gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-4">
+          <button
+            onClick={() => setActiveTab("instructions")}
+            className={`px-4 py-2 rounded-xl font-semibold ${
+              activeTab === "instructions"
+                ? "bg-indigo-600 text-white"
+                : "bg-slate-700 text-slate-300"
+            }`}
+          >
+            Instructions
+          </button>
+
           <button
             onClick={() => setActiveTab("calculator")}
             className={`px-4 py-2 rounded-xl font-semibold ${
@@ -815,6 +889,8 @@ export default function App() {
           </button>
         </div>
 
+        {activeTab === "instructions" && <InstructionsTab />}
+
         {activeTab === "calculator" && (
           <CalculatorTab
             accessSettings={accessSettings}
@@ -863,6 +939,7 @@ export default function App() {
             loading={upgradeAdvisorLoading}
             upgradeRecommendations={upgradeRecommendations}
             onRunAdvisor={runUpgradeAdvisor}
+            needsRefresh={upgradeAdvisorNeedsRefresh}
           />
         )}
 
@@ -883,6 +960,7 @@ export default function App() {
             settings={optimizerSettings}
             setSettings={setOptimizerSettings}
             onRefresh={refreshOptimizerResults}
+            needsRefresh={optimizerNeedsRefresh}
             lockedSlots={lockedSlots}
           />
         )}

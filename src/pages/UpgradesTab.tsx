@@ -22,6 +22,8 @@ interface UpgradesTabProps {
   upgradeRecommendations: UpgradeRecommendationView[];
 
   onRunAdvisor: () => void;
+
+  needsRefresh: boolean;
 }
 
 function formatSignedPercent(value: number): string {
@@ -64,6 +66,7 @@ export default function UpgradesTab({
   loading,
   upgradeRecommendations,
   onRunAdvisor,
+  needsRefresh,
 }: UpgradesTabProps) {
   return (
     <div className="bg-slate-700 rounded-2xl p-4">
@@ -83,7 +86,9 @@ export default function UpgradesTab({
           className={
             !canRunAdvisor || loading
               ? "bg-slate-800 text-slate-500 rounded-lg px-3 py-2 text-sm font-semibold cursor-not-allowed inline-flex items-center gap-2"
-              : "bg-indigo-600 hover:bg-indigo-500 rounded-lg px-3 py-2 text-sm font-semibold inline-flex items-center gap-2"
+              : `bg-indigo-600 hover:bg-indigo-500 rounded-lg px-3 py-2 text-sm font-semibold inline-flex items-center gap-2 ${
+                  needsRefresh ? "attention-glow" : ""
+                }`
           }
         >
           <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
