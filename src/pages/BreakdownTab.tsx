@@ -59,7 +59,7 @@ export default function BreakdownTab({ evaluatedBuild }: BreakdownTabProps) {
             <div className="text-slate-400">Denominator</div>
 
             <div className="text-indigo-300">
-              ( Shake: {evaluatedBuild.cycleData.shakeTime.toFixed(2)}
+              (Shake: {evaluatedBuild.cycleData.shakeTime.toFixed(2)}
               {" + "}
               Dig: {evaluatedBuild.cycleData.totalDigTime.toFixed(2)}
               {" + "}

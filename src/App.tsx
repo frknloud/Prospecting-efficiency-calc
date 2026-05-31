@@ -30,6 +30,7 @@ import { normalizeBuildState } from "./engine/normalizeBuildState";
 
 import { useEvaluatedBuild } from "./hooks/useEvaluatedBuild";
 import { useOptimizer } from "./hooks/useOptimizer";
+import { useAppUpdateCheck } from "./hooks/useAppUpdateCheck";
 
 import type { BuildState, MuseumSlotSelection, Rarity, EquipmentItem, } from "./engine/types";
 import type { OptimizerSettings, DesiredStatConstraintRule } from "./optimizer/optimizerSettings";
@@ -220,6 +221,7 @@ function loadSavedBuild() {
 
 export default function App() {
   const savedBuild = useMemo(() => loadSavedBuild(), []);
+  const { updateAvailable, refreshApp } = useAppUpdateCheck();
 
   const initialAccessSettings: AccessSettings = {
     ...DEFAULT_ACCESS_SETTINGS,
@@ -817,9 +819,34 @@ export default function App() {
   return (
     <main className="min-h-screen p-4 bg-slate-900 text-white overflow-x-hidden">
       <div className="max-w-[1800px] mx-auto">
-        <h1 className="text-3xl font-bold mb-4">
-          Prospecting Efficiency Calculator
-        </h1>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-4">
+          <h1 className="text-3xl font-bold">
+            Prospecting Efficiency Calculator
+          </h1>
+
+          {updateAvailable && (
+            <div className="rounded-2xl border border-blue-400/50 bg-blue-500/15 px-4 py-3 shadow-lg shadow-blue-950/20">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div>
+                  <p className="text-sm font-bold text-blue-100">
+                    Update available
+                  </p>
+                  <p className="text-xs text-blue-100/80">
+                    Refresh to load the newest app version.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={refreshApp}
+                  className="rounded-xl bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-400"
+                >
+                  Refresh App
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="flex flex-wrap gap-2 mb-4">
           <button
