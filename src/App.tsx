@@ -499,6 +499,8 @@ export default function App() {
         topResults: optimizerSettings.topResults,
 
         desiredStatRules: optimizerSettings.desiredStatRules,
+
+        forceOneTapBuilds: optimizerSettings.forceOneTapBuilds,
       }),
     [
       normalizedBuildState,
@@ -595,6 +597,8 @@ export default function App() {
           lockedSlots,
 
           accessSettings,
+
+          searchTimeBudgetMs: Math.max(5_000, optimizerRequestTimeoutMs - 10_000),
         },
         (result) =>
           respectsLockedSlots(
