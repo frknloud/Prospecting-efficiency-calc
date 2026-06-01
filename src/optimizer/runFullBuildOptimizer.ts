@@ -331,6 +331,80 @@ function scoreSearchBuild(build: BuildState, request: OptimizerRequest): number 
   return (1 - constraintStatus.deficitRatio) * 1_000_000_000_000 + objectiveScore;
 }
 
+
+
+function isBetterFinalBuild(
+  candidate: BuildState,
+  current: BuildState,
+  request: OptimizerRequest,
+): boolean {
+  const candidateEvaluated = evaluateBuild(candidate);
+  const currentEvaluated = evaluateBuild(current);
+
+  const candidatePrimary = scoreBuild(candidateEvaluated, {
+    ...request,
+    secondaryObjective: undefined,
+  });
+  const currentPrimary = scoreBuild(currentEvaluated, {
+    ...request,
+    secondaryObjective: undefined,
+  });
+
+  const epsilon = 1e-9;
+
+  if (candidatePrimary > currentPrimary + epsilon) {
+    return true;
+  }
+
+  if (candidatePrimary < currentPrimary - epsilon) {
+    return false;
+  }
+
+  const candidateFullScore = scoreBuild(candidateEvaluated, request);
+  const currentFullScore = scoreBuild(currentEvaluated, request);
+
+  return candidateFullScore > currentFullScore + epsilon;
+}
+
+function polishFinalBuild(
+  build: BuildState,
+  request: OptimizerRequest,
+  stages: FullBuildStage[],
+): BuildState {
+  let polished = build;
+
+  // A short local improvement pass catches no-cost or strictly-better swaps that
+  // the beam may have pruned earlier, such as replacing Voidtorn with Perfect
+  // when Size Boost is the secondary objective and Efficiency is unchanged.
+  for (let pass = 0; pass < 2; pass += 1) {
+    let changed = false;
+
+    for (const stage of stages) {
+      const options = uniqueStageOptions(stage.buildOptions(polished, request))
+        .filter((option) => isFinalBuildValid(option.build, request));
+
+      let bestBuild = polished;
+
+      for (const option of options) {
+        if (isBetterFinalBuild(option.build, bestBuild, request)) {
+          bestBuild = option.build;
+        }
+      }
+
+      if (getFullBuildIdentity(bestBuild) !== getFullBuildIdentity(polished)) {
+        polished = bestBuild;
+        changed = true;
+      }
+    }
+
+    if (!changed) {
+      break;
+    }
+  }
+
+  return polished;
+}
+
 function makeFullBuildResult(build: BuildState, request: OptimizerRequest): OptimizerResult {
   const evaluated = evaluateBuild(build);
 
@@ -480,6 +554,7 @@ function buildResultsOrConstraintRescue(
     originalBuildIdentity,
     topResults,
     requireBaselineImprovement,
+    stages,
   );
 
   if (primaryResults.length > 0 || !hasMinStats(request)) {
@@ -501,6 +576,7 @@ function buildResultsOrConstraintRescue(
     originalBuildIdentity,
     topResults,
     false,
+    stages,
   );
 }
 
@@ -832,6 +908,7 @@ function buildFinalResultsFromFrontier(
   originalBuildIdentity: string,
   topResults: number,
   requireBaselineImprovement: boolean,
+  stages: FullBuildStage[],
 ): OptimizerResult[] {
   const acceptedBuildHashes = new Set<string>();
 
@@ -840,15 +917,17 @@ function buildFinalResultsFromFrontier(
   const finalResults: OptimizerResult[] = [];
 
   for (const candidate of frontier.sort((a, b) => b.score - a.score)) {
-    const finalObjectiveScore = scoreCandidateBuild(candidate.build, request);
+    const polishedBuild = polishFinalBuild(candidate.build, request, stages);
+
+    const finalObjectiveScore = scoreCandidateBuild(polishedBuild, request);
 
     if (requireBaselineImprovement && finalObjectiveScore <= baselineScore) {
       continue;
     }
 
-    const finalBuildHash = buildHash(candidate.build);
+    const finalBuildHash = buildHash(polishedBuild);
 
-    const finalBuildIdentity = getFullBuildIdentity(candidate.build);
+    const finalBuildIdentity = getFullBuildIdentity(polishedBuild);
 
     if (
       finalBuildHash === originalBuildHash ||
@@ -859,7 +938,7 @@ function buildFinalResultsFromFrontier(
       continue;
     }
 
-    if (!isFinalBuildValid(candidate.build, request)) {
+    if (!isFinalBuildValid(polishedBuild, request)) {
       continue;
     }
 
@@ -867,7 +946,7 @@ function buildFinalResultsFromFrontier(
 
     acceptedBuildIdentities.add(finalBuildIdentity);
 
-    finalResults.push(makeFullBuildResult(candidate.build, request));
+    finalResults.push(makeFullBuildResult(polishedBuild, request));
 
     if (finalResults.length >= topResults) {
       break;
