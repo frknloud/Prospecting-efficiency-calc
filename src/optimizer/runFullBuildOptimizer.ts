@@ -46,11 +46,11 @@ import type {
 
 const FULL_BUILD_TIME_BUDGET_MS = 24000;
 
-const FINAL_POLISH_TIME_BUDGET_MS = 2500;
+const FINAL_POLISH_TIME_BUDGET_MS = 900;
 
-const MAX_FINAL_POLISH_CANDIDATES = 60;
+const MAX_FINAL_POLISH_CANDIDATES = 16;
 
-const MAX_POLISH_STAGE_OPTIONS = 24;
+const MAX_POLISH_STAGE_OPTIONS = 10;
 
 const FULL_BUILD_CONFIG: Record<
   OptimizerMode,
@@ -60,18 +60,18 @@ const FULL_BUILD_CONFIG: Record<
   }
 > = {
   fast: {
-    beamWidth: 12,
+    beamWidth: 10,
     perStageLimit: 8,
   },
 
   balanced: {
-    beamWidth: 20,
+    beamWidth: 16,
     perStageLimit: 10,
   },
 
   exhaustive: {
-    beamWidth: 32,
-    perStageLimit: 14,
+    beamWidth: 24,
+    perStageLimit: 12,
   },
 };
 
@@ -164,7 +164,7 @@ function buildAllowedStageKeys(
   const seedLimit = hasHardSearchConstraints
     ? Math.max(getStageSeedLimit(config), config.perStageLimit * 8, 64)
     : useOverhaulSearch
-      ? Math.max(getStageSeedLimit(config), config.perStageLimit * 12, config.beamWidth * 4, 96)
+      ? Math.max(getStageSeedLimit(config), config.perStageLimit * 5, config.beamWidth * 2, 40)
       : getStageSeedLimit(config);
 
   const seedOptions = hasHardSearchConstraints
@@ -478,6 +478,14 @@ function polishFinalBuild(
     for (const stage of stages) {
       if (Date.now() > deadline) {
         return polished;
+      }
+
+      // Ring-set and museum-set option builders are intentionally broad. Do not
+      // run them again during final polish; they can consume enough time to make
+      // the worker hit its timeout. The main beam search already includes these
+      // set stages.
+      if (stage.name === "rings" || stage.name === "museum") {
+        continue;
       }
 
       const stageOptions = rankStageOptions(
@@ -1025,8 +1033,8 @@ function buildRingSetOptions(
   const perSlotOptions: RingSelection[][] = [];
   const useOverhaulSearch = shouldUseOverhaulSearch(request);
   const singleSlotLimit = useOverhaulSearch
-    ? request.mode === "exhaustive" ? 96 : request.mode === "fast" ? 48 : 72
-    : request.mode === "exhaustive" ? 28 : request.mode === "fast" ? 14 : 20;
+    ? request.mode === "exhaustive" ? 40 : request.mode === "fast" ? 22 : 30
+    : request.mode === "exhaustive" ? 24 : request.mode === "fast" ? 12 : 18;
 
   for (let index = 0; index < ringSlotLimit; index += 1) {
     if (request.lockedSlots?.rings?.[index]) {
@@ -1064,8 +1072,8 @@ function buildRingSetOptions(
   ];
 
   const frontierLimit = useOverhaulSearch
-    ? request.mode === "exhaustive" ? 420 : request.mode === "fast" ? 180 : 280
-    : request.mode === "exhaustive" ? 180 : request.mode === "fast" ? 72 : 120;
+    ? request.mode === "exhaustive" ? 160 : request.mode === "fast" ? 72 : 110
+    : request.mode === "exhaustive" ? 120 : request.mode === "fast" ? 48 : 80;
 
   for (let index = 0; index < ringSlotLimit; index += 1) {
     const next = new Map<string, { rings: RingSelection[]; build: BuildState; score: number }>();
@@ -1138,8 +1146,8 @@ function buildMuseumSetOptions(
 
   const useOverhaulSearch = shouldUseOverhaulSearch(request);
   const singleSlotLimit = useOverhaulSearch
-    ? request.mode === "exhaustive" ? 96 : request.mode === "fast" ? 48 : 72
-    : request.mode === "exhaustive" ? 36 : request.mode === "fast" ? 16 : 24;
+    ? request.mode === "exhaustive" ? 40 : request.mode === "fast" ? 22 : 30
+    : request.mode === "exhaustive" ? 28 : request.mode === "fast" ? 14 : 20;
   const perSlotOptions: MuseumSlotSelection[][] = [];
 
   for (const slot of museumSlots) {
@@ -1190,8 +1198,8 @@ function buildMuseumSetOptions(
   ];
 
   const frontierLimit = useOverhaulSearch
-    ? request.mode === "exhaustive" ? 420 : request.mode === "fast" ? 180 : 280
-    : request.mode === "exhaustive" ? 180 : request.mode === "fast" ? 72 : 120;
+    ? request.mode === "exhaustive" ? 160 : request.mode === "fast" ? 72 : 110
+    : request.mode === "exhaustive" ? 120 : request.mode === "fast" ? 48 : 80;
 
   for (let index = 0; index < museumSlots.length; index += 1) {
     const next = new Map<string, { museumSlots: MuseumSlotSelection[]; build: BuildState; score: number }>();
@@ -1390,7 +1398,9 @@ export async function runFullBuildOptimizer(
 
   const requireBaselineImprovement = isFinalBuildValid(initialBuild, scoringRequest);
 
-  const deadline = Date.now() + getSearchTimeBudgetMs(scoringRequest);
+  // Keep an internal margin so the worker can return partial/unique results
+  // instead of being terminated by the outer timeout handler.
+  const deadline = Date.now() + Math.max(5_000, getSearchTimeBudgetMs(scoringRequest) - 8_000);
 
   let frontier: ScoredBuild[] = [
     {
@@ -1453,7 +1463,7 @@ export async function runFullBuildOptimizer(
       const stageLimit = hasMinStats(scoringRequest)
         ? Math.max(config.perStageLimit * 3, 24)
         : useOverhaulSearch
-          ? Math.max(config.perStageLimit * 4, 32)
+          ? Math.max(config.perStageLimit * 2, 18)
           : config.perStageLimit;
 
       const rankedOptions = hasMinStats(scoringRequest)
@@ -1480,7 +1490,7 @@ export async function runFullBuildOptimizer(
     const frontierLimit = hasMinStats(scoringRequest)
       ? Math.max(config.beamWidth * 3, 72)
       : shouldUseOverhaulSearch(scoringRequest)
-        ? Math.max(config.beamWidth * 4, 96)
+        ? Math.max(config.beamWidth * 2, 40)
         : config.beamWidth;
 
     frontier = Array.from(stageMap.values())
