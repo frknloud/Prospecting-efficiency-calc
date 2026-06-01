@@ -134,6 +134,8 @@ export interface OptimizerRequest {
 
   objectiveRanges?: Partial<Record<OptimizerObjective, { current: number; best: number }>>;
 
+  searchTimeBudgetMs?: number;
+
   topResults?: number;
 
   mode?: OptimizerMode;
