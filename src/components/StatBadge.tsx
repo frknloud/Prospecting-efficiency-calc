@@ -1,3 +1,5 @@
+import { formatStatLabel } from "../utils/statLabels";
+
 const statConfig: Record<
   string,
   { label: string; color: string; border?: boolean }
@@ -56,8 +58,12 @@ export default function StatBadge({ statKey, value }: Props) {
   const displayPercent =
     value !== undefined ? Math.round((value - 1) * 100) : undefined;
 
+  const fullLabel = formatStatLabel(statKey);
+
   return (
     <div
+      title={fullLabel}
+      aria-label={fullLabel}
       className={`rounded-md px-2 py-1 text-xs font-bold ${config.border ? "border border-slate-400" : ""}`}
       style={{
         backgroundColor: config.color,

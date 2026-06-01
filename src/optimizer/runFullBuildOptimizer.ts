@@ -2,6 +2,8 @@ import { evaluateBuild } from "../engine/evaluateBuild";
 
 import { scoreBuild } from "./scoreBuild";
 
+import { objectiveValue } from "./objectiveValue";
+
 import { buildHash } from "./buildHash";
 
 import { isBuildLegal } from "./isBuildLegal";
@@ -41,6 +43,12 @@ import type {
 } from "./types";
 
 const FULL_BUILD_TIME_BUDGET_MS = 24000;
+
+const FINAL_POLISH_TIME_BUDGET_MS = 2500;
+
+const MAX_FINAL_POLISH_CANDIDATES = 60;
+
+const MAX_POLISH_STAGE_OPTIONS = 24;
 
 const FULL_BUILD_CONFIG: Record<
   OptimizerMode,
@@ -92,6 +100,18 @@ function getRingOptionKey(build: BuildState, ringIndex: number): string {
   return `${getNullableId(ring?.ringId)}|${getNullableId(ring?.mutationId)}`;
 }
 
+function getRingSetKey(build: BuildState, ringSlotLimit: number): string {
+  return Array.from({ length: ringSlotLimit }, (_, index) => getRingOptionKey(build, index)).join("||");
+}
+
+function getMuseumSetKey(build: BuildState): string {
+  return (build.museumSlots ?? [])
+    .slice()
+    .sort((a, b) => a.slotId - b.slotId)
+    .map((slot) => `${slot.slotId}:${getNullableId(slot.mineralId)}|${getNullableId(slot.modifierId)}`)
+    .join("||");
+}
+
 function getMuseumOptionKey(build: BuildState, slotId: number): string {
   const slot = build.museumSlots.find((museumSlot) => museumSlot.slotId === slotId);
 
@@ -108,11 +128,13 @@ function buildAllowedStageKeys(
   request: OptimizerRequest,
   config: { beamWidth: number; perStageLimit: number },
 ): Set<string> {
-  const seedLimit = hasMinStats(request)
+  const hasHardSearchConstraints = hasMinStats(request) || request.forceOneTapBuilds;
+
+  const seedLimit = hasHardSearchConstraints
     ? Math.max(getStageSeedLimit(config), config.perStageLimit * 8, 64)
     : getStageSeedLimit(config);
 
-  const seedOptions = hasMinStats(request)
+  const seedOptions = hasHardSearchConstraints
     ? rankConstraintStageOptions(stage.buildOptions(seedBuild, request), request, seedLimit)
     : rankStageOptions(stage.buildOptions(seedBuild, request), request, seedLimit);
 
@@ -182,6 +204,13 @@ function scoreConstraintTargetBuild(build: BuildState, request: OptimizerRequest
   const evaluated = evaluateBuild(build);
   const objectiveScore = scoreBuild(evaluated, request);
   const constraintStatus = getMinConstraintStatus(evaluated, request);
+  const oneTapScore = request.forceOneTapBuilds
+    ? getOneTapConstraintScore(evaluated)
+    : 1;
+
+  if (request.forceOneTapBuilds && evaluated.cycleData.digsRequired !== 1) {
+    return oneTapScore * 1_000_000_000_000 + objectiveScore;
+  }
 
   if (!constraintStatus.hasConstraints) {
     return objectiveScore;
@@ -294,6 +323,28 @@ function passesMinStats(build: BuildState, request: OptimizerRequest): boolean {
   return true;
 }
 
+function passesOneTapConstraint(build: BuildState, request: OptimizerRequest): boolean {
+  if (!request.forceOneTapBuilds) {
+    return true;
+  }
+
+  return evaluateBuild(build).cycleData.digsRequired === 1;
+}
+
+function getOneTapConstraintScore(evaluated: ReturnType<typeof evaluateBuild>): number {
+  const digsRequired = Number(evaluated.cycleData.digsRequired);
+
+  if (digsRequired === 1) {
+    return 1;
+  }
+
+  if (!Number.isFinite(digsRequired) || digsRequired <= 1) {
+    return 0;
+  }
+
+  return 1 / digsRequired;
+}
+
 function isCandidateBuildValid(build: BuildState, request: OptimizerRequest): boolean {
   return (
     isBuildLegal(build) &&
@@ -303,7 +354,11 @@ function isCandidateBuildValid(build: BuildState, request: OptimizerRequest): bo
 }
 
 function isFinalBuildValid(build: BuildState, request: OptimizerRequest): boolean {
-  return isCandidateBuildValid(build, request) && passesMinStats(build, request);
+  return (
+    isCandidateBuildValid(build, request) &&
+    passesMinStats(build, request) &&
+    passesOneTapConstraint(build, request)
+  );
 }
 
 function scoreCandidateBuild(build: BuildState, request: OptimizerRequest): number {
@@ -314,6 +369,13 @@ function scoreSearchBuild(build: BuildState, request: OptimizerRequest): number 
   const evaluated = evaluateBuild(build);
   const objectiveScore = scoreBuild(evaluated, request);
   const constraintStatus = getMinConstraintStatus(evaluated, request);
+  const oneTapScore = request.forceOneTapBuilds
+    ? getOneTapConstraintScore(evaluated)
+    : 1;
+
+  if (request.forceOneTapBuilds && evaluated.cycleData.digsRequired !== 1) {
+    return oneTapScore * 1_000_000_000_000 + objectiveScore;
+  }
 
   if (!constraintStatus.hasConstraints) {
     return objectiveScore;
@@ -370,22 +432,34 @@ function polishFinalBuild(
   build: BuildState,
   request: OptimizerRequest,
   stages: FullBuildStage[],
+  deadline: number,
 ): BuildState {
   let polished = build;
 
-  // A short local improvement pass catches no-cost or strictly-better swaps that
-  // the beam may have pruned earlier, such as replacing Voidtorn with Perfect
-  // when Size Boost is the secondary objective and Efficiency is unchanged.
-  for (let pass = 0; pass < 2; pass += 1) {
+  // Keep this as a small local cleanup, not a second full optimizer pass. The
+  // first version re-opened every option for every result candidate and could
+  // run long enough for the worker timeout to terminate the optimizer.
+  for (let pass = 0; pass < 1; pass += 1) {
     let changed = false;
 
     for (const stage of stages) {
-      const options = uniqueStageOptions(stage.buildOptions(polished, request))
-        .filter((option) => isFinalBuildValid(option.build, request));
+      if (Date.now() > deadline) {
+        return polished;
+      }
+
+      const stageOptions = rankStageOptions(
+        stage.buildOptions(polished, request),
+        request,
+        MAX_POLISH_STAGE_OPTIONS,
+      ).filter((option) => isFinalBuildValid(option.build, request));
 
       let bestBuild = polished;
 
-      for (const option of options) {
+      for (const option of stageOptions) {
+        if (Date.now() > deadline) {
+          return polished;
+        }
+
         if (isBetterFinalBuild(option.build, bestBuild, request)) {
           bestBuild = option.build;
         }
@@ -461,6 +535,60 @@ function rankConstraintStageOptions(
   return scored.slice(0, limit).map(({ option }) => option);
 }
 
+function computeObjectiveRanges(
+  initialBuild: BuildState,
+  request: OptimizerRequest,
+  stages: FullBuildStage[],
+): OptimizerRequest["objectiveRanges"] {
+  const objectives = [request.objective, request.secondaryObjective].filter(
+    (objective): objective is NonNullable<typeof objective> => Boolean(objective),
+  );
+
+  const uniqueObjectives = Array.from(new Set(objectives));
+
+  if (uniqueObjectives.length === 0) {
+    return undefined;
+  }
+
+  const currentEvaluated = evaluateBuild(initialBuild);
+
+  const ranges: OptimizerRequest["objectiveRanges"] = {};
+
+  for (const objective of uniqueObjectives) {
+    ranges[objective] = {
+      current: objectiveValue(currentEvaluated, objective),
+      best: objectiveValue(currentEvaluated, objective),
+    };
+  }
+
+  const seen = new Set<string>([getFullBuildIdentity(initialBuild)]);
+
+  for (const stage of stages) {
+    for (const option of stage.buildOptions(initialBuild, request)) {
+      const identity = getFullBuildIdentity(option.build);
+
+      if (seen.has(identity) || !isCandidateBuildValid(option.build, request)) {
+        continue;
+      }
+
+      seen.add(identity);
+
+      const evaluated = evaluateBuild(option.build);
+
+      for (const objective of uniqueObjectives) {
+        const value = objectiveValue(evaluated, objective);
+        const range = ranges[objective];
+
+        if (range && value > range.best) {
+          range.best = value;
+        }
+      }
+    }
+  }
+
+  return ranges;
+}
+
 function mergeFrontierCandidates(
   candidates: ScoredBuild[],
   limit: number,
@@ -487,7 +615,7 @@ function runConstraintRescueSearch(
   ringSlotLimit: number,
   stages: FullBuildStage[],
 ): ScoredBuild[] {
-  if (!hasMinStats(request)) {
+  if (!hasMinStats(request) && !request.forceOneTapBuilds) {
     return [];
   }
 
@@ -557,7 +685,7 @@ function buildResultsOrConstraintRescue(
     stages,
   );
 
-  if (primaryResults.length > 0 || !hasMinStats(request)) {
+  if (primaryResults.length > 0 || (!hasMinStats(request) && !request.forceOneTapBuilds)) {
     return primaryResults;
   }
 
@@ -847,6 +975,230 @@ function buildMuseumOptions(
   return options;
 }
 
+function buildRingSetOptions(
+  build: BuildState,
+  request: OptimizerRequest,
+  ringSlotLimit: number,
+): StageOption[] {
+  const keepCurrent: StageOption = {
+    label: "Keep current ring set",
+    build,
+  };
+
+  if (request.lockedSlots?.rings?.slice(0, ringSlotLimit).every(Boolean)) {
+    return [keepCurrent];
+  }
+
+  const perSlotOptions: RingSelection[][] = [];
+  const singleSlotLimit = request.mode === "exhaustive" ? 28 : request.mode === "fast" ? 14 : 20;
+
+  for (let index = 0; index < ringSlotLimit; index += 1) {
+    if (request.lockedSlots?.rings?.[index]) {
+      perSlotOptions.push([cloneRings(build, ringSlotLimit)[index]]);
+      continue;
+    }
+
+    const currentKey = getRingOptionKey(build, index);
+    const rankedOptions = rankStageOptions(
+      buildRingOptions(build, request, ringSlotLimit, index),
+      request,
+      singleSlotLimit,
+    );
+
+    const uniqueOptions = new Map<string, RingSelection>();
+
+    for (const option of rankedOptions) {
+      const key = getRingOptionKey(option.build, index);
+      uniqueOptions.set(key, cloneRings(option.build, ringSlotLimit)[index]);
+    }
+
+    if (!uniqueOptions.has(currentKey)) {
+      uniqueOptions.set(currentKey, cloneRings(build, ringSlotLimit)[index]);
+    }
+
+    perSlotOptions.push(Array.from(uniqueOptions.values()));
+  }
+
+  let frontier: Array<{ rings: RingSelection[]; build: BuildState; score: number }> = [
+    {
+      rings: cloneRings(build, ringSlotLimit),
+      build,
+      score: scoreSearchBuild(build, request),
+    },
+  ];
+
+  const frontierLimit = request.mode === "exhaustive" ? 180 : request.mode === "fast" ? 72 : 120;
+
+  for (let index = 0; index < ringSlotLimit; index += 1) {
+    const next = new Map<string, { rings: RingSelection[]; build: BuildState; score: number }>();
+
+    for (const frontierEntry of frontier) {
+      for (const ringOption of perSlotOptions[index]) {
+        const ringsForBuild = frontierEntry.rings.map((ring) => ({ ...ring }));
+        ringsForBuild[index] = { ...ringOption };
+
+        const candidateBuild: BuildState = {
+          ...build,
+          rings: ringsForBuild,
+        };
+
+        if (!isCandidateBuildValid(candidateBuild, request)) {
+          continue;
+        }
+
+        const key = getRingSetKey(candidateBuild, ringSlotLimit);
+        const score = scoreSearchBuild(candidateBuild, request);
+        const existing = next.get(key);
+
+        if (!existing || score > existing.score) {
+          next.set(key, {
+            rings: ringsForBuild,
+            build: candidateBuild,
+            score,
+          });
+        }
+      }
+    }
+
+    frontier = Array.from(next.values())
+      .sort((a, b) => b.score - a.score)
+      .slice(0, frontierLimit);
+
+    if (frontier.length === 0) {
+      return [keepCurrent];
+    }
+  }
+
+  const options = frontier.map((entry) => ({
+    label: "Legal ring set",
+    build: entry.build,
+  }));
+
+  return uniqueStageOptions([keepCurrent, ...options]);
+}
+
+function buildMuseumSetOptions(
+  build: BuildState,
+  request: OptimizerRequest,
+): StageOption[] {
+  const keepCurrent: StageOption = {
+    label: "Keep current museum set",
+    build,
+  };
+
+  const museumSlots = build.museumSlots ?? [];
+
+  if (museumSlots.length === 0) {
+    return [keepCurrent];
+  }
+
+  const allSlotsLocked = museumSlots.every((_, index) => request.lockedSlots?.museumSlots?.[index]);
+
+  if (allSlotsLocked) {
+    return [keepCurrent];
+  }
+
+  const singleSlotLimit = request.mode === "exhaustive" ? 36 : request.mode === "fast" ? 16 : 24;
+  const perSlotOptions: MuseumSlotSelection[][] = [];
+
+  for (const slot of museumSlots) {
+    const slotIndex = museumSlots.findIndex((museumSlot) => museumSlot.slotId === slot.slotId);
+
+    if (request.lockedSlots?.museumSlots?.[slotIndex]) {
+      perSlotOptions.push([slot]);
+      continue;
+    }
+
+    const rankedOptions = rankStageOptions(
+      buildMuseumOptions(build, request, slot),
+      request,
+      singleSlotLimit,
+    );
+
+    const uniqueOptions = new Map<string, MuseumSlotSelection>();
+
+    for (const option of rankedOptions) {
+      const updatedSlot = option.build.museumSlots.find(
+        (museumSlot) => museumSlot.slotId === slot.slotId,
+      );
+
+      if (!updatedSlot) {
+        continue;
+      }
+
+      uniqueOptions.set(
+        `${updatedSlot.slotId}:${getNullableId(updatedSlot.mineralId)}|${getNullableId(updatedSlot.modifierId)}`,
+        updatedSlot,
+      );
+    }
+
+    uniqueOptions.set(
+      `${slot.slotId}:${getNullableId(slot.mineralId)}|${getNullableId(slot.modifierId)}`,
+      slot,
+    );
+
+    perSlotOptions.push(Array.from(uniqueOptions.values()));
+  }
+
+  let frontier: Array<{ museumSlots: MuseumSlotSelection[]; build: BuildState; score: number }> = [
+    {
+      museumSlots,
+      build,
+      score: scoreSearchBuild(build, request),
+    },
+  ];
+
+  const frontierLimit = request.mode === "exhaustive" ? 180 : request.mode === "fast" ? 72 : 120;
+
+  for (let index = 0; index < museumSlots.length; index += 1) {
+    const next = new Map<string, { museumSlots: MuseumSlotSelection[]; build: BuildState; score: number }>();
+
+    for (const frontierEntry of frontier) {
+      for (const slotOption of perSlotOptions[index]) {
+        const updatedMuseumSlots = frontierEntry.museumSlots.map((slot) =>
+          slot.slotId === slotOption.slotId ? { ...slotOption } : { ...slot },
+        );
+
+        const candidateBuild: BuildState = {
+          ...build,
+          museumSlots: updatedMuseumSlots,
+        };
+
+        if (!isCandidateBuildValid(candidateBuild, request)) {
+          continue;
+        }
+
+        const key = getMuseumSetKey(candidateBuild);
+        const score = scoreSearchBuild(candidateBuild, request);
+        const existing = next.get(key);
+
+        if (!existing || score > existing.score) {
+          next.set(key, {
+            museumSlots: updatedMuseumSlots,
+            build: candidateBuild,
+            score,
+          });
+        }
+      }
+    }
+
+    frontier = Array.from(next.values())
+      .sort((a, b) => b.score - a.score)
+      .slice(0, frontierLimit);
+
+    if (frontier.length === 0) {
+      return [keepCurrent];
+    }
+  }
+
+  const options = frontier.map((entry) => ({
+    label: "Legal museum set",
+    build: entry.build,
+  }));
+
+  return uniqueStageOptions([keepCurrent, ...options]);
+}
+
 function makeFullBuildStages(
   initialBuild: BuildState,
   ringSlotLimit: number,
@@ -879,23 +1231,19 @@ function makeFullBuildStages(
     },
   ];
 
-  for (let index = 0; index < ringSlotLimit; index++) {
-    stages.push({
-      name: `ring ${index + 1}`,
-      buildOptions: (build, request) =>
-        buildRingOptions(build, request, ringSlotLimit, index),
-      optionKey: (build) => getRingOptionKey(build, index),
-    });
-  }
+  stages.push({
+    name: "rings",
+    buildOptions: (build, request) =>
+      buildRingSetOptions(build, request, ringSlotLimit),
+    optionKey: (build) => getRingSetKey(build, ringSlotLimit),
+  });
 
-  for (const museumSlot of initialBuild.museumSlots ?? []) {
-    stages.push({
-      name: `museum ${museumSlot.slotId}`,
-      buildOptions: (build, request) =>
-        buildMuseumOptions(build, request, museumSlot),
-      optionKey: (build) => getMuseumOptionKey(build, museumSlot.slotId),
-    });
-  }
+  stages.push({
+    name: "museum",
+    buildOptions: (build, request) =>
+      buildMuseumSetOptions(build, request),
+    optionKey: (build) => getMuseumSetKey(build),
+  });
 
   return stages;
 }
@@ -916,8 +1264,14 @@ function buildFinalResultsFromFrontier(
 
   const finalResults: OptimizerResult[] = [];
 
-  for (const candidate of frontier.sort((a, b) => b.score - a.score)) {
-    const polishedBuild = polishFinalBuild(candidate.build, request, stages);
+  const polishDeadline = Date.now() + FINAL_POLISH_TIME_BUDGET_MS;
+
+  const candidatesToReview = frontier
+    .sort((a, b) => b.score - a.score)
+    .slice(0, Math.max(topResults * 3, MAX_FINAL_POLISH_CANDIDATES));
+
+  for (const candidate of candidatesToReview) {
+    const polishedBuild = polishFinalBuild(candidate.build, request, stages, polishDeadline);
 
     const finalObjectiveScore = scoreCandidateBuild(polishedBuild, request);
 
@@ -969,9 +1323,6 @@ export async function runFullBuildOptimizer(
 
   const baselineEvaluated = evaluateBuild(build);
 
-  const baselineScore =
-    request.baselineScore ?? scoreBuild(baselineEvaluated, request);
-
   const originalBuildHash = buildHash(build);
 
   const originalBuildIdentity = getFullBuildIdentity(build);
@@ -981,16 +1332,27 @@ export async function runFullBuildOptimizer(
     rings: cloneRings(build, ringSlotLimit),
   };
 
-  const requireBaselineImprovement = isFinalBuildValid(initialBuild, request);
-
   const stages = makeFullBuildStages(initialBuild, ringSlotLimit);
+
+  const scoringRequest: OptimizerRequest = {
+    ...request,
+    objectiveRanges: computeObjectiveRanges(initialBuild, request, stages),
+  };
+
+  // Full-build hybrid scoring depends on objectiveRanges derived inside this
+  // optimizer pass. A baseline score calculated earlier without those ranges is
+  // on a different scale and can accidentally filter out every candidate. Always
+  // score the baseline with the same request object used for candidate scoring.
+  const baselineScore = scoreBuild(baselineEvaluated, scoringRequest);
+
+  const requireBaselineImprovement = isFinalBuildValid(initialBuild, scoringRequest);
 
   const deadline = Date.now() + FULL_BUILD_TIME_BUDGET_MS;
 
   let frontier: ScoredBuild[] = [
     {
       build: initialBuild,
-      score: scoreSearchBuild(initialBuild, request),
+      score: scoreSearchBuild(initialBuild, scoringRequest),
       label: "Current build",
     },
   ];
@@ -999,7 +1361,7 @@ export async function runFullBuildOptimizer(
     if (Date.now() > deadline) {
       return buildResultsOrConstraintRescue(
         frontier,
-        request,
+        scoringRequest,
         baselineScore,
         originalBuildHash,
         originalBuildIdentity,
@@ -1013,7 +1375,7 @@ export async function runFullBuildOptimizer(
 
     const stageMap = new Map<string, ScoredBuild>();
 
-    const allowedStageKeys = buildAllowedStageKeys(stage, initialBuild, request, config);
+    const allowedStageKeys = buildAllowedStageKeys(stage, initialBuild, scoringRequest, config);
 
     for (const frontierBuild of frontier) {
       if (Date.now() > deadline) {
@@ -1021,7 +1383,7 @@ export async function runFullBuildOptimizer(
 
         return buildResultsOrConstraintRescue(
           partialFrontier.length > 0 ? partialFrontier : frontier,
-          request,
+          scoringRequest,
           baselineScore,
           originalBuildHash,
           originalBuildIdentity,
@@ -1036,25 +1398,25 @@ export async function runFullBuildOptimizer(
       const currentStageKey = stage.optionKey(frontierBuild.build);
 
       const stageOptions = stage
-        .buildOptions(frontierBuild.build, request)
+        .buildOptions(frontierBuild.build, scoringRequest)
         .filter((option) => {
           const optionKey = stage.optionKey(option.build);
 
           return optionKey === currentStageKey || allowedStageKeys.has(optionKey);
         });
 
-      const stageLimit = hasMinStats(request)
+      const stageLimit = hasMinStats(scoringRequest)
         ? Math.max(config.perStageLimit * 3, 24)
         : config.perStageLimit;
 
-      const rankedOptions = hasMinStats(request)
-        ? rankConstraintStageOptions(stageOptions, request, stageLimit)
-        : rankStageOptions(stageOptions, request, stageLimit);
+      const rankedOptions = hasMinStats(scoringRequest)
+        ? rankConstraintStageOptions(stageOptions, scoringRequest, stageLimit)
+        : rankStageOptions(stageOptions, scoringRequest, stageLimit);
 
       for (const option of rankedOptions) {
         const identity = getFullBuildIdentity(option.build);
 
-        const score = scoreSearchBuild(option.build, request);
+        const score = scoreSearchBuild(option.build, scoringRequest);
 
         const existing = stageMap.get(identity);
 
@@ -1068,7 +1430,7 @@ export async function runFullBuildOptimizer(
       }
     }
 
-    const frontierLimit = hasMinStats(request)
+    const frontierLimit = hasMinStats(scoringRequest)
       ? Math.max(config.beamWidth * 3, 72)
       : config.beamWidth;
 
@@ -1079,7 +1441,7 @@ export async function runFullBuildOptimizer(
     if (frontier.length === 0) {
       return buildResultsOrConstraintRescue(
         frontier,
-        request,
+        scoringRequest,
         baselineScore,
         originalBuildHash,
         originalBuildIdentity,
@@ -1094,7 +1456,7 @@ export async function runFullBuildOptimizer(
 
   return buildResultsOrConstraintRescue(
     frontier,
-    request,
+    scoringRequest,
     baselineScore,
     originalBuildHash,
     originalBuildIdentity,

@@ -3,6 +3,7 @@ import { Lock, Unlock } from "lucide-react";
 import EquipmentPanel from "../components/EquipmentPanel";
 import MuseumSlotSelector from "../components/MuseumSlotSelector";
 import AccessFilterPanel from "../components/AccessFilterPanel";
+import { formatStatLabel } from "../utils/statLabels";
 
 import type { MuseumSlotSelection } from "../engine/types";
 import type { AccessSettings } from "../access/accessTypes";
@@ -160,6 +161,29 @@ export default function CalculatorTab({
     }));
   }
 
+  const finalStatEntries = Object.entries(evaluatedBuild.stats).flatMap(
+    ([key, value]) => {
+      const entries = [
+        {
+          key,
+          label: formatStatLabel(key),
+          value: Number(value ?? 0),
+        },
+      ];
+
+      if (key === "luck") {
+        entries.push({
+          key: "modifierLuck",
+          label: formatStatLabel("modifierLuck"),
+          value: Number(evaluatedBuild.modifierLuck ?? 0),
+        });
+      }
+
+      return entries;
+    },
+  );
+
+
   return (
     <div className="space-y-4">
       <AccessFilterPanel
@@ -306,12 +330,23 @@ export default function CalculatorTab({
         <div>
           <h2 className="text-xl font-semibold mb-3">Efficiency Score</h2>
 
-          <div className="bg-indigo-600 rounded-2xl p-4 text-center">
-            <div className="text-xs uppercase tracking-wide text-indigo-200 mb-1">
-              Efficiency
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="bg-indigo-600 rounded-2xl p-4 text-center">
+              <div className="text-xs uppercase tracking-wide text-indigo-200 mb-1">
+                Efficiency
+              </div>
+              <div className="text-4xl font-bold">
+                {evaluatedBuild.efficiency.toFixed(2)}
+              </div>
             </div>
-            <div className="text-4xl font-bold">
-              {evaluatedBuild.efficiency.toFixed(2)}
+
+            <div className="bg-sky-700 rounded-2xl p-4 text-center">
+              <div className="text-xs uppercase tracking-wide text-sky-200 mb-1">
+                Modifier Efficiency
+              </div>
+              <div className="text-4xl font-bold">
+                {evaluatedBuild.modifierEfficiency.toFixed(2)}
+              </div>
             </div>
           </div>
         </div>
@@ -320,13 +355,13 @@ export default function CalculatorTab({
           <h3 className="text-lg font-semibold mb-2">Final Stats</h3>
 
           <div className="space-y-2">
-            {Object.entries(evaluatedBuild.stats).map(([key, value]) => (
+            {finalStatEntries.map(({ key, label, value }) => (
               <div
                 key={key}
                 className="flex justify-between bg-slate-700 rounded-lg px-3 py-2"
               >
-                <span className="capitalize">{key}</span>
-                <span>{Number(value ?? 0).toFixed(2)}</span>
+                <span>{label}</span>
+                <span>{value.toFixed(2)}</span>
               </div>
             ))}
           </div>

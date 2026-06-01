@@ -40,6 +40,7 @@ import type { AccessSettings, } from "./access/accessTypes";
 import { loadOptimizerSettings, saveOptimizerSettings, } from "./optimizer/optimizerSettings";
 import { respectsLockedSlots, } from "./optimizer/respectsLockedSlots";
 import { scoreBuild, } from "./optimizer/scoreBuild";
+import { canPairObjectives } from "./optimizer/objectiveRules";
 import { OPTIMIZER_MAX_REQUEST_TIMEOUT_MS, OPTIMIZER_MIN_REQUEST_TIMEOUT_MS, } from "./optimizer/optimizerConfig";
 
 import { DEFAULT_ACCESS_SETTINGS, isRegionUnlocked, } from "./access/accessRules";
@@ -459,6 +460,15 @@ export default function App() {
     [optimizerSettings.desiredStatRules],
   );
 
+  const effectiveOptimizerSecondaryObjective = useMemo(
+    () =>
+      optimizerSettings.secondaryObjective &&
+      canPairObjectives(optimizerSettings.objective, optimizerSettings.secondaryObjective)
+        ? optimizerSettings.secondaryObjective
+        : undefined,
+    [optimizerSettings.objective, optimizerSettings.secondaryObjective],
+  );
+
   const optimizerRequestTimeoutMs = useMemo(
     () =>
       calculateOptimizerTimeoutMs(
@@ -480,7 +490,7 @@ export default function App() {
 
         objective: optimizerSettings.objective,
 
-        secondaryObjective: optimizerSettings.secondaryObjective,
+        secondaryObjective: effectiveOptimizerSecondaryObjective,
 
         mode: optimizerSettings.mode,
 
@@ -495,11 +505,12 @@ export default function App() {
       lockedSlots,
       accessSettings,
       optimizerSettings.objective,
-      optimizerSettings.secondaryObjective,
+      effectiveOptimizerSecondaryObjective,
       optimizerSettings.mode,
       optimizerSettings.strategy,
       optimizerSettings.topResults,
       optimizerSettings.desiredStatRules,
+      optimizerSettings.forceOneTapBuilds,
     ],
   );
 
@@ -556,7 +567,7 @@ export default function App() {
         {
           objective: optimizerSettings.objective,
 
-          secondaryObjective: optimizerSettings.secondaryObjective,
+          secondaryObjective: effectiveOptimizerSecondaryObjective,
 
           baselineEfficiency: evaluatedBuild.efficiency,
 
@@ -565,7 +576,7 @@ export default function App() {
             {
               objective: optimizerSettings.objective,
 
-              secondaryObjective: optimizerSettings.secondaryObjective,
+              secondaryObjective: effectiveOptimizerSecondaryObjective,
             },
           ),
 
@@ -578,6 +589,8 @@ export default function App() {
           minStats: desiredStatConstraints.minStats,
 
           maxStats: desiredStatConstraints.maxStats,
+
+          forceOneTapBuilds: optimizerSettings.forceOneTapBuilds,
 
           lockedSlots,
 
@@ -622,11 +635,12 @@ export default function App() {
     evaluatedBuild.efficiency,
     optimizerSettings.autoRun,
     optimizerSettings.objective,
-    optimizerSettings.secondaryObjective,
+    effectiveOptimizerSecondaryObjective,
     optimizerSettings.mode,
     optimizerSettings.strategy,
     optimizerSettings.topResults,
     optimizerSettings.desiredStatRules,
+    optimizerSettings.forceOneTapBuilds,
     optimizerSettings.debounceMs,
     optimizerRequestTimeoutMs,
     normalizedBuildState,

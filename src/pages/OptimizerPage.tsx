@@ -13,8 +13,10 @@ import museumModifiers from "../data/museum-modifiers.json";
 
 import { useEvaluatedBuild } from "../hooks/useEvaluatedBuild";
 import { compareBuilds } from "../optimizer/compareBuilds";
+import { formatStatLabel } from "../utils/statLabels";
 
-import { OPTIMIZER_OBJECTIVES, } from "../optimizer/objectives";
+import { OPTIMIZER_OBJECTIVES } from "../optimizer/objectives";
+import { canPairObjectives, getAllowedSecondaryObjectives, isMovementObjective } from "../optimizer/objectiveRules";
 import type {
   OptimizerSettings,
   DesiredStatConstraintRule,
@@ -251,6 +253,29 @@ function getChangedSlots(
   return changed;
 }
 
+function getFinalStatEntries(evaluatedBuild: any) {
+  return Object.entries(evaluatedBuild.stats ?? {}).flatMap(([key, value]) => {
+    const entries = [
+      {
+        key,
+        label: formatStatLabel(key),
+        value: Number(value ?? 0),
+      },
+    ];
+
+    if (key === "luck") {
+      entries.push({
+        key: "modifierLuck",
+        label: formatStatLabel("modifierLuck"),
+        value: Number(evaluatedBuild.modifierLuck ?? 0),
+      });
+    }
+
+    return entries;
+  });
+}
+
+
 function getObjectiveValue(
   result: any,
   objective: string
@@ -261,6 +286,22 @@ function getObjectiveValue(
   ) {
     return Number(
       result.evaluated?.efficiency ?? 0
+    );
+  }
+
+  if (
+    objective === "modifierEfficiency"
+  ) {
+    return Number(
+      result.evaluated?.modifierEfficiency ?? 0
+    );
+  }
+
+  if (
+    objective === "modifierLuck"
+  ) {
+    return Number(
+      result.evaluated?.modifierLuck ?? 0
     );
   }
 
@@ -292,7 +333,7 @@ const DESIRED_STAT_OPTIONS = OPTIMIZER_OBJECTIVES.filter(
   (objective): objective is {
     value: DesiredStatConstraintStat;
     label: string;
-  } => objective.value !== "efficiency",
+  } => objective.value !== "efficiency" && objective.value !== "modifierEfficiency" && objective.value !== "modifierLuck",
 );
 
 function createDesiredStatRule(index: number): DesiredStatConstraintRule {
@@ -373,30 +414,50 @@ export default function OptimizerPage({
   needsRefresh,
   lockedSlots,
 }: OptimizerPageProps) {
-  const summary = useMemo(
-    () => ({
+  const summary = useMemo(() => {
+    const finalStatEntries = getFinalStatEntries(evaluatedBuild);
+
+    return {
       efficiency: evaluatedBuild.efficiency,
+
+      modifierLuck: evaluatedBuild.modifierLuck,
+
+      modifierEfficiency: evaluatedBuild.modifierEfficiency,
 
       stats: evaluatedBuild.stats,
 
+      finalStatEntries,
+
       cycleData: evaluatedBuild.cycleData,
-    }),
-    [evaluatedBuild],
-  );
+    };
+  }, [evaluatedBuild]);
   
+  const effectiveSecondaryObjective =
+    settings.secondaryObjective && canPairObjectives(settings.objective, settings.secondaryObjective)
+      ? settings.secondaryObjective
+      : undefined;
+
   const primaryObjectiveOptions =
     OPTIMIZER_OBJECTIVES.filter(
       objective =>
         objective.value !==
-        settings.secondaryObjective
+        effectiveSecondaryObjective
     );
 
   const secondaryObjectiveOptions =
-    OPTIMIZER_OBJECTIVES.filter(
-      objective =>
-        objective.value !==
-        settings.objective
-    );
+    getAllowedSecondaryObjectives(settings.objective);
+
+  const objectiveModeTitle = effectiveSecondaryObjective
+    ? isMovementObjective(settings.objective)
+      ? "Movement meme build"
+      : "Hybrid build"
+    : "Single-objective build";
+
+  const objectiveModeDescription = effectiveSecondaryObjective
+    ? isMovementObjective(settings.objective)
+      ? "The optimizer will chase Walk Speed and Jump Power together. Efficiency is only a tiny tie-breaker for this meme build style."
+      : "The optimizer will use both objectives to define the build style, then prefer the most efficient practical builds that match that style."
+    : "The optimizer will focus on one target and use Efficiency as a practical tie-breaker when two builds are close.";
     
   const [
     expandedResultHashes,
@@ -563,7 +624,16 @@ export default function OptimizerPage({
   return (
     <div className="space-y-4 max-w-5xl">
       <section className="bg-slate-800 rounded-2xl p-4 shadow-lg space-y-4 text-sm">
-        <h2 className="text-xl font-semibold">Optimization Objectives</h2>
+        <div className="space-y-2">
+          <h2 className="text-xl font-semibold">Optimization Objectives</h2>
+
+          <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-3 text-sm">
+            <div className="font-semibold text-indigo-200">{objectiveModeTitle}</div>
+            <p className="mt-1 text-xs leading-relaxed text-indigo-100/80">
+              {objectiveModeDescription}
+            </p>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -577,6 +647,11 @@ export default function OptimizerPage({
                 const nextObjective =
                   event.target.value as OptimizerObjective;
 
+                const nextSecondaryObjective =
+                  settings.secondaryObjective && canPairObjectives(nextObjective, settings.secondaryObjective)
+                    ? settings.secondaryObjective
+                    : undefined;
+
                 setSettings({
                   ...settings,
 
@@ -584,9 +659,7 @@ export default function OptimizerPage({
                     nextObjective,
 
                   secondaryObjective:
-                    settings.secondaryObjective === nextObjective
-                      ? undefined
-                      : settings.secondaryObjective,
+                    nextSecondaryObjective,
                 });
               }}
             >
@@ -611,7 +684,7 @@ export default function OptimizerPage({
 
             <select
               className="w-full bg-slate-700 rounded-lg px-3 py-2"
-              value={settings.secondaryObjective ?? ""}
+              value={effectiveSecondaryObjective ?? ""}
               onChange={event => {
 
                 const nextSecondaryObjective =
@@ -626,9 +699,9 @@ export default function OptimizerPage({
                   ...settings,
 
                   secondaryObjective:
-                    nextSecondaryObjective === settings.objective
-                      ? undefined
-                      : nextSecondaryObjective,
+                    nextSecondaryObjective && canPairObjectives(settings.objective, nextSecondaryObjective)
+                      ? nextSecondaryObjective
+                      : undefined,
                 });
               }}
             >
@@ -648,6 +721,35 @@ export default function OptimizerPage({
             </select>
           </div>
         </div>
+      </section>
+
+
+      <section className="bg-slate-800 rounded-2xl p-4 shadow-lg space-y-3 text-sm">
+        <h2 className="text-xl font-semibold">Optimizer Constraints</h2>
+
+        <label className="flex items-start gap-3 rounded-xl bg-slate-900/60 p-3">
+          <input
+            type="checkbox"
+            className="mt-1 h-4 w-4 accent-indigo-500"
+            checked={settings.forceOneTapBuilds}
+            onChange={(event) =>
+              setSettings({
+                ...settings,
+                forceOneTapBuilds: event.target.checked,
+              })
+            }
+          />
+
+          <span>
+            <span className="block font-semibold text-slate-100">
+              Force one-tap builds
+            </span>
+
+            <span className="mt-1 block text-xs text-slate-400">
+              Only recommend builds where digs required equals 1. Other objectives and desired min/max stats still apply.
+            </span>
+          </span>
+        </label>
       </section>
 
       <section className="bg-slate-800 rounded-2xl p-4 shadow-lg space-y-4 text-sm">
@@ -774,16 +876,24 @@ export default function OptimizerPage({
             </span>
           </div>
 
+          <div className="flex justify-between">
+            <span>Modifier Efficiency</span>
+
+            <span className="font-bold text-indigo-300">
+              {summary.modifierEfficiency.toFixed(2)}
+            </span>
+          </div>
+
           <div className="border-t border-slate-700 pt-3 mt-3">
             <div className="font-semibold mb-2">Final Stats</div>
 
             <div className="grid grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-2">
-              {Object.entries(summary.stats).map(([key, value]) => (
+              {summary.finalStatEntries.map(({ key, label, value }) => (
                 <div key={key} className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3">
-                  <span className="truncate text-slate-300">{key}</span>
+                  <span className="truncate text-slate-300">{label}</span>
 
                   <span className="font-medium tabular-nums text-slate-100">
-                    {Number(value).toFixed(2)}
+                    {value.toFixed(2)}
                   </span>
                 </div>
               ))}
@@ -868,6 +978,20 @@ export default function OptimizerPage({
             const resultHash = JSON.stringify(result.build);
             
             const expanded = expandedResultHashes.has(resultHash);
+
+            const resultFinalStatEntries = getFinalStatEntries(result.evaluated);
+            const optimizedScoreEntries = [
+              {
+                key: "efficiency",
+                label: "Efficiency",
+                value: Number(result.evaluated.efficiency ?? 0),
+              },
+              {
+                key: "modifierEfficiency",
+                label: "Modifier Efficiency",
+                value: Number(result.evaluated.modifierEfficiency ?? 0),
+              },
+            ];
 
             const selected = resultHash === selectedOptimizerBuildHash;
 
@@ -1024,7 +1148,7 @@ export default function OptimizerPage({
                       </div>
 
                       <div className="text-xs text-slate-400 mt-2">
-                        {objectiveLabel}: {resultObjectiveValue.toFixed(2)}
+                        Objective Score: {resultObjectiveValue.toFixed(2)}
                       </div>
 
                       <div className={`text-xs ${signedDeltaClass(objectiveDelta)}`}>
@@ -1234,6 +1358,44 @@ export default function OptimizerPage({
                             );
                           })}
                         </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-700 space-y-2">
+                      <div className="font-semibold text-slate-300">
+                        Optimized Final Stats
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                        {optimizedScoreEntries.map((entry) => (
+                          <div
+                            key={entry.key}
+                            className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-2 rounded-lg bg-slate-800 px-2 py-1"
+                          >
+                            <span className="truncate text-slate-300">
+                              {entry.label}
+                            </span>
+
+                            <span className="font-semibold tabular-nums text-indigo-300">
+                              {entry.value.toFixed(2)}
+                            </span>
+                          </div>
+                        ))}
+
+                        {resultFinalStatEntries.map(({ key, label, value }) => (
+                          <div
+                            key={key}
+                            className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-2 rounded-lg bg-slate-800 px-2 py-1"
+                          >
+                            <span className="truncate text-slate-300">
+                              {label}
+                            </span>
+
+                            <span className="font-medium tabular-nums text-slate-100">
+                              {value.toFixed(2)}
+                            </span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>

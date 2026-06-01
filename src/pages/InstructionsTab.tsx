@@ -51,8 +51,11 @@ export default function InstructionsTab() {
 
           <ul className="space-y-2 text-sm leading-6 text-slate-300">
             <li>Use this when you want bigger build changes instead of one quick upgrade.</li>
-            <li>Choose a Primary Objective, then add a Secondary Objective if you care about a backup stat.</li>
-            <li>Add Desired Min/Max Stats when you need the result to stay above or below a specific number.</li>
+            <li>Choose one objective when you want the app to focus on one goal, like pure Efficiency or pure Luck.</li>
+            <li>Choose a Secondary Objective when you want a hybrid build, such as Luck + Size Boost or Modifier Efficiency + Modifier Boost.</li>
+            <li>For farming hybrids, the selected objectives define the build style, then Efficiency helps rank the best practical versions of that style.</li>
+            <li>Walk Speed and Jump Power are treated as movement meme-build goals and can pair with each other.</li>
+            <li>Add Desired Min/Max Stats when the result must stay above or below a specific number.</li>
             <li>Click Run Optimizer to generate results. The button glows when your inputs changed since the last run.</li>
             <li>Use Load Build only when you want the recommended build to become your current calculator build.</li>
           </ul>
@@ -73,7 +76,9 @@ export default function InstructionsTab() {
       <div className="rounded-2xl border border-indigo-500/40 bg-indigo-950/50 p-5 text-sm leading-6 text-indigo-100">
         <strong>Simple workflow:</strong> Calculator first, then Efficiency
         Breakdown if you want to understand the numbers, then Upgrade Advisor
-        for quick ideas, then Optimizer for bigger build searches.
+        for quick ideas, then Optimizer for bigger build searches. Use one
+        objective for a focused build, or add a secondary objective when you
+        want hybrid recommendations.
       </div>
     </section>
   );

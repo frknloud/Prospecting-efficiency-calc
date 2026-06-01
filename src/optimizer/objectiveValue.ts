@@ -10,6 +10,12 @@ export function objectiveValue(
     case "efficiency":
       return evaluated.efficiency;
 
+    case "modifierEfficiency":
+      return evaluated.modifierEfficiency;
+
+    case "modifierLuck":
+      return evaluated.modifierLuck;
+
     case "capacity":
       return evaluated.stats.capacity;
 
@@ -38,7 +44,19 @@ export function objectiveValue(
       return evaluated.stats.shakeStrength;
       
     case "walkSpeed":
-      return evaluated.stats.walkSpeed;    
+      return evaluated.stats.walkSpeed;
+
+    case "jumpPower":
+      return evaluated.stats.jumpPower;
+
+    case "inventorySize":
+      return evaluated.stats.inventorySize;
+
+    case "statusTimerSpeed":
+      return evaluated.stats.statusTimerSpeed;
+
+    case "treasureMapChance":
+      return evaluated.stats.treasureMapChance;
 
     default:
       return 0;

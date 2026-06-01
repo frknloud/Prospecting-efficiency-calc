@@ -191,12 +191,20 @@ export function evaluateBuild(build: BuildState): EvaluatedBuild {
 
   const efficiency = cycleData.efficiency;
 
+  const modifierLuck = cycleData.modifierLuck;
+
+  const modifierEfficiency = cycleData.modifierEfficiency;
+
   return {
     build,
 
     stats,
 
     efficiency,
+
+    modifierLuck,
+
+    modifierEfficiency,
 
     objectiveScore: efficiency,
 

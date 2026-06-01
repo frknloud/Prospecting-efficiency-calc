@@ -5,6 +5,8 @@ import type { AccessSettings } from "../access/accessTypes";
 
 export type OptimizerObjective =
   | "efficiency"
+  | "modifierEfficiency"
+  | "modifierLuck"
   | "luck"
   | "capacity"
   | "digSpeed"
@@ -14,7 +16,11 @@ export type OptimizerObjective =
   | "modifierBoost"
   | "sizeBoost"
   | "sellBoost"
-  | "walkSpeed";
+  | "walkSpeed"
+  | "jumpPower"
+  | "inventorySize"
+  | "statusTimerSpeed"
+  | "treasureMapChance";
 
 export type OptimizerMode = "fast" | "balanced" | "exhaustive";
 
@@ -123,6 +129,10 @@ export interface OptimizerRequest {
   minStats?: Partial<Record<string, number>>;
 
   maxStats?: Partial<Record<string, number>>;
+
+  forceOneTapBuilds?: boolean;
+
+  objectiveRanges?: Partial<Record<OptimizerObjective, { current: number; best: number }>>;
 
   topResults?: number;
 

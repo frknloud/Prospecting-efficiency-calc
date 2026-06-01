@@ -7,6 +7,10 @@ export interface EvaluatedBuild {
 
   efficiency: number;
 
+  modifierLuck: number;
+
+  modifierEfficiency: number;
+
   objectiveScore: number;
 
   cycleData: {

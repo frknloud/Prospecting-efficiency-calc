@@ -9,6 +9,10 @@ import { digTimePerDig } from "./digTime";
 export interface EfficiencyCoreResult {
   efficiency: number;
 
+  modifierLuck: number;
+
+  modifierEfficiency: number;
+
   cycleTime: number;
 
   digsRequired: number;
@@ -40,6 +44,8 @@ export function efficiencyCore(stats: Stats): EfficiencyCoreResult {
   if (L <= 0 || C <= 0 || DS <= 0 || d <= 0 || s <= 0) {
     return {
       efficiency: 0,
+      modifierLuck: 0,
+      modifierEfficiency: 0,
       cycleTime: Infinity,
       digsRequired: Infinity,
       shakeTime: Infinity,
@@ -64,10 +70,24 @@ export function efficiencyCore(stats: Stats): EfficiencyCoreResult {
 
   const cycleTime = shakeTime + FIXED_CYCLE_TIME + totalDigTime;
 
+  const modifierBoost = stats.modifierBoost || 0;
+
+  const modifierLuckNumerator =
+    ((L / 1000) + (modifierBoost / 10)) *
+    (0.05 + 0.95 * Math.min(modifierBoost / 1900, 1));
+
   const efficiency = (L * Math.sqrt(C)) / cycleTime;
+
+  const modifierLuck = modifierLuckNumerator;
+
+  const modifierEfficiency = (modifierLuck * Math.sqrt(C)) / cycleTime;
 
   return {
     efficiency,
+
+    modifierLuck,
+
+    modifierEfficiency,
 
     cycleTime,
 

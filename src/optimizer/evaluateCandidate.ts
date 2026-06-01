@@ -28,6 +28,10 @@ export function evaluateCandidate(
     }
   }
 
+  if (request.forceOneTapBuilds && evaluated.cycleData.digsRequired !== 1) {
+    return null;
+  }
+
   if (request.maxStats) {
     for (const [stat, max] of Object.entries(request.maxStats)) {
       const value = evaluated.stats[stat as keyof typeof evaluated.stats];
