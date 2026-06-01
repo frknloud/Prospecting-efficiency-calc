@@ -160,7 +160,7 @@
       "sizeBoost": 160,
       "walkSpeed": -0.75
     },
-    "rarity": "Mythic"
+    "rarity": "mythic"
   },
   {
     "name": "Royal Federation Crown",
@@ -172,7 +172,7 @@
       "sizeBoost": 100,
       "sellBoost": 200
     },
-    "rarity": "Mythic"
+    "rarity": "mythic"
   },
   {
     "name": "Phoenix Wings",
@@ -184,7 +184,7 @@
       "capacity": -35,
       "sizeBoost": 450
     },
-    "rarity": "Mythic"
+    "rarity": "mythic"
   },
   {
     "name": "Cryogenic Preserver",
@@ -197,7 +197,7 @@
       "shakeSpeed": -18,
       "sellBoost": 55
     },
-    "rarity": "Mythic"
+    "rarity": "mythic"
   },
   {
     "name": "Pumpkin Lord",
@@ -240,7 +240,7 @@
       "sizeBoost": 55,
       "sellBoost": 110
     },
-    "rarity": "Exotic"
+    "rarity": "exotic"
   },
   {
     "name": "Antlers of Life",
@@ -253,7 +253,7 @@
       "modifierBoost": 220,
       "sizeBoost": 65
     },
-    "rarity": "Exotic"
+    "rarity": "exotic"
   },
   {
     "name": "Excalibur",
@@ -267,7 +267,7 @@
       "treasureMapChance": 175,
       "walkSpeed": 5.5
     },
-    "rarity": "Exotic"
+    "rarity": "exotic"
   },
   {
     "name": "Timelocked Soul",
@@ -281,7 +281,7 @@
       "sizeBoost": 55,
       "inventorySize": 500
     },
-    "rarity": "Exotic"
+    "rarity": "exotic"
   },
   {
     "name": "Starlight Wings",
@@ -295,7 +295,7 @@
       "sizeBoost": 45,
       "walkSpeed": 2
     },
-    "rarity": "Exotic"
+    "rarity": "exotic"
   },
   {
     "name": "Clockwork",
@@ -310,7 +310,7 @@
       "sellBoost": 110,
       "inventorySize": 325
     },
-    "rarity": "Ascended",
+    "rarity": "ascended",
     "specialAccess": "clockwork"
   }
 ]

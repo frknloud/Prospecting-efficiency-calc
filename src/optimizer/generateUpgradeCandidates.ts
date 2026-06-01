@@ -10,7 +10,13 @@ import {
 
 import type { AccessSettings } from "../access/accessTypes";
 
-import { canUseMuseumModifier, } from "../helpers/museumValidation";
+import {
+  getOptimizerSearchProfile,
+  isOptimizerAccessoryAllowed,
+  isOptimizerMutationAllowed,
+} from "./searchProfiles";
+
+import { canUseMuseumModifier } from "../helpers/museumValidation";
 
 import pans from "../data/pans.json";
 import shovels from "../data/shovels.json";
@@ -27,41 +33,22 @@ const MAX_MUSEUM_MINERAL_CANDIDATES_PER_SLOT = 8;
 const MAX_MUSEUM_MODIFIER_CANDIDATES_PER_SLOT = 8;
 
 function getStatValue(
-  stats:
-    | Record<
-        string,
-        number | undefined
-      >
-    | undefined,
-  stat: string
+  stats: Record<string, number | undefined> | undefined,
+  stat: string,
 ): number {
-
-  return Number(
-    stats?.[stat] ?? 0
-  );
+  return Number(stats?.[stat] ?? 0);
 }
 
 function scoreMuseumMineral(
   mineral: {
-    stats?: Record<
-      string,
-      number | undefined
-    >;
+    stats?: Record<string, number | undefined>;
   },
-  relevantStats: Set<string>
+  relevantStats: Set<string>,
 ): number {
-
   let score = 0;
 
-  for (
-    const stat
-    of relevantStats
-  ) {
-    score +=
-      getStatValue(
-        mineral.stats,
-        stat
-      );
+  for (const stat of relevantStats) {
+    score += getStatValue(mineral.stats, stat);
   }
 
   return score;
@@ -72,24 +59,13 @@ function scoreMuseumModifier(
     affects?: string[];
     isDouble?: boolean;
   },
-  relevantStats: Set<string>
+  relevantStats: Set<string>,
 ): number {
-
   let score = 0;
 
-  for (
-    const stat
-    of modifier.affects ?? []
-  ) {
-    if (
-      relevantStats.has(
-        stat
-      )
-    ) {
-      score +=
-        modifier.isDouble
-          ? 2
-          : 1;
+  for (const stat of modifier.affects ?? []) {
+    if (relevantStats.has(stat)) {
+      score += modifier.isDouble ? 2 : 1;
     }
   }
 
@@ -98,34 +74,19 @@ function scoreMuseumModifier(
 
 function getRelevantMuseumStats(
   objective?: string,
-  secondaryObjective?: string
+  secondaryObjective?: string,
 ): Set<string> {
+  const stats = new Set<string>();
 
-  const stats =
-    new Set<string>();
-
-  if (
-    objective &&
-    objective !== "efficiency"
-  ) {
-    stats.add(
-      objective
-    );
+  if (objective && objective !== "efficiency") {
+    stats.add(objective);
   }
 
-  if (
-    secondaryObjective &&
-    secondaryObjective !== "efficiency"
-  ) {
-    stats.add(
-      secondaryObjective
-    );
+  if (secondaryObjective && secondaryObjective !== "efficiency") {
+    stats.add(secondaryObjective);
   }
 
-  if (
-    objective === "efficiency" ||
-    stats.size === 0
-  ) {
+  if (objective === "efficiency" || stats.size === 0) {
     stats.add("luck");
     stats.add("capacity");
     stats.add("digSpeed");
@@ -138,22 +99,12 @@ function getRelevantMuseumStats(
   return stats;
 }
 
-function getMuseumMineral(
-  mineralId: string | null | undefined
-) {
-  return museumMinerals.find(
-    mineral =>
-      mineral.id === mineralId
-  );
+function getMuseumMineral(mineralId: string | null | undefined) {
+  return museumMinerals.find((mineral) => mineral.id === mineralId);
 }
 
-function getMuseumModifier(
-  modifierId: string | null | undefined
-) {
-  return museumModifiers.find(
-    modifier =>
-      modifier.id === modifierId
-  );
+function getMuseumModifier(modifierId: string | null | undefined) {
+  return museumModifiers.find((modifier) => modifier.id === modifierId);
 }
 
 export function generateUpgradeCandidates(
@@ -180,85 +131,54 @@ export function generateUpgradeCandidates(
     museumModifier: 0,
   };
 
-  const relevantMuseumStats =
-    getRelevantMuseumStats(
-      objective,
-      secondaryObjective
-    );
+  const relevantMuseumStats = getRelevantMuseumStats(
+    objective,
+    secondaryObjective,
+  );
 
-  const mutationsAccessible =
-    areMutationsAccessible(
-      accessSettings
-    );
+  const mutationsAccessible = areMutationsAccessible(accessSettings);
 
-  const availablePans =
-    pans.filter(
-      pan =>
-        isItemAccessible(
-          pan as any,
-          accessSettings
-        )
-    );
+  const searchProfile = getOptimizerSearchProfile(accessSettings);
 
-  const availableShovels =
-    shovels.filter(
-      shovel =>
-        isItemAccessible(
-          shovel as any,
-          accessSettings
-        )
-    );
+  const availablePans = pans.filter((pan) =>
+    isItemAccessible(pan as any, accessSettings),
+  );
 
-  const availableNecklaces =
-    necklaces.filter(
-      necklace =>
-        isItemAccessible(
-          necklace as any,
-          accessSettings
-        )
-    );
+  const availableShovels = shovels.filter((shovel) =>
+    isItemAccessible(shovel as any, accessSettings),
+  );
 
-  const availableCharms =
-    charms.filter(
-      charm =>
-        isItemAccessible(
-          charm as any,
-          accessSettings
-        )
-    );
-    
-  const availableMutations =
-    mutations.filter(
-      mutation =>
-        !mutation.limitedTime ||
-        accessSettings.includeLimitedTime
-    );
+  const availableNecklaces = necklaces.filter(
+    (necklace) =>
+      isItemAccessible(necklace as any, accessSettings) &&
+      isOptimizerAccessoryAllowed(necklace as any, searchProfile),
+  );
 
-  const availableMuseumMinerals =
-    museumMinerals.filter(
-      mineral =>
-        isMuseumMineralAccessible(
-          mineral as any,
-          accessSettings
-        )
-    );
+  const availableCharms = charms.filter(
+    (charm) =>
+      isItemAccessible(charm as any, accessSettings) &&
+      isOptimizerAccessoryAllowed(charm as any, searchProfile),
+  );
 
-  const availableMuseumModifiers =
-    museumModifiers.filter(
-      modifier =>
-        isItemAccessible(
-          modifier as any,
-          accessSettings
-        )
-    );
+  const availableMutations = mutations.filter(
+    (mutation) =>
+      (!mutation.limitedTime || accessSettings.includeLimitedTime) &&
+      isOptimizerMutationAllowed(mutation.id, searchProfile),
+  );
 
-  const availableRings =
-    rings.filter((ring) =>
-      isItemAccessible(
-        ring as any,
-        accessSettings
-      )
-    );
+  const availableMuseumMinerals = museumMinerals.filter((mineral) =>
+    isMuseumMineralAccessible(mineral as any, accessSettings),
+  );
+
+  const availableMuseumModifiers = museumModifiers.filter((modifier) =>
+    isItemAccessible(modifier as any, accessSettings),
+  );
+
+  const availableRings = rings.filter(
+    (ring) =>
+      isItemAccessible(ring as any, accessSettings) &&
+      isOptimizerAccessoryAllowed(ring as any, searchProfile),
+  );
 
   if (!lockedSlots?.pan) {
     for (const pan of availablePans) {
@@ -333,10 +253,7 @@ export function generateUpgradeCandidates(
       });
     }
 
-    if (
-      build.necklaceId &&
-      mutationsAccessible
-    ) {
+    if (build.necklaceId && mutationsAccessible) {
       for (const mutation of availableMutations) {
         if (mutation.id === build.necklaceMutationId) {
           continue;
@@ -374,10 +291,7 @@ export function generateUpgradeCandidates(
       });
     }
 
-    if (
-      build.charmId &&
-      mutationsAccessible
-    ) {
+    if (build.charmId && mutationsAccessible) {
       for (const mutation of availableMutations) {
         if (mutation.id === build.charmMutationId) {
           continue;
@@ -454,10 +368,7 @@ export function generateUpgradeCandidates(
       });
     }
 
-    if (
-      !currentRing.ringId ||
-      !mutationsAccessible
-    ) {
+    if (!currentRing.ringId || !mutationsAccessible) {
       continue;
     }
 
@@ -504,239 +415,136 @@ export function generateUpgradeCandidates(
       });
     }
   }
-  
-  for (const slot of build.museumSlots ?? []) {   
-      
-      const museumSlotIndex =
-        build.museumSlots.findIndex(
-          museumSlot =>
-            museumSlot.slotId ===
-            slot.slotId
+
+  for (const slot of build.museumSlots ?? []) {
+    const museumSlotIndex = build.museumSlots.findIndex(
+      (museumSlot) => museumSlot.slotId === slot.slotId,
+    );
+
+    if (lockedSlots?.museumSlots[museumSlotIndex]) {
+      continue;
+    }
+
+    const rankedMuseumMinerals = availableMuseumMinerals
+      .filter((mineral) => {
+        if (mineral.id === slot.mineralId) {
+          return false;
+        }
+
+        const mineralAlreadyUsedInAnotherSlot = build.museumSlots.some(
+          (otherSlot) =>
+            otherSlot.slotId !== slot.slotId &&
+            otherSlot.mineralId === mineral.id,
         );
 
-      if (
-        lockedSlots?.museumSlots[
-          museumSlotIndex
-        ]
-      ) {
-        continue;
-      }
+        if (mineralAlreadyUsedInAnotherSlot) {
+          return false;
+        }
 
-      const rankedMuseumMinerals =
-        availableMuseumMinerals
-          .filter(
-            mineral => {
+        if (mineral.rarity !== slot.rarity) {
+          return false;
+        }
 
-              if (
-                mineral.id ===
-                slot.mineralId
-              ) {
-                return false;
-              }
+        const currentModifier = getMuseumModifier(slot.modifierId);
 
-              const mineralAlreadyUsedInAnotherSlot =
-                build.museumSlots.some(
-                  otherSlot =>
-                    otherSlot.slotId !== slot.slotId &&
-                    otherSlot.mineralId === mineral.id
-                );
+        if (!canUseMuseumModifier(mineral, currentModifier)) {
+          return false;
+        }
 
-              if (
-                mineralAlreadyUsedInAnotherSlot
-              ) {
-                return false;
-              }
+        const mineralStats = Object.keys(mineral.stats ?? {});
 
-              if (
-                mineral.rarity !==
-                slot.rarity
-              ) {
-                return false;
-              }
+        return mineralStats.some((stat) => relevantMuseumStats.has(stat));
+      })
+      .sort(
+        (a, b) =>
+          scoreMuseumMineral(b, relevantMuseumStats) -
+          scoreMuseumMineral(a, relevantMuseumStats),
+      )
+      .slice(0, MAX_MUSEUM_MINERAL_CANDIDATES_PER_SLOT);
 
-              const currentModifier =
-                getMuseumModifier(
-                  slot.modifierId
-                );
-
-              if (
-                !canUseMuseumModifier(
-                  mineral,
-                  currentModifier
-                )
-              ) {
-                return false;
-              }
-
-              const mineralStats =
-                Object.keys(
-                  mineral.stats ?? {}
-                );
-
-              return mineralStats.some(
-                stat =>
-                  relevantMuseumStats.has(
-                    stat
-                  )
-              );
+    for (const mineral of rankedMuseumMinerals) {
+      const updatedMuseumSlots = build.museumSlots.map((currentSlot) =>
+        currentSlot.slotId === slot.slotId
+          ? {
+              ...currentSlot,
+              mineralId: mineral.id,
             }
-          )
-          .sort(
-            (a, b) =>
-              scoreMuseumMineral(
-                b,
-                relevantMuseumStats
-              ) -
-              scoreMuseumMineral(
-                a,
-                relevantMuseumStats
-              )
-          )
-          .slice(
-            0,
-            MAX_MUSEUM_MINERAL_CANDIDATES_PER_SLOT
-          );
+          : currentSlot,
+      );
 
-      for (
-        const mineral
-        of rankedMuseumMinerals
-      ) {
+      counts.museumMineral++;
 
-        const updatedMuseumSlots =
-          build.museumSlots.map(
-            currentSlot =>
-              currentSlot.slotId ===
-              slot.slotId
-                ? {
-                    ...currentSlot,
-                    mineralId:
-                      mineral.id,
-                  }
-                : currentSlot
-          );
+      candidates.push({
+        slot: "museumMineral",
 
-        counts.museumMineral++;
+        previousItemId: slot.mineralId ?? undefined,
 
-        candidates.push({
-          slot:
-            "museumMineral",
+        newItemId: mineral.id,
 
-          previousItemId:
-            slot.mineralId ??
-            undefined,
+        label: `Replace museum slot ${slot.slotId} mineral with ${mineral.name}`,
 
-          newItemId:
-            mineral.id,
-
-          label:
-            `Replace museum slot ${slot.slotId} mineral with ${mineral.name}`,
-
-          build: {
-            ...build,
-            museumSlots:
-              updatedMuseumSlots,
-          },
-        });
-      }
-
-      const rankedMuseumModifiers =
-        availableMuseumModifiers
-          .filter(
-            modifier => {
-
-              if (
-                modifier.id ===
-                slot.modifierId
-              ) {
-                return false;
-              }
-
-              const currentMineral =
-                getMuseumMineral(
-                  slot.mineralId
-                );
-
-              if (!currentMineral) {
-                return false;
-              }
-
-              if (
-                !canUseMuseumModifier(
-                  currentMineral,
-                  modifier
-                )
-              ) {
-                return false;
-              }
-
-              return (
-                modifier.affects ?? []
-              ).some(
-                stat =>
-                  relevantMuseumStats.has(
-                    stat
-                  )
-              );
-            }
-          )
-          .sort(
-            (a, b) =>
-              scoreMuseumModifier(
-                b,
-                relevantMuseumStats
-              ) -
-              scoreMuseumModifier(
-                a,
-                relevantMuseumStats
-              )
-          )
-          .slice(
-            0,
-            MAX_MUSEUM_MODIFIER_CANDIDATES_PER_SLOT
-          );
-
-      for (
-        const modifier
-        of rankedMuseumModifiers
-      ) {
-
-        const updatedMuseumSlots =
-          build.museumSlots.map(
-            currentSlot =>
-              currentSlot.slotId ===
-              slot.slotId
-                ? {
-                    ...currentSlot,
-                    modifierId:
-                      modifier.id,
-                  }
-                : currentSlot
-          );
-
-        counts.museumModifier++;
-
-        candidates.push({
-          slot:
-            "museumModifier",
-
-          previousItemId:
-            slot.modifierId ??
-            undefined,
-
-          newItemId:
-            modifier.id,
-
-          label:
-            `Replace museum slot ${slot.slotId} modifier with ${modifier.name}`,
-
-          build: {
-            ...build,
-            museumSlots:
-              updatedMuseumSlots,
-          },
-        });
-      }
+        build: {
+          ...build,
+          museumSlots: updatedMuseumSlots,
+        },
+      });
     }
+
+    const rankedMuseumModifiers = availableMuseumModifiers
+      .filter((modifier) => {
+        if (modifier.id === slot.modifierId) {
+          return false;
+        }
+
+        const currentMineral = getMuseumMineral(slot.mineralId);
+
+        if (!currentMineral) {
+          return false;
+        }
+
+        if (!canUseMuseumModifier(currentMineral, modifier)) {
+          return false;
+        }
+
+        return (modifier.affects ?? []).some((stat) =>
+          relevantMuseumStats.has(stat),
+        );
+      })
+      .sort(
+        (a, b) =>
+          scoreMuseumModifier(b, relevantMuseumStats) -
+          scoreMuseumModifier(a, relevantMuseumStats),
+      )
+      .slice(0, MAX_MUSEUM_MODIFIER_CANDIDATES_PER_SLOT);
+
+    for (const modifier of rankedMuseumModifiers) {
+      const updatedMuseumSlots = build.museumSlots.map((currentSlot) =>
+        currentSlot.slotId === slot.slotId
+          ? {
+              ...currentSlot,
+              modifierId: modifier.id,
+            }
+          : currentSlot,
+      );
+
+      counts.museumModifier++;
+
+      candidates.push({
+        slot: "museumModifier",
+
+        previousItemId: slot.modifierId ?? undefined,
+
+        newItemId: modifier.id,
+
+        label: `Replace museum slot ${slot.slotId} modifier with ${modifier.name}`,
+
+        build: {
+          ...build,
+          museumSlots: updatedMuseumSlots,
+        },
+      });
+    }
+  }
 
   return candidates;
 }

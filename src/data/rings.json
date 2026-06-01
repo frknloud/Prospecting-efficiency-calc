@@ -153,7 +153,7 @@
       "shakeStrength": 5.5,
       "sellBoost": 45
     },
-    "rarity": "Mythic"
+    "rarity": "mythic"
   },
   {
     "name": "Mythril Ring",
@@ -167,7 +167,7 @@
       "shakeSpeed": 42,
       "sellBoost": 26
     },
-    "rarity": "Mythic"
+    "rarity": "mythic"
   },
   {
     "name": "Prismatic Star",
@@ -187,7 +187,7 @@
       "modifierBoost": 22,
       "inventorySize": 55
     },
-    "rarity": "Mythic"
+    "rarity": "mythic"
   },
   {
     "name": "Ring of Thorns",
@@ -202,7 +202,7 @@
       "sizeBoost": 32,
       "inventorySize": 170
     },
-    "rarity": "Mythic"
+    "rarity": "mythic"
   },
   {
     "name": "Purifying Ring",
@@ -217,7 +217,7 @@
       "shakeStrength": 30,
       "inventorySize": 90
     },
-    "rarity": "Mythic"
+    "rarity": "mythic"
   },
   {
     "name": "Solar Ring",
@@ -233,7 +233,7 @@
       "shakeSpeed": -8,
       "modifierBoost": 22
     },
-    "rarity": "Mythic"
+    "rarity": "mythic"
   },
   {
     "name": "Vortex Ring",
@@ -247,7 +247,7 @@
       "digStrength": 90,
       "shakeStrength": 11
     },
-    "rarity": "Exotic"
+    "rarity": "exotic"
   },
   {
     "name": "Umbrite Ring",
@@ -262,7 +262,7 @@
       "shakeStrength": 22,
       "sizeBoost": 16
     },
-    "rarity": "Exotic"
+    "rarity": "exotic"
   },
   {
     "name": "Otherworldly Ring",
@@ -277,7 +277,7 @@
       "sizeBoost": 26,
       "sellBoost": 32
     },
-    "rarity": "Exotic"
+    "rarity": "exotic"
   },
   {
     "name": "Dredge Master's Ring",
@@ -291,7 +291,7 @@
       "shakeStrength": 30,
       "sizeBoost": 55
     },
-    "rarity": "Exotic",
+    "rarity": "exotic",
     "specialAccess": "dredgeMastersRing"
   },
   {
@@ -308,7 +308,7 @@
       "modifierBoost": 16,
       "inventorySize": 100
     },
-    "rarity": "Exotic"
+    "rarity": "exotic"
   },
   {
     "name": "Ring of Champions",
@@ -327,7 +327,7 @@
       "modifierBoost": 160,
       "sellBoost": 160
     },
-    "rarity": "Ascended",
+    "rarity": "ascended",
     "specialAccess": "ringOfChampions"
   },
   {
@@ -345,7 +345,7 @@
       "walkSpeed": 4,
       "jumpPower": 5.5
     },
-    "rarity": "Ascended",
+    "rarity": "ascended",
     "specialAccess": "ringOfTheStars"
   }
 ]

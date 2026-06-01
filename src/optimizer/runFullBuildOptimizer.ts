@@ -2,7 +2,17 @@ import { evaluateBuild } from "../engine/evaluateBuild";
 
 import { scoreBuild } from "./scoreBuild";
 
-import { canPairObjectives, isEfficiencyObjective, isMovementObjective } from "./objectiveRules";
+import {
+  canPairObjectives,
+  isEfficiencyObjective,
+  isMovementObjective,
+} from "./objectiveRules";
+
+import {
+  getOptimizerSearchProfile,
+  isOptimizerAccessoryAllowed,
+  isOptimizerMutationAllowed,
+} from "./searchProfiles";
 
 import { objectiveValue } from "./objectiveValue";
 
@@ -103,29 +113,42 @@ function getRingOptionKey(build: BuildState, ringIndex: number): string {
 }
 
 function getRingSetKey(build: BuildState, ringSlotLimit: number): string {
-  return Array.from({ length: ringSlotLimit }, (_, index) => getRingOptionKey(build, index)).join("||");
+  return Array.from({ length: ringSlotLimit }, (_, index) =>
+    getRingOptionKey(build, index),
+  ).join("||");
 }
 
 function getMuseumSetKey(build: BuildState): string {
   return (build.museumSlots ?? [])
     .slice()
     .sort((a, b) => a.slotId - b.slotId)
-    .map((slot) => `${slot.slotId}:${getNullableId(slot.mineralId)}|${getNullableId(slot.modifierId)}`)
+    .map(
+      (slot) =>
+        `${slot.slotId}:${getNullableId(slot.mineralId)}|${getNullableId(slot.modifierId)}`,
+    )
     .join("||");
 }
 
 function getMuseumOptionKey(build: BuildState, slotId: number): string {
-  const slot = build.museumSlots.find((museumSlot) => museumSlot.slotId === slotId);
+  const slot = build.museumSlots.find(
+    (museumSlot) => museumSlot.slotId === slotId,
+  );
 
   return `${getNullableId(slot?.mineralId)}|${getNullableId(slot?.modifierId)}`;
 }
 
-function getStageSeedLimit(config: { beamWidth: number; perStageLimit: number }): number {
+function getStageSeedLimit(config: {
+  beamWidth: number;
+  perStageLimit: number;
+}): number {
   return Math.max(config.perStageLimit * 3, config.beamWidth);
 }
 
-function getEffectiveSecondaryObjective(request: OptimizerRequest): OptimizerRequest["secondaryObjective"] {
-  return request.secondaryObjective && canPairObjectives(request.objective, request.secondaryObjective)
+function getEffectiveSecondaryObjective(
+  request: OptimizerRequest,
+): OptimizerRequest["secondaryObjective"] {
+  return request.secondaryObjective &&
+    canPairObjectives(request.objective, request.secondaryObjective)
     ? request.secondaryObjective
     : undefined;
 }
@@ -158,26 +181,41 @@ function buildAllowedStageKeys(
   request: OptimizerRequest,
   config: { beamWidth: number; perStageLimit: number },
 ): Set<string> {
-  const hasHardSearchConstraints = hasMinStats(request) || request.forceOneTapBuilds;
+  const hasHardSearchConstraints =
+    hasMinStats(request) || request.forceOneTapBuilds;
   const useOverhaulSearch = shouldUseOverhaulSearch(request);
 
   const seedLimit = hasHardSearchConstraints
     ? Math.max(getStageSeedLimit(config), config.perStageLimit * 8, 64)
     : useOverhaulSearch
-      ? Math.max(getStageSeedLimit(config), config.perStageLimit * 5, config.beamWidth * 2, 40)
+      ? Math.max(
+          getStageSeedLimit(config),
+          config.perStageLimit * 5,
+          config.beamWidth * 2,
+          40,
+        )
       : getStageSeedLimit(config);
 
   const seedOptions = hasHardSearchConstraints
-    ? rankConstraintStageOptions(stage.buildOptions(seedBuild, request), request, seedLimit)
-    : rankStageOptions(stage.buildOptions(seedBuild, request), request, seedLimit);
+    ? rankConstraintStageOptions(
+        stage.buildOptions(seedBuild, request),
+        request,
+        seedLimit,
+      )
+    : rankStageOptions(
+        stage.buildOptions(seedBuild, request),
+        request,
+        seedLimit,
+      );
 
-  const keys = new Set(seedOptions.map((option) => stage.optionKey(option.build)));
+  const keys = new Set(
+    seedOptions.map((option) => stage.optionKey(option.build)),
+  );
 
   keys.add(stage.optionKey(seedBuild));
 
   return keys;
 }
-
 
 function hasMinStats(request: OptimizerRequest): boolean {
   return Boolean(request.minStats && Object.keys(request.minStats).length > 0);
@@ -186,7 +224,12 @@ function hasMinStats(request: OptimizerRequest): boolean {
 function getMinConstraintStatus(
   evaluated: ReturnType<typeof evaluateBuild>,
   request: OptimizerRequest,
-): { hasConstraints: boolean; passes: boolean; deficitRatio: number; progressRatio: number } {
+): {
+  hasConstraints: boolean;
+  passes: boolean;
+  deficitRatio: number;
+  progressRatio: number;
+} {
   if (!request.minStats || Object.keys(request.minStats).length === 0) {
     return {
       hasConstraints: false,
@@ -209,7 +252,9 @@ function getMinConstraintStatus(
 
     checkedStats += 1;
 
-    const value = Number(evaluated.stats[stat as keyof typeof evaluated.stats] ?? 0);
+    const value = Number(
+      evaluated.stats[stat as keyof typeof evaluated.stats] ?? 0,
+    );
     const safeValue = Math.max(value, 0);
 
     totalDeficitRatio += Math.max(target - safeValue, 0) / target;
@@ -233,7 +278,10 @@ function getMinConstraintStatus(
   };
 }
 
-function scoreConstraintTargetBuild(build: BuildState, request: OptimizerRequest): number {
+function scoreConstraintTargetBuild(
+  build: BuildState,
+  request: OptimizerRequest,
+): number {
   const evaluated = evaluateBuild(build);
   const objectiveScore = scoreBuild(evaluated, request);
   const constraintStatus = getMinConstraintStatus(evaluated, request);
@@ -258,7 +306,9 @@ function scoreConstraintTargetBuild(build: BuildState, request: OptimizerRequest
     return 1_000_000_000_000_000 + objectiveScore;
   }
 
-  return (1 - constraintStatus.deficitRatio) * 1_000_000_000_000 + objectiveScore;
+  return (
+    (1 - constraintStatus.deficitRatio) * 1_000_000_000_000 + objectiveScore
+  );
 }
 
 function cloneRings(build: BuildState, ringSlotLimit: number): RingSelection[] {
@@ -337,7 +387,6 @@ function passesMaxStats(build: BuildState, request: OptimizerRequest): boolean {
   return true;
 }
 
-
 function passesMinStats(build: BuildState, request: OptimizerRequest): boolean {
   if (!request.minStats) {
     return true;
@@ -356,7 +405,10 @@ function passesMinStats(build: BuildState, request: OptimizerRequest): boolean {
   return true;
 }
 
-function passesOneTapConstraint(build: BuildState, request: OptimizerRequest): boolean {
+function passesOneTapConstraint(
+  build: BuildState,
+  request: OptimizerRequest,
+): boolean {
   if (!request.forceOneTapBuilds) {
     return true;
   }
@@ -364,7 +416,9 @@ function passesOneTapConstraint(build: BuildState, request: OptimizerRequest): b
   return evaluateBuild(build).cycleData.digsRequired === 1;
 }
 
-function getOneTapConstraintScore(evaluated: ReturnType<typeof evaluateBuild>): number {
+function getOneTapConstraintScore(
+  evaluated: ReturnType<typeof evaluateBuild>,
+): number {
   const digsRequired = Number(evaluated.cycleData.digsRequired);
 
   if (digsRequired === 1) {
@@ -378,7 +432,10 @@ function getOneTapConstraintScore(evaluated: ReturnType<typeof evaluateBuild>): 
   return 1 / digsRequired;
 }
 
-function isCandidateBuildValid(build: BuildState, request: OptimizerRequest): boolean {
+function isCandidateBuildValid(
+  build: BuildState,
+  request: OptimizerRequest,
+): boolean {
   return (
     isBuildLegal(build) &&
     !hasDuplicateMuseumMinerals(build) &&
@@ -386,7 +443,10 @@ function isCandidateBuildValid(build: BuildState, request: OptimizerRequest): bo
   );
 }
 
-function isFinalBuildValid(build: BuildState, request: OptimizerRequest): boolean {
+function isFinalBuildValid(
+  build: BuildState,
+  request: OptimizerRequest,
+): boolean {
   return (
     isCandidateBuildValid(build, request) &&
     passesMinStats(build, request) &&
@@ -394,11 +454,17 @@ function isFinalBuildValid(build: BuildState, request: OptimizerRequest): boolea
   );
 }
 
-function scoreCandidateBuild(build: BuildState, request: OptimizerRequest): number {
+function scoreCandidateBuild(
+  build: BuildState,
+  request: OptimizerRequest,
+): number {
   return scoreBuild(evaluateBuild(build), request);
 }
 
-function scoreSearchBuild(build: BuildState, request: OptimizerRequest): number {
+function scoreSearchBuild(
+  build: BuildState,
+  request: OptimizerRequest,
+): number {
   const evaluated = evaluateBuild(build);
   const objectiveScore = scoreBuild(evaluated, request);
   const constraintStatus = getMinConstraintStatus(evaluated, request);
@@ -423,10 +489,10 @@ function scoreSearchBuild(build: BuildState, request: OptimizerRequest): number 
     return 1_000_000_000_000_000 + objectiveScore;
   }
 
-  return (1 - constraintStatus.deficitRatio) * 1_000_000_000_000 + objectiveScore;
+  return (
+    (1 - constraintStatus.deficitRatio) * 1_000_000_000_000 + objectiveScore
+  );
 }
-
-
 
 function isBetterFinalBuild(
   candidate: BuildState,
@@ -520,7 +586,10 @@ function polishFinalBuild(
   return polished;
 }
 
-function makeFullBuildResult(build: BuildState, request: OptimizerRequest): OptimizerResult {
+function makeFullBuildResult(
+  build: BuildState,
+  request: OptimizerRequest,
+): OptimizerResult {
   const evaluated = evaluateBuild(build);
 
   return {
@@ -540,7 +609,9 @@ function makeFullBuildResult(build: BuildState, request: OptimizerRequest): Opti
 
 function uniqueStageOptions(options: StageOption[]): StageOption[] {
   return Array.from(
-    new Map(options.map((option) => [getFullBuildIdentity(option.build), option])).values(),
+    new Map(
+      options.map((option) => [getFullBuildIdentity(option.build), option]),
+    ).values(),
   );
 }
 
@@ -582,7 +653,8 @@ function computeObjectiveRanges(
   stages: FullBuildStage[],
 ): OptimizerRequest["objectiveRanges"] {
   const objectives = [request.objective, request.secondaryObjective].filter(
-    (objective): objective is NonNullable<typeof objective> => Boolean(objective),
+    (objective): objective is NonNullable<typeof objective> =>
+      Boolean(objective),
   );
 
   const uniqueObjectives = Array.from(new Set(objectives));
@@ -726,7 +798,10 @@ function buildResultsOrConstraintRescue(
     stages,
   );
 
-  if (primaryResults.length > 0 || (!hasMinStats(request) && !request.forceOneTapBuilds)) {
+  if (
+    primaryResults.length > 0 ||
+    (!hasMinStats(request) && !request.forceOneTapBuilds)
+  ) {
     return primaryResults;
   }
 
@@ -749,21 +824,28 @@ function buildResultsOrConstraintRescue(
   );
 }
 
-function getAvailableMutationIds(request: OptimizerRequest): Array<string | null> {
+function getAvailableMutationIds(
+  request: OptimizerRequest,
+): Array<string | null> {
   const accessSettings = request.accessSettings ?? DEFAULT_ACCESS_SETTINGS;
+  const searchProfile = getOptimizerSearchProfile(accessSettings);
 
   if (!areMutationsAccessible(accessSettings)) {
     return [null];
   }
 
-  return [
-    null,
-    ...mutations
-      .filter(
-        (mutation) => !mutation.limitedTime || accessSettings.includeLimitedTime,
-      )
-      .map((mutation) => mutation.id),
-  ];
+  const mutationIds = mutations
+    .filter(
+      (mutation) => !mutation.limitedTime || accessSettings.includeLimitedTime,
+    )
+    .map((mutation) => mutation.id)
+    .filter((mutationId) =>
+      isOptimizerMutationAllowed(mutationId, searchProfile),
+    );
+
+  return isOptimizerMutationAllowed(null, searchProfile)
+    ? [null, ...mutationIds]
+    : mutationIds;
 }
 
 function buildPanOptions(
@@ -850,27 +932,42 @@ function buildAccessoryOptions(
   slot: "necklace" | "charm",
 ): StageOption[] {
   const accessSettings = request.accessSettings ?? DEFAULT_ACCESS_SETTINGS;
+  const searchProfile = getOptimizerSearchProfile(accessSettings);
 
   const locked =
-    slot === "necklace" ? request.lockedSlots?.necklace : request.lockedSlots?.charm;
+    slot === "necklace"
+      ? request.lockedSlots?.necklace
+      : request.lockedSlots?.charm;
 
-  const options: StageOption[] = [
-    {
+  const options: StageOption[] = [];
+  const items = slot === "necklace" ? necklaces : charms;
+  const currentItemId = slot === "necklace" ? build.necklaceId : build.charmId;
+  const currentMutationId =
+    slot === "necklace" ? build.necklaceMutationId : build.charmMutationId;
+  const currentItem = items.find((item) => item.id === currentItemId);
+
+  const currentSetupAllowed =
+    !currentItem ||
+    (isOptimizerAccessoryAllowed(currentItem as any, searchProfile) &&
+      isOptimizerMutationAllowed(currentMutationId, searchProfile));
+
+  if (locked || currentSetupAllowed) {
+    options.push({
       label: `Keep current ${slot}`,
       build,
-    },
-  ];
+    });
+  }
 
   if (locked) {
     return options;
   }
 
-  const items = slot === "necklace" ? necklaces : charms;
-
   const mutationIds = getAvailableMutationIds(request);
 
-  for (const item of items.filter((item) =>
-    isItemAccessible(item as any, accessSettings),
+  for (const item of items.filter(
+    (item) =>
+      isItemAccessible(item as any, accessSettings) &&
+      isOptimizerAccessoryAllowed(item as any, searchProfile),
   )) {
     for (const mutationId of mutationIds) {
       options.push({
@@ -905,13 +1002,22 @@ function buildRingOptions(
   ringIndex: number,
 ): StageOption[] {
   const accessSettings = request.accessSettings ?? DEFAULT_ACCESS_SETTINGS;
+  const searchProfile = getOptimizerSearchProfile(accessSettings);
 
-  const options: StageOption[] = [
-    {
+  const options: StageOption[] = [];
+  const currentRing = build.rings[ringIndex];
+  const currentRingItem = rings.find((ring) => ring.id === currentRing?.ringId);
+  const currentSetupAllowed =
+    !currentRingItem ||
+    (isOptimizerAccessoryAllowed(currentRingItem as any, searchProfile) &&
+      isOptimizerMutationAllowed(currentRing?.mutationId, searchProfile));
+
+  if (request.lockedSlots?.rings?.[ringIndex] || currentSetupAllowed) {
+    options.push({
       label: `Keep ring ${ringIndex + 1}`,
       build,
-    },
-  ];
+    });
+  }
 
   if (request.lockedSlots?.rings?.[ringIndex]) {
     return options;
@@ -919,8 +1025,10 @@ function buildRingOptions(
 
   const mutationIds = getAvailableMutationIds(request);
 
-  const availableRings = rings.filter((ring) =>
-    isItemAccessible(ring as any, accessSettings),
+  const availableRings = rings.filter(
+    (ring) =>
+      isItemAccessible(ring as any, accessSettings) &&
+      isOptimizerAccessoryAllowed(ring as any, searchProfile),
   );
 
   for (const ring of availableRings) {
@@ -962,7 +1070,6 @@ function buildMuseumOptions(
       build,
     },
   ];
-
 
   const museumSlotIndex = build.museumSlots.findIndex(
     (museumSlot) => museumSlot.slotId === slot.slotId,
@@ -1033,8 +1140,16 @@ function buildRingSetOptions(
   const perSlotOptions: RingSelection[][] = [];
   const useOverhaulSearch = shouldUseOverhaulSearch(request);
   const singleSlotLimit = useOverhaulSearch
-    ? request.mode === "exhaustive" ? 40 : request.mode === "fast" ? 22 : 30
-    : request.mode === "exhaustive" ? 24 : request.mode === "fast" ? 12 : 18;
+    ? request.mode === "exhaustive"
+      ? 40
+      : request.mode === "fast"
+        ? 22
+        : 30
+    : request.mode === "exhaustive"
+      ? 24
+      : request.mode === "fast"
+        ? 12
+        : 18;
 
   for (let index = 0; index < ringSlotLimit; index += 1) {
     if (request.lockedSlots?.rings?.[index]) {
@@ -1063,7 +1178,11 @@ function buildRingSetOptions(
     perSlotOptions.push(Array.from(uniqueOptions.values()));
   }
 
-  let frontier: Array<{ rings: RingSelection[]; build: BuildState; score: number }> = [
+  let frontier: Array<{
+    rings: RingSelection[];
+    build: BuildState;
+    score: number;
+  }> = [
     {
       rings: cloneRings(build, ringSlotLimit),
       build,
@@ -1072,11 +1191,22 @@ function buildRingSetOptions(
   ];
 
   const frontierLimit = useOverhaulSearch
-    ? request.mode === "exhaustive" ? 160 : request.mode === "fast" ? 72 : 110
-    : request.mode === "exhaustive" ? 120 : request.mode === "fast" ? 48 : 80;
+    ? request.mode === "exhaustive"
+      ? 160
+      : request.mode === "fast"
+        ? 72
+        : 110
+    : request.mode === "exhaustive"
+      ? 120
+      : request.mode === "fast"
+        ? 48
+        : 80;
 
   for (let index = 0; index < ringSlotLimit; index += 1) {
-    const next = new Map<string, { rings: RingSelection[]; build: BuildState; score: number }>();
+    const next = new Map<
+      string,
+      { rings: RingSelection[]; build: BuildState; score: number }
+    >();
 
     for (const frontierEntry of frontier) {
       for (const ringOption of perSlotOptions[index]) {
@@ -1138,7 +1268,9 @@ function buildMuseumSetOptions(
     return [keepCurrent];
   }
 
-  const allSlotsLocked = museumSlots.every((_, index) => request.lockedSlots?.museumSlots?.[index]);
+  const allSlotsLocked = museumSlots.every(
+    (_, index) => request.lockedSlots?.museumSlots?.[index],
+  );
 
   if (allSlotsLocked) {
     return [keepCurrent];
@@ -1146,12 +1278,22 @@ function buildMuseumSetOptions(
 
   const useOverhaulSearch = shouldUseOverhaulSearch(request);
   const singleSlotLimit = useOverhaulSearch
-    ? request.mode === "exhaustive" ? 40 : request.mode === "fast" ? 22 : 30
-    : request.mode === "exhaustive" ? 28 : request.mode === "fast" ? 14 : 20;
+    ? request.mode === "exhaustive"
+      ? 40
+      : request.mode === "fast"
+        ? 22
+        : 30
+    : request.mode === "exhaustive"
+      ? 28
+      : request.mode === "fast"
+        ? 14
+        : 20;
   const perSlotOptions: MuseumSlotSelection[][] = [];
 
   for (const slot of museumSlots) {
-    const slotIndex = museumSlots.findIndex((museumSlot) => museumSlot.slotId === slot.slotId);
+    const slotIndex = museumSlots.findIndex(
+      (museumSlot) => museumSlot.slotId === slot.slotId,
+    );
 
     if (request.lockedSlots?.museumSlots?.[slotIndex]) {
       perSlotOptions.push([slot]);
@@ -1189,7 +1331,11 @@ function buildMuseumSetOptions(
     perSlotOptions.push(Array.from(uniqueOptions.values()));
   }
 
-  let frontier: Array<{ museumSlots: MuseumSlotSelection[]; build: BuildState; score: number }> = [
+  let frontier: Array<{
+    museumSlots: MuseumSlotSelection[];
+    build: BuildState;
+    score: number;
+  }> = [
     {
       museumSlots,
       build,
@@ -1198,11 +1344,22 @@ function buildMuseumSetOptions(
   ];
 
   const frontierLimit = useOverhaulSearch
-    ? request.mode === "exhaustive" ? 160 : request.mode === "fast" ? 72 : 110
-    : request.mode === "exhaustive" ? 120 : request.mode === "fast" ? 48 : 80;
+    ? request.mode === "exhaustive"
+      ? 160
+      : request.mode === "fast"
+        ? 72
+        : 110
+    : request.mode === "exhaustive"
+      ? 120
+      : request.mode === "fast"
+        ? 48
+        : 80;
 
   for (let index = 0; index < museumSlots.length; index += 1) {
-    const next = new Map<string, { museumSlots: MuseumSlotSelection[]; build: BuildState; score: number }>();
+    const next = new Map<
+      string,
+      { museumSlots: MuseumSlotSelection[]; build: BuildState; score: number }
+    >();
 
     for (const frontierEntry of frontier) {
       for (const slotOption of perSlotOptions[index]) {
@@ -1291,8 +1448,7 @@ function makeFullBuildStages(
 
   stages.push({
     name: "museum",
-    buildOptions: (build, request) =>
-      buildMuseumSetOptions(build, request),
+    buildOptions: (build, request) => buildMuseumSetOptions(build, request),
     optionKey: (build) => getMuseumSetKey(build),
   });
 
@@ -1322,7 +1478,12 @@ function buildFinalResultsFromFrontier(
     .slice(0, Math.max(topResults * 3, MAX_FINAL_POLISH_CANDIDATES));
 
   for (const candidate of candidatesToReview) {
-    const polishedBuild = polishFinalBuild(candidate.build, request, stages, polishDeadline);
+    const polishedBuild = polishFinalBuild(
+      candidate.build,
+      request,
+      stages,
+      polishDeadline,
+    );
 
     const finalObjectiveScore = scoreCandidateBuild(polishedBuild, request);
 
@@ -1396,11 +1557,15 @@ export async function runFullBuildOptimizer(
   // score the baseline with the same request object used for candidate scoring.
   const baselineScore = scoreBuild(baselineEvaluated, scoringRequest);
 
-  const requireBaselineImprovement = isFinalBuildValid(initialBuild, scoringRequest);
+  const requireBaselineImprovement = isFinalBuildValid(
+    initialBuild,
+    scoringRequest,
+  );
 
   // Keep an internal margin so the worker can return partial/unique results
   // instead of being terminated by the outer timeout handler.
-  const deadline = Date.now() + Math.max(5_000, getSearchTimeBudgetMs(scoringRequest) - 8_000);
+  const deadline =
+    Date.now() + Math.max(5_000, getSearchTimeBudgetMs(scoringRequest) - 8_000);
 
   let frontier: ScoredBuild[] = [
     {
@@ -1428,7 +1593,12 @@ export async function runFullBuildOptimizer(
 
     const stageMap = new Map<string, ScoredBuild>();
 
-    const allowedStageKeys = buildAllowedStageKeys(stage, initialBuild, scoringRequest, config);
+    const allowedStageKeys = buildAllowedStageKeys(
+      stage,
+      initialBuild,
+      scoringRequest,
+      config,
+    );
 
     for (const frontierBuild of frontier) {
       if (Date.now() > deadline) {
@@ -1455,7 +1625,9 @@ export async function runFullBuildOptimizer(
         .filter((option) => {
           const optionKey = stage.optionKey(option.build);
 
-          return optionKey === currentStageKey || allowedStageKeys.has(optionKey);
+          return (
+            optionKey === currentStageKey || allowedStageKeys.has(optionKey)
+          );
         });
 
       const useOverhaulSearch = shouldUseOverhaulSearch(scoringRequest);
