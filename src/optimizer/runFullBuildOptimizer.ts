@@ -2,6 +2,8 @@ import { evaluateBuild } from "../engine/evaluateBuild";
 
 import { scoreBuild } from "./scoreBuild";
 
+import { canPairObjectives, isEfficiencyObjective, isMovementObjective } from "./objectiveRules";
+
 import { objectiveValue } from "./objectiveValue";
 
 import { buildHash } from "./buildHash";
@@ -122,6 +124,34 @@ function getStageSeedLimit(config: { beamWidth: number; perStageLimit: number })
   return Math.max(config.perStageLimit * 3, config.beamWidth);
 }
 
+function getEffectiveSecondaryObjective(request: OptimizerRequest): OptimizerRequest["secondaryObjective"] {
+  return request.secondaryObjective && canPairObjectives(request.objective, request.secondaryObjective)
+    ? request.secondaryObjective
+    : undefined;
+}
+
+function shouldUseOverhaulSearch(request: OptimizerRequest): boolean {
+  const secondaryObjective = getEffectiveSecondaryObjective(request);
+
+  return (
+    hasMinStats(request) ||
+    Boolean(request.forceOneTapBuilds) ||
+    Boolean(secondaryObjective) ||
+    isMovementObjective(request.objective) ||
+    !isEfficiencyObjective(request.objective)
+  );
+}
+
+function getSearchTimeBudgetMs(request: OptimizerRequest): number {
+  const requestedBudget = Number(request.searchTimeBudgetMs ?? 0);
+
+  if (Number.isFinite(requestedBudget) && requestedBudget > 0) {
+    return Math.max(5_000, requestedBudget);
+  }
+
+  return FULL_BUILD_TIME_BUDGET_MS;
+}
+
 function buildAllowedStageKeys(
   stage: FullBuildStage,
   seedBuild: BuildState,
@@ -129,10 +159,13 @@ function buildAllowedStageKeys(
   config: { beamWidth: number; perStageLimit: number },
 ): Set<string> {
   const hasHardSearchConstraints = hasMinStats(request) || request.forceOneTapBuilds;
+  const useOverhaulSearch = shouldUseOverhaulSearch(request);
 
   const seedLimit = hasHardSearchConstraints
     ? Math.max(getStageSeedLimit(config), config.perStageLimit * 8, 64)
-    : getStageSeedLimit(config);
+    : useOverhaulSearch
+      ? Math.max(getStageSeedLimit(config), config.perStageLimit * 12, config.beamWidth * 4, 96)
+      : getStageSeedLimit(config);
 
   const seedOptions = hasHardSearchConstraints
     ? rankConstraintStageOptions(stage.buildOptions(seedBuild, request), request, seedLimit)
@@ -990,7 +1023,10 @@ function buildRingSetOptions(
   }
 
   const perSlotOptions: RingSelection[][] = [];
-  const singleSlotLimit = request.mode === "exhaustive" ? 28 : request.mode === "fast" ? 14 : 20;
+  const useOverhaulSearch = shouldUseOverhaulSearch(request);
+  const singleSlotLimit = useOverhaulSearch
+    ? request.mode === "exhaustive" ? 96 : request.mode === "fast" ? 48 : 72
+    : request.mode === "exhaustive" ? 28 : request.mode === "fast" ? 14 : 20;
 
   for (let index = 0; index < ringSlotLimit; index += 1) {
     if (request.lockedSlots?.rings?.[index]) {
@@ -1027,7 +1063,9 @@ function buildRingSetOptions(
     },
   ];
 
-  const frontierLimit = request.mode === "exhaustive" ? 180 : request.mode === "fast" ? 72 : 120;
+  const frontierLimit = useOverhaulSearch
+    ? request.mode === "exhaustive" ? 420 : request.mode === "fast" ? 180 : 280
+    : request.mode === "exhaustive" ? 180 : request.mode === "fast" ? 72 : 120;
 
   for (let index = 0; index < ringSlotLimit; index += 1) {
     const next = new Map<string, { rings: RingSelection[]; build: BuildState; score: number }>();
@@ -1098,7 +1136,10 @@ function buildMuseumSetOptions(
     return [keepCurrent];
   }
 
-  const singleSlotLimit = request.mode === "exhaustive" ? 36 : request.mode === "fast" ? 16 : 24;
+  const useOverhaulSearch = shouldUseOverhaulSearch(request);
+  const singleSlotLimit = useOverhaulSearch
+    ? request.mode === "exhaustive" ? 96 : request.mode === "fast" ? 48 : 72
+    : request.mode === "exhaustive" ? 36 : request.mode === "fast" ? 16 : 24;
   const perSlotOptions: MuseumSlotSelection[][] = [];
 
   for (const slot of museumSlots) {
@@ -1148,7 +1189,9 @@ function buildMuseumSetOptions(
     },
   ];
 
-  const frontierLimit = request.mode === "exhaustive" ? 180 : request.mode === "fast" ? 72 : 120;
+  const frontierLimit = useOverhaulSearch
+    ? request.mode === "exhaustive" ? 420 : request.mode === "fast" ? 180 : 280
+    : request.mode === "exhaustive" ? 180 : request.mode === "fast" ? 72 : 120;
 
   for (let index = 0; index < museumSlots.length; index += 1) {
     const next = new Map<string, { museumSlots: MuseumSlotSelection[]; build: BuildState; score: number }>();
@@ -1347,7 +1390,7 @@ export async function runFullBuildOptimizer(
 
   const requireBaselineImprovement = isFinalBuildValid(initialBuild, scoringRequest);
 
-  const deadline = Date.now() + FULL_BUILD_TIME_BUDGET_MS;
+  const deadline = Date.now() + getSearchTimeBudgetMs(scoringRequest);
 
   let frontier: ScoredBuild[] = [
     {
@@ -1405,9 +1448,13 @@ export async function runFullBuildOptimizer(
           return optionKey === currentStageKey || allowedStageKeys.has(optionKey);
         });
 
+      const useOverhaulSearch = shouldUseOverhaulSearch(scoringRequest);
+
       const stageLimit = hasMinStats(scoringRequest)
         ? Math.max(config.perStageLimit * 3, 24)
-        : config.perStageLimit;
+        : useOverhaulSearch
+          ? Math.max(config.perStageLimit * 4, 32)
+          : config.perStageLimit;
 
       const rankedOptions = hasMinStats(scoringRequest)
         ? rankConstraintStageOptions(stageOptions, scoringRequest, stageLimit)
@@ -1432,7 +1479,9 @@ export async function runFullBuildOptimizer(
 
     const frontierLimit = hasMinStats(scoringRequest)
       ? Math.max(config.beamWidth * 3, 72)
-      : config.beamWidth;
+      : shouldUseOverhaulSearch(scoringRequest)
+        ? Math.max(config.beamWidth * 4, 96)
+        : config.beamWidth;
 
     frontier = Array.from(stageMap.values())
       .sort((a, b) => b.score - a.score)
