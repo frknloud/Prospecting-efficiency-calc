@@ -865,7 +865,12 @@ export default function OptimizerPage({
       </section>
 
       <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
-        <h3 className="text-xl font-semibold mb-4">Current Evaluated Build</h3>
+        <div className="mb-4 space-y-1">
+          <h3 className="text-xl font-semibold">Current Evaluated Build</h3>
+          <p className="text-xs text-slate-400">
+            Optimizer ignores Consumables because they are temporary. Permanent Buffs are included.
+          </p>
+        </div>
 
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">

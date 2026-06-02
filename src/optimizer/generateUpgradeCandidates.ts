@@ -14,6 +14,7 @@ import {
   getOptimizerSearchProfile,
   isOptimizerAccessoryAllowed,
   isOptimizerMutationAllowed,
+  isOptimizerShovelAllowed,
 } from "./searchProfiles";
 
 import { canUseMuseumModifier } from "../helpers/museumValidation";
@@ -144,8 +145,10 @@ export function generateUpgradeCandidates(
     isItemAccessible(pan as any, accessSettings),
   );
 
-  const availableShovels = shovels.filter((shovel) =>
-    isItemAccessible(shovel as any, accessSettings),
+  const availableShovels = shovels.filter(
+    (shovel) =>
+      isItemAccessible(shovel as any, accessSettings) &&
+      isOptimizerShovelAllowed(shovel as any, accessSettings),
   );
 
   const availableNecklaces = necklaces.filter(

@@ -98,6 +98,51 @@ function normalizedObjectiveValue(
   return Math.max(0, Math.min((transformedValue - transformedCurrent) / denominator, 1.5));
 }
 
+function secondaryTargetSatisfaction(
+  evaluated: EvaluatedBuild,
+  objective?: OptimizerObjective,
+): number {
+  if (!objective) {
+    return 1;
+  }
+
+  const value = objectiveValue(evaluated, objective);
+
+  if (!Number.isFinite(value) || value <= 0) {
+    return 0;
+  }
+
+  switch (objective) {
+    case "sizeBoost":
+      // Size Boost is most useful as a hybrid support stat once it reaches
+      // the practical 1000-1500 range. Values beyond that range are still
+      // allowed, but should not be required unless Size Boost is primary.
+      return Math.min(value / 1000, 1);
+
+    case "modifierBoost":
+      // 1900 Modifier Boost is the important support breakpoint for
+      // guaranteed modified minerals. Extra reroll power can still help via
+      // normal objective tie-breaks, but the support target is satisfied here.
+      return Math.min(value / 1900, 1);
+
+    default:
+      return 1;
+  }
+}
+
+function secondarySupportMultiplier(
+  evaluated: EvaluatedBuild,
+  secondary?: OptimizerObjective,
+): number {
+  const satisfaction = secondaryTargetSatisfaction(evaluated, secondary);
+
+  // Strongly discourage hybrid candidates that ignore an important secondary
+  // support breakpoint, without making the secondary objective an impossible
+  // hard constraint. Once the support target is reached, the multiplier is 1
+  // and the primary objective can dominate normally.
+  return 0.1 + 0.9 * satisfaction;
+}
+
 function rankedObjectiveScore(
   evaluated: EvaluatedBuild,
   request: {
@@ -131,17 +176,24 @@ function rankedObjectiveScore(
 
   if (isEfficiencyObjective(request.objective)) {
     // Efficiency and Modifier Efficiency already include cycle time, so the raw
-    // objective remains dominant when selected as the primary target.
+    // objective remains dominant when selected as the primary target. If the
+    // secondary objective has a known useful support breakpoint, apply a soft
+    // support multiplier so builds that ignore that target do not dominate just
+    // because their raw efficiency is higher.
+    const supportMultiplier = secondarySupportMultiplier(evaluated, secondary);
+
     return (
-      primaryRaw * PRIMARY_SCORE_WEIGHT +
+      primaryRaw * supportMultiplier * PRIMARY_SCORE_WEIGHT +
       secondaryScore * SECONDARY_SCORE_WEIGHT +
       cycle * CYCLE_TIME_SCORE_WEIGHT +
       secondaryRaw * RAW_TIE_BREAKER_WEIGHT
     );
   }
 
+  const supportMultiplier = secondarySupportMultiplier(evaluated, secondary);
+
   return (
-    primary * PRIMARY_SCORE_WEIGHT +
+    primary * supportMultiplier * PRIMARY_SCORE_WEIGHT +
     secondaryScore * SECONDARY_SCORE_WEIGHT +
     cycle * CYCLE_TIME_SCORE_WEIGHT +
     primaryRaw * RAW_TIE_BREAKER_WEIGHT +

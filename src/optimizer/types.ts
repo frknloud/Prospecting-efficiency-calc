@@ -136,6 +136,8 @@ export interface OptimizerRequest {
 
   searchTimeBudgetMs?: number;
 
+  searchDeadlineMs?: number;
+
   topResults?: number;
 
   mode?: OptimizerMode;

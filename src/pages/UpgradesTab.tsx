@@ -68,7 +68,7 @@ export default function UpgradesTab({
           <h3 className="text-lg font-semibold">Upgrade Advisor</h3>
 
           <p className="text-xs text-slate-400 mt-1">
-            Ranked by a fixed balance of efficiency gain and luck gain.
+            Ranked by a fixed balance of efficiency gain and luck gain. Consumables are ignored because they are temporary.
           </p>
         </div>
 

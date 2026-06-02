@@ -29,6 +29,7 @@ import { createBuildState } from "./engine/createBuildState";
 import { normalizeBuildState } from "./engine/normalizeBuildState";
 
 import { useEvaluatedBuild } from "./hooks/useEvaluatedBuild";
+import { stripTemporaryEffectsForOptimization } from "./engine/stripTemporaryEffectsForOptimization";
 import { useOptimizer } from "./hooks/useOptimizer";
 import { useAppUpdateCheck } from "./hooks/useAppUpdateCheck";
 
@@ -439,7 +440,14 @@ export default function App() {
     [buildState, ringSlotLimit],
   );
 
+  const optimizationBuildState = useMemo(
+    () => stripTemporaryEffectsForOptimization(normalizedBuildState),
+    [normalizedBuildState],
+  );
+
   const evaluatedBuild = useEvaluatedBuild(normalizedBuildState);
+
+  const optimizerEvaluatedBuild = useEvaluatedBuild(optimizationBuildState);
 
   const {
     runOptimizer,
@@ -482,7 +490,7 @@ export default function App() {
   const optimizerCacheKey = useMemo(
     () =>
       JSON.stringify({
-        build: normalizedBuildState,
+        build: optimizationBuildState,
 
         lockedSlots,
 
@@ -503,7 +511,7 @@ export default function App() {
         forceOneTapBuilds: optimizerSettings.forceOneTapBuilds,
       }),
     [
-      normalizedBuildState,
+      optimizationBuildState,
       lockedSlots,
       accessSettings,
       optimizerSettings.objective,
@@ -519,11 +527,11 @@ export default function App() {
   const upgradeAdvisorInputKey = useMemo(
     () =>
       JSON.stringify({
-        build: normalizedBuildState,
+        build: optimizationBuildState,
         ringSlotLimit,
         accessSettings,
       }),
-    [normalizedBuildState, ringSlotLimit, accessSettings],
+    [optimizationBuildState, ringSlotLimit, accessSettings],
   );
 
   const [lastUpgradeAdvisorInputKey, setLastUpgradeAdvisorInputKey] =
@@ -559,22 +567,22 @@ export default function App() {
       return;
     }
 
-    setOptimizerBaselineEfficiency(evaluatedBuild.efficiency);
+    setOptimizerBaselineEfficiency(optimizerEvaluatedBuild.efficiency);
 
     try {
       await runOptimizer(
         optimizerCacheKey,
-        normalizedBuildState,
+        optimizationBuildState,
         ringSlotLimit,
         {
           objective: optimizerSettings.objective,
 
           secondaryObjective: effectiveOptimizerSecondaryObjective,
 
-          baselineEfficiency: evaluatedBuild.efficiency,
+          baselineEfficiency: optimizerEvaluatedBuild.efficiency,
 
           baselineScore: scoreBuild(
-            evaluatedBuild,
+            optimizerEvaluatedBuild,
             {
               objective: optimizerSettings.objective,
 
@@ -602,7 +610,7 @@ export default function App() {
         },
         (result) =>
           respectsLockedSlots(
-            normalizedBuildState,
+            optimizationBuildState,
             result.build,
             lockedSlots,
           ),
@@ -636,7 +644,7 @@ export default function App() {
     ringSlotLimit,
     optimizable,
     optimizerLocked,
-    evaluatedBuild.efficiency,
+    optimizerEvaluatedBuild.efficiency,
     optimizerSettings.autoRun,
     optimizerSettings.objective,
     effectiveOptimizerSecondaryObjective,
@@ -647,7 +655,7 @@ export default function App() {
     optimizerSettings.forceOneTapBuilds,
     optimizerSettings.debounceMs,
     optimizerRequestTimeoutMs,
-    normalizedBuildState,
+    optimizationBuildState,
     lockedSlots,
     accessSettings,
   ]);
@@ -672,7 +680,7 @@ export default function App() {
       try {
         setUpgradeRecommendations(
           recommendUpgrades(
-            normalizedBuildState,
+            optimizationBuildState,
             ringSlotLimit,
             accessSettings,
           ),
@@ -990,7 +998,7 @@ export default function App() {
 
         {activeTab === "optimizer" && (
           <OptimizerPage
-            buildState={normalizedBuildState}
+            buildState={optimizationBuildState}
             loading={optimizerLoading}
             optimizable={optimizable}
             results={optimizerResults}
@@ -1001,7 +1009,7 @@ export default function App() {
             setSelectedOptimizerBuildHash={setSelectedOptimizerBuildHash}
             optimizerLocked={optimizerLocked}
             optimizerBaselineEfficiency={optimizerBaselineEfficiency}
-            evaluatedBuild={evaluatedBuild}
+            evaluatedBuild={optimizerEvaluatedBuild}
             settings={optimizerSettings}
             setSettings={setOptimizerSettings}
             onRefresh={refreshOptimizerResults}

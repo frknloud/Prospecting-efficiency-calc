@@ -4,6 +4,7 @@ import EquipmentPanel from "../components/EquipmentPanel";
 import MuseumSlotSelector from "../components/MuseumSlotSelector";
 import AccessFilterPanel from "../components/AccessFilterPanel";
 import { formatStatLabel } from "../utils/statLabels";
+import { buildMuseumMultiplierBonuses } from "../engine/applyMuseum";
 
 import type { MuseumSlotSelection } from "../engine/types";
 import type { AccessSettings } from "../access/accessTypes";
@@ -182,6 +183,20 @@ export default function CalculatorTab({
       return entries;
     },
   );
+
+  const museumMultiplierEntries = Object.entries(
+    buildMuseumMultiplierBonuses({
+      ...evaluatedBuild.build,
+      museumSlots,
+    }),
+  )
+    .map(([key, value]) => ({
+      key,
+      label: formatStatLabel(key),
+      multiplier: 1 + Number(value ?? 0),
+    }))
+    .filter((entry) => Number.isFinite(entry.multiplier) && entry.multiplier !== 1)
+    .sort((a, b) => a.label.localeCompare(b.label));
 
 
   return (
@@ -365,6 +380,30 @@ export default function CalculatorTab({
               </div>
             ))}
           </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-2">Museum</h3>
+
+          {museumMultiplierEntries.length > 0 ? (
+            <div className="space-y-2">
+              {museumMultiplierEntries.map(({ key, label, multiplier }) => (
+                <div
+                  key={key}
+                  className="grid grid-cols-[auto_1fr] items-center gap-x-3 bg-slate-700 rounded-lg px-3 py-2"
+                >
+                  <span className="font-mono tabular-nums text-right text-emerald-300 min-w-[5.5rem]">
+                    + {multiplier.toFixed(2)}x
+                  </span>
+                  <span>{label}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="bg-slate-700 rounded-lg px-3 py-2 text-slate-300">
+              No museum multiplier bonuses selected.
+            </p>
+          )}
         </div>
       </section>
       </div>
