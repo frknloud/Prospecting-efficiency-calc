@@ -8,20 +8,33 @@ import {
 import { EvaluatedBuild } from "./evaluatedTypes";
 import { OptimizerObjective } from "./types";
 
-const PRIMARY_WEIGHT = 0.65;
-const SECONDARY_WEIGHT = 0.35;
-const HYBRID_QUALIFIED_THRESHOLD = 0.55;
+const PRIMARY_SCORE_WEIGHT = 1_000_000_000;
+const SECONDARY_SCORE_WEIGHT = 1_000_000;
+const CYCLE_TIME_SCORE_WEIGHT = 1_000;
+const RAW_TIE_BREAKER_WEIGHT = 0.001;
+
+function cycleTimeScore(evaluated: EvaluatedBuild): number {
+  const cycleTime = evaluated.cycleData?.cycleTime ?? Infinity;
+
+  if (!Number.isFinite(cycleTime) || cycleTime <= 0) {
+    return 0;
+  }
+
+  // Higher is better, but the value stays bounded between 0 and 1 so cycle
+  // speed acts as a practical tie-breaker instead of overpowering objectives.
+  return 1 / (1 + cycleTime);
+}
 
 function objectiveUtility(
   objective: OptimizerObjective,
   value: number,
-  isSoloObjective: boolean,
+  applySecondarySoftCap: boolean,
 ): number {
   if (!Number.isFinite(value)) {
     return 0;
   }
 
-  if (objective === "sizeBoost" && !isSoloObjective) {
+  if (objective === "sizeBoost" && applySecondarySoftCap) {
     if (value <= 1000) {
       return value;
     }
@@ -33,7 +46,7 @@ function objectiveUtility(
     return 1250 + (value - 1500) * 0.05;
   }
 
-  if (objective === "modifierBoost" && !isSoloObjective) {
+  if (objective === "modifierBoost" && applySecondarySoftCap) {
     if (value <= 1900) {
       return value;
     }
@@ -52,18 +65,30 @@ function normalizedObjectiveValue(
     secondaryObjective?: OptimizerObjective;
     objectiveRanges?: Partial<Record<OptimizerObjective, { current: number; best: number }>>;
   },
+  options: { applySecondarySoftCap?: boolean } = {},
 ): number {
   const value = objectiveValue(evaluated, objective);
-  const isSoloObjective = !request.secondaryObjective;
-  const transformedValue = objectiveUtility(objective, value, isSoloObjective);
+  const transformedValue = objectiveUtility(
+    objective,
+    value,
+    Boolean(options.applySecondarySoftCap),
+  );
   const range = request.objectiveRanges?.[objective];
 
   if (!range) {
     return Math.max(transformedValue, 0);
   }
 
-  const transformedCurrent = objectiveUtility(objective, range.current, isSoloObjective);
-  const transformedBest = objectiveUtility(objective, range.best, isSoloObjective);
+  const transformedCurrent = objectiveUtility(
+    objective,
+    range.current,
+    Boolean(options.applySecondarySoftCap),
+  );
+  const transformedBest = objectiveUtility(
+    objective,
+    range.best,
+    Boolean(options.applySecondarySoftCap),
+  );
   const denominator = transformedBest - transformedCurrent;
 
   if (!Number.isFinite(denominator) || Math.abs(denominator) < 1e-9) {
@@ -73,23 +98,55 @@ function normalizedObjectiveValue(
   return Math.max(0, Math.min((transformedValue - transformedCurrent) / denominator, 1.5));
 }
 
-function hybridScore(
+function rankedObjectiveScore(
   evaluated: EvaluatedBuild,
   request: {
     objective: OptimizerObjective;
     secondaryObjective?: OptimizerObjective;
     objectiveRanges?: Partial<Record<OptimizerObjective, { current: number; best: number }>>;
   },
+  secondary?: OptimizerObjective,
 ): number {
-  const primary = normalizedObjectiveValue(evaluated, request.objective, request);
+  const primaryRaw = objectiveValue(evaluated, request.objective);
+  const primary = normalizedObjectiveValue(evaluated, request.objective, request, {
+    applySecondarySoftCap: false,
+  });
+  const secondaryRaw = secondary ? objectiveValue(evaluated, secondary) : 0;
+  const secondaryScore = secondary
+    ? normalizedObjectiveValue(evaluated, secondary, request, {
+        applySecondarySoftCap: true,
+      })
+    : 0;
+  const cycle = cycleTimeScore(evaluated);
 
-  if (!request.secondaryObjective || !canPairObjectives(request.objective, request.secondaryObjective)) {
-    return primary;
+  if (isMovementObjective(request.objective)) {
+    return (
+      primary * PRIMARY_SCORE_WEIGHT +
+      secondaryScore * SECONDARY_SCORE_WEIGHT +
+      primaryRaw * 1_000 +
+      secondaryRaw +
+      cycle * CYCLE_TIME_SCORE_WEIGHT
+    );
   }
 
-  const secondary = normalizedObjectiveValue(evaluated, request.secondaryObjective, request);
+  if (isEfficiencyObjective(request.objective)) {
+    // Efficiency and Modifier Efficiency already include cycle time, so the raw
+    // objective remains dominant when selected as the primary target.
+    return (
+      primaryRaw * PRIMARY_SCORE_WEIGHT +
+      secondaryScore * SECONDARY_SCORE_WEIGHT +
+      cycle * CYCLE_TIME_SCORE_WEIGHT +
+      secondaryRaw * RAW_TIE_BREAKER_WEIGHT
+    );
+  }
 
-  return primary * PRIMARY_WEIGHT + secondary * SECONDARY_WEIGHT;
+  return (
+    primary * PRIMARY_SCORE_WEIGHT +
+    secondaryScore * SECONDARY_SCORE_WEIGHT +
+    cycle * CYCLE_TIME_SCORE_WEIGHT +
+    primaryRaw * RAW_TIE_BREAKER_WEIGHT +
+    secondaryRaw * RAW_TIE_BREAKER_WEIGHT * 0.1
+  );
 }
 
 export function scoreBuild(
@@ -100,39 +157,9 @@ export function scoreBuild(
     objectiveRanges?: Partial<Record<OptimizerObjective, { current: number; best: number }>>;
   },
 ) {
-  const primaryRaw = objectiveValue(evaluated, request.objective);
-  const secondaryRaw = request.secondaryObjective
-    ? objectiveValue(evaluated, request.secondaryObjective)
-    : 0;
-
   const secondary = request.secondaryObjective && canPairObjectives(request.objective, request.secondaryObjective)
     ? request.secondaryObjective
     : undefined;
 
-  if (!secondary) {
-    return primaryRaw * 1_000_000 + evaluated.efficiency;
-  }
-
-  const hybrid = hybridScore(evaluated, {
-    ...request,
-    secondaryObjective: secondary,
-  });
-
-  if (isMovementObjective(request.objective)) {
-    return hybrid * 1_000_000_000 + primaryRaw * 1_000 + secondaryRaw;
-  }
-
-  if (isEfficiencyObjective(request.objective) || isEfficiencyObjective(secondary)) {
-    return hybrid * 1_000_000_000 + evaluated.efficiency;
-  }
-
-  const hybridQualified = Math.min(hybrid / HYBRID_QUALIFIED_THRESHOLD, 1);
-
-  if (hybridQualified < 1) {
-    return hybridQualified * 1_000_000_000 + hybrid * 1_000_000;
-  }
-
-  // Once a candidate is a reasonable hybrid match, efficiency ranks the best
-  // practical version of that build type. The hybrid score remains a tie-breaker.
-  return 1_000_000_000 + evaluated.efficiency * 1_000_000 + hybrid * 1_000 + primaryRaw + secondaryRaw * 0.001;
+  return rankedObjectiveScore(evaluated, request, secondary);
 }
