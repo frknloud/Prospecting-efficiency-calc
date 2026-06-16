@@ -1,25 +1,16 @@
-import { Lock, Unlock, } from "lucide-react";
-
 import minerals from "../data/museum-minerals.json";
 import modifiers from "../data/museum-modifiers.json";
 
 import type { MuseumSlotSelection } from "../engine/types";
-import type { AccessSettings } from "../access/accessTypes";
 
-import { isItemAccessible, isMuseumMineralAccessible } from "../access/accessRules";
-
-import { canUseMuseumModifier, filterValidMuseumMinerals, filterValidMuseumModifiers } from "../helpers/museumValidation";
+import { canUseMuseumModifier, filterValidMuseumModifiers } from "../helpers/museumValidation";
 
 import StatBadge from "./StatBadge";
 
 interface Props {
-  accessSettings: AccessSettings;
   slot: MuseumSlotSelection;
   allSlots: MuseumSlotSelection[];
   onChange: (slot: MuseumSlotSelection) => void;
-  locked?: boolean;
-  lockDisabled?: boolean;
-  onToggleLock?: () => void;
 }
 
 const rarityStyles: Record<string, string> = {
@@ -33,13 +24,9 @@ const rarityStyles: Record<string, string> = {
 };
 
 export default function MuseumSlotSelector({
-  accessSettings,
   slot,
   allSlots,
   onChange,
-  locked,
-  lockDisabled,
-  onToggleLock,
 }: Props) {
   const usedMinerals = allSlots
     .filter((s: MuseumSlotSelection) => s.slotId !== slot.slotId)
@@ -57,43 +44,21 @@ export default function MuseumSlotSelector({
     const notAlreadyUsed =
       !usedMinerals.includes(mineral.id) || mineral.id === slot.mineralId;
 
-    const accessible =
-      isMuseumMineralAccessible(
-        mineral as any,
-        accessSettings,
-      ) || mineral.id === slot.mineralId;
-
-    const modifierCompatible =
-      canUseMuseumModifier(
-        mineral,
-        selectedModifier,
-      );
-
-    return (
-      rarityMatches &&
-      notAlreadyUsed &&
-      accessible &&
-      modifierCompatible
+    const modifierCompatible = canUseMuseumModifier(
+      mineral,
+      selectedModifier,
     );
+
+    return rarityMatches && notAlreadyUsed && modifierCompatible;
   });
 
   const selectedMineral = minerals.find(
     (mineral) => mineral.id === slot.mineralId,
   );
 
-  const accessFilteredModifiers =
-    modifiers.filter(
-      modifier =>
-        isItemAccessible(
-          modifier as any,
-          accessSettings,
-        ) ||
-        modifier.id === slot.modifierId
-    );
-
   const availableModifiers = filterValidMuseumModifiers(
     selectedMineral,
-    accessFilteredModifiers,
+    modifiers,
   );
 
   const mineralStats = Object.keys(selectedMineral?.stats ?? {});
@@ -114,42 +79,7 @@ export default function MuseumSlotSelector({
           {slot.rarity}
         </div>
 
-        <div className="flex items-center gap-2 mb-2">
-
-          {onToggleLock && (
-
-            <button
-              type="button"
-              onClick={onToggleLock}
-              disabled={lockDisabled}
-              title={
-                locked
-                  ? "Museum slot locked"
-                  : "Museum slot unlocked"
-              }
-              aria-label={
-                locked
-                  ? "Museum slot locked"
-                  : "Museum slot unlocked"
-              }
-              className={
-                locked
-                  ? "bg-yellow-500 text-black rounded w-7 h-7 flex items-center justify-center disabled:opacity-70"
-                  : "bg-slate-700 rounded w-7 h-7 flex items-center justify-center"
-              }
-            >
-              {locked ? (
-                <Lock size={13} />
-              ) : (
-                <Unlock size={13} />
-              )}
-            </button>
-          )}
-
-          <div className="font-semibold text-slate-100">Slot {slot.slotId}</div>
-
-        </div>
-
+        <div className="font-semibold text-slate-100">Slot {slot.slotId}</div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -160,27 +90,22 @@ export default function MuseumSlotSelector({
             className="w-full bg-slate-800 rounded-lg px-3 py-2"
             value={slot.mineralId ?? ""}
             onChange={(e) => {
-              const nextMineralId =
-                e.target.value || null;
+              const nextMineralId = e.target.value || null;
 
-              const nextMineral =
-                minerals.find(
-                  mineral => mineral.id === nextMineralId
-                );
+              const nextMineral = minerals.find(
+                mineral => mineral.id === nextMineralId
+              );
 
-              const nextModifierId =
-                canUseMuseumModifier(
-                  nextMineral,
-                  selectedModifier,
-                )
-                  ? slot.modifierId
-                  : null;
+              const nextModifierId = canUseMuseumModifier(
+                nextMineral,
+                selectedModifier,
+              )
+                ? slot.modifierId
+                : null;
 
               onChange({
                 ...slot,
-
                 mineralId: nextMineralId,
-
                 modifierId: nextModifierId,
               });
             }}

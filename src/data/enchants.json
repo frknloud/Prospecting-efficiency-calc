@@ -207,8 +207,7 @@
       "luck": 200
     },
     "multiplier": {
-      "luck": 1.5,
-      "sizeBoost": 0.5
+      "luck": 1.5
     }
   },
   {

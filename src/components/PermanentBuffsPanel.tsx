@@ -1,8 +1,5 @@
 import ToggleCard from "./ToggleCard";
 
-import type { AccessSettings } from "../access/accessTypes";
-import { isRegionUnlocked } from "../access/accessRules";
-
 export interface PermanentBuffsState {
   mvpProspector: boolean;
   experience: number;
@@ -14,39 +11,6 @@ export interface PermanentBuffsState {
   mastery: number;
 }
 
-interface RegionLockedPermanentBuff {
-  id:
-    | "tradersRecommendation"
-    | "lighthouseBlessing"
-    | "ancientBlessing"
-    | "blessingOfTheSpirits";
-  label: string;
-  requiredRegion: string;
-}
-
-export const REGION_LOCKED_PERMANENT_BUFFS: RegionLockedPermanentBuff[] = [
-  {
-    id: "tradersRecommendation",
-    label: "Trader's Recommendation",
-    requiredRegion: "rubbleCreek",
-  },
-  {
-    id: "lighthouseBlessing",
-    label: "Lighthouse Blessing",
-    requiredRegion: "fortuneRiver",
-  },
-  {
-    id: "ancientBlessing",
-    label: "Ancient Blessing",
-    requiredRegion: "crystalCavern",
-  },
-  {
-    id: "blessingOfTheSpirits",
-    label: "Blessing of the Spirits",
-    requiredRegion: "overgrownCaves",
-  },
-];
-
 export const MASTERY_OPTIONS = [
   { value: 1, label: "x1" },
   { value: 1.05, label: "x1.05" },
@@ -56,52 +20,20 @@ export const MASTERY_OPTIONS = [
   { value: 1.25, label: "x1.25" },
 ] as const;
 
-export function createDefaultPermanentBuffs(
-  accessSettings: AccessSettings,
-): PermanentBuffsState {
+export function createDefaultPermanentBuffs(): PermanentBuffsState {
   return {
     mvpProspector: false,
     experience: 0,
-    tradersRecommendation: isRegionUnlocked(
-      "rubbleCreek",
-      accessSettings.region,
-    ),
-    lighthouseBlessing: isRegionUnlocked(
-      "fortuneRiver",
-      accessSettings.region,
-    ),
-    ancientBlessing: isRegionUnlocked(
-      "crystalCavern",
-      accessSettings.region,
-    ),
-    blessingOfTheSpirits: isRegionUnlocked(
-      "overgrownCaves",
-      accessSettings.region,
-    ),
+    tradersRecommendation: true,
+    lighthouseBlessing: true,
+    ancientBlessing: true,
+    blessingOfTheSpirits: true,
     dredgeMaster: 0,
     mastery: 1,
   };
 }
 
-export function sanitizePermanentBuffsForAccess(
-  buffs: PermanentBuffsState,
-  accessSettings: AccessSettings,
-): PermanentBuffsState {
-  const next = {
-    ...buffs,
-  };
-
-  for (const buff of REGION_LOCKED_PERMANENT_BUFFS) {
-    if (!isRegionUnlocked(buff.requiredRegion, accessSettings.region)) {
-      next[buff.id] = false;
-    }
-  }
-
-  return next;
-}
-
 interface Props {
-  accessSettings: AccessSettings;
   permanentBuffs: PermanentBuffsState;
   setPermanentBuffs: React.Dispatch<React.SetStateAction<PermanentBuffsState>>;
 }
@@ -125,7 +57,6 @@ function formatLuckBadge(value: number): string {
 }
 
 export default function PermanentBuffsPanel({
-  accessSettings,
   permanentBuffs,
   setPermanentBuffs,
 }: Props) {
@@ -177,22 +108,29 @@ export default function PermanentBuffsPanel({
           </select>
         </label>
 
-        {REGION_LOCKED_PERMANENT_BUFFS.map((buff) => {
-          const accessible = isRegionUnlocked(
-            buff.requiredRegion,
-            accessSettings.region,
-          );
+        <ToggleCard
+          label="Trader's Recommendation"
+          enabled={permanentBuffs.tradersRecommendation}
+          onToggle={() => toggleBooleanBuff("tradersRecommendation")}
+        />
 
-          return (
-            <ToggleCard
-              key={buff.id}
-              label={buff.label}
-              enabled={accessible && permanentBuffs[buff.id]}
-              disabled={!accessible}
-              onToggle={() => toggleBooleanBuff(buff.id)}
-            />
-          );
-        })}
+        <ToggleCard
+          label="Lighthouse Blessing"
+          enabled={permanentBuffs.lighthouseBlessing}
+          onToggle={() => toggleBooleanBuff("lighthouseBlessing")}
+        />
+
+        <ToggleCard
+          label="Ancient Blessing"
+          enabled={permanentBuffs.ancientBlessing}
+          onToggle={() => toggleBooleanBuff("ancientBlessing")}
+        />
+
+        <ToggleCard
+          label="Blessing of the Spirits"
+          enabled={permanentBuffs.blessingOfTheSpirits}
+          onToggle={() => toggleBooleanBuff("blessingOfTheSpirits")}
+        />
 
         <label className="block rounded-xl p-4 bg-slate-700 border border-slate-600">
           <span className="block font-medium mb-2">Experience - Login Bonus</span>

@@ -1,5 +1,3 @@
-import { Lock, Unlock } from "lucide-react";
-
 import pans from "../data/pans.json";
 import shovels from "../data/shovels.json";
 import rings from "../data/rings.json";
@@ -15,13 +13,10 @@ import PermanentBuffsPanel from "./PermanentBuffsPanel";
 import ConsumablesPanel from "./ConsumablesPanel";
 
 import type { EquipmentItem } from "../engine/types";
-import type { AccessSettings } from "../access/accessTypes";
-import type { LockedSlots } from "../optimizer/types";
 import type { PermanentBuffsState } from "./PermanentBuffsPanel";
 import type { ConsumablesState } from "./ConsumablesPanel";
 
 import { filterAvailableRings } from "../helpers/filterAvailableRings";
-import { areMutationsAccessible, isItemAccessible } from "../access/accessRules";
 
 const typedPans: EquipmentItem[] = pans;
 const typedShovels: EquipmentItem[] = shovels;
@@ -30,7 +25,6 @@ const typedNecklaces: EquipmentItem[] = necklaces;
 const typedCharms: EquipmentItem[] = charms;
 
 interface Props {
-  accessSettings: AccessSettings;
   ringSlotLimit: 6 | 8;
   setRingSlotLimit: (value: 6 | 8) => void;
   selectedPan: string | null;
@@ -55,83 +49,10 @@ interface Props {
   updateRing: (index: number, value: string | null) => void;
   updateRingMutation: (index: number, value: string | null) => void;
   toggleConsumable: (category: keyof ConsumablesState, id: string) => void;
-  lockedSlots:LockedSlots;
-  setLockedSlots: React.Dispatch<
-    React.SetStateAction<LockedSlots>
-  >;
-}
-
-function includeSelectedItem<T extends EquipmentItem>(
-  accessibleItems: T[],
-  allItems: T[],
-  selectedId: string | null,
-): T[] {
-  if (!selectedId) {
-    return accessibleItems;
-  }
-
-  if (accessibleItems.some((item) => item.id === selectedId)) {
-    return accessibleItems;
-  }
-
-  const selectedItem = allItems.find((item) => item.id === selectedId);
-
-  if (!selectedItem) {
-    return accessibleItems;
-  }
-
-  return [
-    selectedItem,
-    ...accessibleItems,
-  ];
 }
 
 export default function EquipmentPanel(props: Props) {
   const visibleRings = props.selectedRings.slice(0, props.ringSlotLimit);
-
-  const mutationsAccessible =
-    areMutationsAccessible(props.accessSettings);
-
-  const accessiblePans = includeSelectedItem(
-    typedPans.filter((item) =>
-      isItemAccessible(item as any, props.accessSettings)
-    ),
-    typedPans,
-    props.selectedPan,
-  );
-
-  const accessibleShovels = includeSelectedItem(
-    typedShovels.filter((item) =>
-      isItemAccessible(item as any, props.accessSettings)
-    ),
-    typedShovels,
-    props.selectedShovel,
-  );
-
-  const accessibleNecklaces = includeSelectedItem(
-    typedNecklaces.filter((item) =>
-      isItemAccessible(item as any, props.accessSettings)
-    ),
-    typedNecklaces,
-    props.selectedNecklace,
-  );
-
-  const accessibleCharms = includeSelectedItem(
-    typedCharms.filter((item) =>
-      isItemAccessible(item as any, props.accessSettings)
-    ),
-    typedCharms,
-    props.selectedCharm,
-  );
-
-  const accessibleRings = typedRings.filter((item) =>
-    isItemAccessible(item as any, props.accessSettings)
-  );
-  
-  const accessibleMutations =
-    props.accessSettings.includeLimitedTime
-      ? mutations
-      : mutations.filter((mutation) => !mutation.limitedTime);
 
   return (
     <section className="bg-slate-800 rounded-2xl p-4 shadow-lg space-y-4 text-sm">
@@ -155,26 +76,10 @@ export default function EquipmentPanel(props: Props) {
       </div>
 
       <div className="space-y-2">
-        <div className="grid grid-cols-[auto_1fr_1fr] gap-4 items-end">
-          <button
-            onClick={() =>
-              props.setLockedSlots((prev) => ({
-                ...prev,
-                pan: !prev.pan,
-              }))
-            }
-            className={
-              props.lockedSlots.pan
-                ? "bg-yellow-500 text-black rounded w-10 h-10 flex items-center justify-center"
-                : "bg-slate-700 rounded w-10 h-10 flex items-center justify-center"
-            }
-          >
-            {props.lockedSlots.pan ? <Lock size={14} /> : <Unlock size={14} />}
-          </button>
-
+        <div className="grid grid-cols-1 gap-4 items-end sm:grid-cols-2">
           <EquipmentSelector
             label="Pan"
-            items={accessiblePans}
+            items={typedPans}
             value={props.selectedPan}
             getName={(item) => item.name}
             onChange={props.setSelectedPan}
@@ -188,56 +93,21 @@ export default function EquipmentPanel(props: Props) {
           />
         </div>
       </div>
-      <div className="grid grid-cols-[auto_1fr_1fr] gap-4 items-end">
-        <button
-          onClick={() =>
-            props.setLockedSlots((prev) => ({
-              ...prev,
-              shovel: !prev.shovel,
-            }))
-          }
-          className={
-            props.lockedSlots.shovel
-              ? "bg-yellow-500 text-black rounded w-10 h-10 flex items-center justify-center"
-              : "bg-slate-700 rounded w-10 h-10 flex items-center justify-center"
-          }
-        >
-          {props.lockedSlots.shovel ? <Lock size={14} /> : <Unlock size={14} />}
-        </button>
 
+      <div className="grid grid-cols-1 gap-4 items-end sm:grid-cols-2">
         <EquipmentSelector
           label="Shovel"
-          items={accessibleShovels}
+          items={typedShovels}
           value={props.selectedShovel}
           getName={(item) => item.name}
           onChange={props.setSelectedShovel}
         />
       </div>
 
-      <div className="grid grid-cols-[auto_1fr_1fr] gap-4 items-end">
-        <button
-          onClick={() =>
-            props.setLockedSlots((prev) => ({
-              ...prev,
-              necklace: !prev.necklace,
-            }))
-          }
-          className={
-            props.lockedSlots.necklace
-              ? "bg-yellow-500 text-black rounded w-10 h-10 flex items-center justify-center"
-              : "bg-slate-700 rounded w-10 h-10 flex items-center justify-center"
-          }
-        >
-          {props.lockedSlots.necklace ? (
-            <Lock size={14} />
-          ) : (
-            <Unlock size={14} />
-          )}
-        </button>
-
+      <div className="grid grid-cols-1 gap-4 items-end sm:grid-cols-2">
         <EquipmentSelector
           label="Necklace"
-          items={accessibleNecklaces}
+          items={typedNecklaces}
           value={props.selectedNecklace}
           getName={(item) => item.name}
           onChange={props.setSelectedNecklace}
@@ -245,34 +115,16 @@ export default function EquipmentPanel(props: Props) {
 
         <MutationSelector
           label="Necklace Mutation"
-          mutations={accessibleMutations}
+          mutations={mutations}
           value={props.selectedNecklaceMutation}
-          disabled={!mutationsAccessible}
-          disabledMessage="Unlocks at Snowy Mountain"
           onChange={props.setSelectedNecklaceMutation}
         />
       </div>
 
-      <div className="grid grid-cols-[auto_1fr_1fr] gap-4 items-end">
-        <button
-          onClick={() =>
-            props.setLockedSlots((prev) => ({
-              ...prev,
-              charm: !prev.charm,
-            }))
-          }
-          className={
-            props.lockedSlots.charm
-              ? "bg-yellow-500 text-black rounded w-10 h-10 flex items-center justify-center"
-              : "bg-slate-700 rounded w-10 h-10 flex items-center justify-center"
-          }
-        >
-          {props.lockedSlots.charm ? <Lock size={14} /> : <Unlock size={14} />}
-        </button>
-
+      <div className="grid grid-cols-1 gap-4 items-end sm:grid-cols-2">
         <EquipmentSelector
           label="Charm"
-          items={accessibleCharms}
+          items={typedCharms}
           value={props.selectedCharm}
           getName={(item) => item.name}
           onChange={props.setSelectedCharm}
@@ -280,10 +132,8 @@ export default function EquipmentPanel(props: Props) {
 
         <MutationSelector
           label="Charm Mutation"
-          mutations={accessibleMutations}
+          mutations={mutations}
           value={props.selectedCharmMutation}
-          disabled={!mutationsAccessible}
-          disabledMessage="Unlocks at Snowy Mountain"
           onChange={props.setSelectedCharmMutation}
         />
       </div>
@@ -291,46 +141,17 @@ export default function EquipmentPanel(props: Props) {
       <div className="pt-3 border-t border-slate-700">
         <div className="space-y-2">
           {visibleRings.map((value, index) => {
-            const accessibleRingsForSlot = includeSelectedItem(
-              accessibleRings,
-              typedRings,
-              value,
-            );
-
             const availableRings = filterAvailableRings(
-              accessibleRingsForSlot,
+              typedRings,
               props.selectedRings,
               index,
             );
+
             return (
               <div
                 key={index}
-                className="grid grid-cols-[auto_1fr_1fr] gap-4 items-end"
+                className="grid grid-cols-1 gap-4 items-end sm:grid-cols-2"
               >
-                <button
-                  onClick={() =>
-                    props.setLockedSlots((prev) => {
-                      const nextRings = [...prev.rings];
-                      nextRings[index] = !nextRings[index];
-                      return {
-                        ...prev,
-                        rings: nextRings,
-                      };
-                    })
-                  }
-                  className={
-                    props.lockedSlots.rings[index]
-                      ? "bg-yellow-500 text-black rounded w-10 h-10 flex items-center justify-center"
-                      : "bg-slate-700 rounded w-10 h-10 flex items-center justify-center"
-                  }
-                >
-                  {props.lockedSlots.rings[index] ? (
-                    <Lock size={14} />
-                  ) : (
-                    <Unlock size={14} />
-                  )}
-                </button>
-
                 <EquipmentSelector
                   label={`Ring ${index + 1}`}
                   items={availableRings}
@@ -342,10 +163,8 @@ export default function EquipmentPanel(props: Props) {
 
                 <MutationSelector
                   label={`Ring ${index + 1} Mutation`}
-                  mutations={accessibleMutations}
+                  mutations={mutations}
                   value={props.selectedRingMutations[index]}
-                  disabled={!mutationsAccessible}
-                  disabledMessage="Unlocks at Snowy Mountain"
                   onChange={(newValue) =>
                     props.updateRingMutation(index, newValue)
                   }
@@ -356,9 +175,7 @@ export default function EquipmentPanel(props: Props) {
         </div>
       </div>
 
-
       <PermanentBuffsPanel
-        accessSettings={props.accessSettings}
         permanentBuffs={props.permanentBuffs}
         setPermanentBuffs={props.setPermanentBuffs}
       />

@@ -1,18 +1,12 @@
-import { BuildState, Stats } from "../engine/types";
+import type { BuildState, Stats } from "./types";
 
 export interface EvaluatedBuild {
   build: BuildState;
-
   stats: Stats;
-
   efficiency: number;
-
   modifierLuck: number;
-
   modifierEfficiency: number;
-
   objectiveScore: number;
-
   cycleData: {
     cycleTime: number;
     shakeTime: number;
@@ -23,6 +17,5 @@ export interface EvaluatedBuild {
     timePerDig: number;
     r: number;
   };
-
   valid: boolean;
 }

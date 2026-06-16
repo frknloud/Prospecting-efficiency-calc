@@ -1,6 +1,6 @@
 import type { BuildState, PartialStats } from "./types";
 
-import type { EvaluatedBuild } from "../optimizer/evaluatedTypes";
+import type { EvaluatedBuild } from "./evaluatedTypes";
 
 import { addStats, emptyStats } from "./calculateFinalStats";
 

@@ -1,3 +1,0 @@
-export const MAX_REPLAY_HISTORY = 250;
-
-export const REPLAY_DECIMATION_INTERVAL = 2;

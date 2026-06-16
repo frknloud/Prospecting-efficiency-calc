@@ -1,6 +1,6 @@
 import { FIXED_CYCLE_TIME } from "../engine/core/constants";
 
-import type { EvaluatedBuild } from "../optimizer/evaluatedTypes";
+import type { EvaluatedBuild } from "../engine/evaluatedTypes";
 
 interface BreakdownTabProps {
   evaluatedBuild: EvaluatedBuild;
